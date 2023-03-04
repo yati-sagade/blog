@@ -1,0 +1,156 @@
+---
+layout: post
+title: Tihai in Indian music
+date: 2022-08-14
+math: true
+---
+
+
+The rhythmic aspect of Indian classical music uses cycles of a fixed  number of beats. Familiar Western analogs are rhythmic accompaniments to 12-bar Blues, which repeat in 12-bar cycle, each played in 4/4 time.
+
+One unique thing I've seen in Indian music is the concept of a *Tihai*. There are many variations, but the most popular variant refers to  playing a rhythmic phrase, that, when repeated precisely three times,  lands you on the beginning of the next cycle.
+
+For instance, consider the 16-beat *Teen Taal*:
+
+<pre>
+Dha | Dhin | Dhin | Dha
+Dha | Dhin | Dhin | Dha
+Dha | Tin  | Tin  | Ta
+Ta  | Dhin | Dhin | Dha
+</pre>
+
+And an example *Tihai* (in **bold**). My hacky notation can be read as follows:
+ 
+ * Pipe (`|`) delimits single beats.
+ * When needed, I use slashes (`/`) on top to divide the beat into equal parts
+   and then to distribute them among the notes to be played in that beat.
+
+
+<pre>
+Dha      | Dhin     | Dhin      | Dha
+Dha      | Dhin     | Dhin      | Dha
+// //      / / / /                // //
+<b>DhaDha   | TiReKeTe | Dha       | DhaDha
+/ / / /               // //       / / / /
+TiReKeTe | Dha      | DhaDha    | TiReKeTe
+----
+Dha</b>      | Dhin     | Dhin      | Dha
+...
+</pre>
+
+
+ Note how:
+
+- The *Tihai* starts halfway (after the 8th beat, i.e., on the 9th beat)
+- The 3-beat phrase **{DhaDha}{TiReKeTe}{Dha}** (each {} takes one beat) repeats
+  three times, for a total of 9 beats.
+- Since we only have space for 8 beats in this cycle, the last beat starts the
+  next cycle
+
+ 
+
+The first beat of the cycle is known as *Sam*, and is the highest emotional
+point of the cycle*.* When one emphasizes the landing on *Sam* properly, the
+*Tihai* serves to temporarily distort the listener's rhythmic perception only to
+resolve it at the *Sam*.
+
+Here's me speaking and playing this *Tihai* on the Tabla:
+
+<iframe width="431" height="766" src="https://www.youtube.com/embed/wVhaVJNXBt0" title="Simple Teen Taal Tihai" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+## Rhythm math
+
+Let:
+
+* $N$ be the number of beats in the *Tihai* phrase. The one above had $N=3$.
+* $T$ be the number of beats in the *Taal* chosen. e.g., $T=16$ for *Teen Taal*.
+* Let $q$ be the beat number that should start the *Tihai*, $1 \le q \le T$.
+  In the above example, $q=9$, since we started on the 9th beat in the cycle.
+
+If we are to play the $N$-beat phrase 3 times and land on the beginning of a
+rhythmic cycle, we must have:
+
+$$
+3N = 1\mod{T-q+1}
+$$
+
+In the preceding example, we have all the values match up ($N=3$, $q=9$,
+$T=16$):
+
+
+$$3 \times 3 = 1\mod{\left(16-9+1 = 8\right)}$$
+
+Here's another example of a *Tihai* which starts on the first beat, and is 11
+beats long (first 11 beats <u>underlined</u>, the entire *Tihai* is
+**emboldened**):
+
+<pre>
+<b>
+// //      / / / /    // / /    / / //
+<u>DhaDha</u>   | <u>TiReKiTa</u> | <u>DhaTiRe</u> | <u>KiTaDha</u>
+//  //                // //     // //
+<u>DhinNa</u>   | <u>Dha</u>      | <u>DhaDhin</u> | <u>Na Dha</u>
+// //      //  //                // //
+<u>xx Dha</u>   | <u>DhinNa</u>   | <u>Dha</u>     | DhaDha
+/ / / /    // / /     / / //    //  //
+TiReKiTa | DhaTiRe  | KiTaDha | DhinNa
+-----
+////       // //      // //      // //
+Dha      | DhaDhin  | Na Dha   | xx Dha
+//  //                // //     / / / /
+DhinNa   | Dha      | DhaDha  | TiReKiTa
+// / /     / / //     //  //    
+DhaTiRe  | KiTaDha  | DhinNa  | Dha
+// //      // //      // //       //  //
+DhaDhin  | Na Dha   | xx Dha    | DhinNa
+-----
+Dha</b>  | Dhin ...
+</pre>
+
+Note how this 11-beat phrase, when played 3 times, gives us a piece of 33 beats,
+which is 2 full 16-beat cycles, and the extra beat that starts the next one.
+This shows that *Tihai*s need not complete within a cycle -- they can span
+multiple cycles, the only requirement seems to be to land on the *Sam* after 3
+repetitions.
+
+Here, $N=11$, $q=1$ and $T=16$, and we can see that:
+
+$$3N = 3 \times 11 = 33$$
+
+$$ = 1 \mod{16} $$
+
+$$ = 1 \mod{16 - 1 + 1} $$
+
+$$= 1 \mod{T-q+1}$$
+
+## Generalization?
+
+I have only ever heard this concept applied to 3x repetitions of fixed phrases
+(after all, the name *Tihai* does hint at 3's). But out of curiosity, what if we
+want to generalize this to a $K$-way repetition? e.g., we could invent a
+*Panchai* or something such that a fixed phrase, when repeated 5 times, has to
+end on the *Sam* of a rhythmic cycle.
+
+The simple calculations above should generalize to give us:
+
+$$K \times N = 1\mod{T-q+1}$$
+
+To jam with this idea with $K=5$, $q=1$ and $T=16$, we need an $N$ such
+that:
+
+$$5N = 1\mod{16}$$
+
+```python
+>>> [n for n in range(50) if (5*n) % 16 == 1]
+[13, 29, 45]
+```
+
+So there, our first option is a 13-beat phrase. When repeated 5 times, this will
+be 65 beats, which is 4 cycles of 16 beats and our extra beat to start the next
+cycle.
+
+Do let me know if such a generalization exists, or if there is maybe some reason
+why artists choose not to incorporate it. I for one can see that there is
+something magical about the number 3 -- it is an odd number that I, as a
+listener, seem to be able to keep in my head easily. Maybe 5, 7 or higher odd
+numbers are just too complex? Maybe they just don't sound good? I don't know.

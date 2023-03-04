@@ -1,5 +1,15 @@
 baseURL = 'http://example.org/'
 languageCode = 'en-us'
-title = 'My New Hugo Site'
+title = 'explog'
 defaultContentLanguage = "en"
 theme = "mini"
+math = true
+
+[markup.goldmark.renderer]
+  unsafe= true
+
+[markup]
+  [markup.highlight]
+    lineNos = true
+    lineNoStart = 1
+    style = "abap"
