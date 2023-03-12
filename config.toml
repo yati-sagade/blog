@@ -4,6 +4,7 @@ title = 'explog'
 defaultContentLanguage = "en"
 theme = "mini"
 math = true
+staticDir = ['static/', 'static/images/']
 
 [markup.goldmark.renderer]
   unsafe= true

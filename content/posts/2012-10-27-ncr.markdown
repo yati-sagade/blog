@@ -1,0 +1,78 @@
+---
+title: Calculating C(n,r) efficiently
+layout: post
+date: 2012-10-27
+math: true
+---
+
+The number of ways of choosing <span>$r$</span> items from a collection of $n$ identical
+items is referred to as <span>$C(n,r)$</span>,  <span>${}^{n}C_{r}$</span> or
+<span>$ n \\choose r $</span> and is a fundamental counting operation. <span>$ n \\choose r $</span> is given by
+
+<div>
+$$ {n \choose r} = \frac {n(n-1)(n-2)...(n-r+1)} {r(r-1)...1} $$
+</div>
+
+
+or, equivalently, using factorials,
+
+<div>
+$$ {n \choose r} = \frac { n! }{ r! (n-r)! } $$
+</div>
+
+One implementation would be to compute the constituent factorials and the
+perform the multiplication and division on them. But this is bad for 2 reasons
+
+- It is slow.
+- For even decent problems like C(100, 2), where the answer is 4950, the
+  intermediate factorials are very large. 100! is approximately 9.33e57 and
+  hence, languages that do not have numeric types to hold that kind of a
+  number will overflow, wrecking havoc - all for a result that fits well
+  within 2 bytes!
+
+
+A better implementation should use this recurrence:
+
+<div>
+$$ {n \choose r} =  \frac{n}{r} { {n-1} \choose {r-1} } $$
+</div>
+
+with
+
+<div>
+$$ {n \choose 1} = n $$
+$$ {n \choose 0} = 1 $$
+$$ {0 \choose r} = 0 $$
+</div>
+
+so, a recursive implementation in Python would look like
+
+    def comb(n, r):
+        '''
+        Find the number of ways r items can be chosen from a pool of n
+        identical items, with n >= r
+
+        '''
+        if r > n or n == 0:
+            return 0
+        if r == 0:
+            return 1
+        return n * comb(n - 1, r - 1) / r
+
+An iterative implementation is also not very difficult to arrive at:
+
+    def comb(n, r):
+        '''
+        Find the number of ways r items can be chosen from a pool of n
+        identical items, with n >= r
+
+        '''
+        if r > n:
+            return 0
+        result = 1
+        for i in xrange(r):
+            result *= n
+            result /= (i + 1)
+            n -= 1
+        return result
+

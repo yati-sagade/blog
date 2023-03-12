@@ -1,0 +1,220 @@
+---
+title: SICP Exercise 1.20 - GCD
+layout: post
+date: 2015-05-19
+math: true
+
+---
+
+[Euclid's algorithm][1] for computing the [GCD (Greatest Common Divisor)][2]
+of two numbers is based on a very neat idea: The GCD of two numbers
+<span>$a$</span> and <span>$b$</span>, with <span>$a \gt b$<span> is the same
+as the GCD of <span>$a-b$</span> and <span>$b$</span>. A little thought would
+convince us that this means the GCD of <span>$a$</span> and
+<span>$b$</span> is then equal to the GCD of <span>$remainder \left( a, b \right)$</span> and
+<span>$b$</span>, which in turn is equal to the GCD of <span>$b$</span> and <span>$remainder \left( b, remainder
+\left( a, b \right) \right)$</span> and so on. In Scheme code,
+
+```scheme
+(define (gcd a b)
+     (if (= b 0)
+     a
+     (gcd b (remainder a b))))
+```
+
+
+Note that the terminating clause for the recursion is when <span>$b=0$</span>,
+in which case we just return <span>$a$</span>, since any number is a divisor of
+<span>$0$</span>, and <span>$0 \times 0 = 0$</span>.
+
+The exercise asks us to compare the applicative and normal orders of evaluation
+as applied to the procedure `gcd`, under the substitution model.
+
+Under applicative-order of evaluation (which is the default in most languages
+today), the arguments to a procedure are evaluated first and the procedure is
+then called with these values. For example, the call `(gcd (* 4 3) (* 2 3))`
+will cause the argument expressions `(* 4 3)` and `(* 2 3)` to be evaluated to
+`12` and `6`, respectively, followed by the actual call `(gcd 12 6)`.
+
+In contrast, the normal-order of evaluation (a characteristic of some "lazy"
+functional languages like Haskell) delays the evaluation of argument
+expressions until their values are absolutely required. Let us trace the
+process generated in the normal-order evaluation of `(gcd 206 40)`.
+
+```scheme
+(gcd 206 40)
+
+-> (if (= 40 0)
+          206
+          (gcd 40 (remainder 206 40))))
+
+;; At this point, the antecedent for the `if` clause must be evaluated:
+
+-> (if false
+          206
+          (gcd 40 (remainder 206 40))))
+
+-> (gcd 40 (remainder 206 40))
+
+-> (if (= (remainder 206 40) 0)
+          40
+          (gcd (remainder 206 40)
+               (remainder 40 (remainder 206 40))))
+
+;; Eval the if condition now, resulting in one call to remainder
+
+-> (if (= 6 0)
+          40
+          (gcd (remainder 206 40)
+               (remainder 40 (remainder 206 40))))
+
+-> (gcd (remainder 206 40)
+          (remainder 40 (remainder 206 40))))
+
+-> (if (= (remainder 40 (remainder 206 40)) 0)
+          (remainder 206 40)
+          (gcd (remainder 40 (remainder 206 40))
+               (remainder (remainder 206 40)
+                         (remainder 40 (remainder 206 40)))))
+
+;; This step calls remainder twice
+
+-> (if (= 4 0)
+          (remainder 206 40)
+          (gcd (remainder 40 (remainder 206 40))
+               (remainder (remainder 206 40)
+                         (remainder 40 (remainder 206 40)))))
+
+-> (gcd (remainder 40 (remainder 206 40))
+          (remainder (remainder 206 40)
+                    (remainder 40 (remainder 206 40)))))
+
+-> (if (= (remainder (remainder 206 40)
+                    (remainder 40 (remainder 206 40)))
+          0)
+          (remainder 40 (remainder 206 40))
+          ;; else
+          (gcd (remainder (remainder 206 40)
+                         (remainder 40 (remainder 206 40)))
+               (remainder (remainder 40 (remainder 206 40))
+                         (remainder (remainder 206 40)
+                                   (remainder 40 (remainder 206 40))))))
+
+;; This step calls remainder 4 times
+-> (if (= 2 0)
+          (remainder 40 (remainder 206 40))
+          ;; else
+          (gcd (remainder (remainder 206 40)
+                         (remainder 40 (remainder 206 40)))
+               (remainder (remainder 40 (remainder 206 40))
+                         (remainder (remainder 206 40)
+                                   (remainder 40 (remainder 206 40))))))
+
+-> (gcd (remainder (remainder 206 40)
+                    (remainder 40 (remainder 206 40)))
+          (remainder (remainder 40 (remainder 206 40))
+                    (remainder (remainder 206 40)
+                              (remainder 40 (remainder 206 40)))))
+
+
+-> (if (= (remainder (remainder 40 (remainder 206 40))
+                    (remainder (remainder 206 40)
+                                   (remainder 40 (remainder 206 40))))
+          0)
+          (remainder (remainder 206 40)
+                    (remainder 40 (remainder 206 40)))
+          (gcd (remainder (remainder 40 (remainder 206 40))
+                                        (remainder (remainder 206 40)
+                                                  (remainder 40 (remainder 206 40))))
+               (remainder (remainder (remainder 206 40)
+                                   (remainder 40 (remainder 206 40)))
+                         (remainder (remainder 40 (remainder 206 40))
+                                   (remainder (remainder 206 40)
+                                             (remainder 40 (remainder 206 40)))))))
+     
+;; This step calls remainder 7 times and the recursion terminates here.
+-> (if (= 0 0)
+          (remainder (remainder 206 40)
+                    (remainder 40 (remainder 206 40)))
+          (gcd (remainder (remainder 40 (remainder 206 40))
+                                        (remainder (remainder 206 40)
+                                                  (remainder 40 (remainder 206 40))))
+               (remainder (remainder (remainder 206 40)
+                                   (remainder 40 (remainder 206 40)))
+                         (remainder (remainder 40 (remainder 206 40))
+                                   (remainder (remainder 206 40)
+                                             (remainder 40 (remainder 206 40)))))))
+
+-> (remainder (remainder 206 40)
+               (remainder 40 (remainder 206 40)))
+
+;; The remaining 4 remainder calls are now evaluated
+
+-> 2
+```
+
+
+In all, the number of remainder calls in the normal-order evaluation of
+`(gcd 206 40)` is therefore <span>$4 + 7 + 4 + 2 + 1 = 18$</span>
+
+
+Now, here's the applicative-order evaluation of the same expression:
+    
+```scheme
+(gcd 206 40)
+
+-> (if (= 40 0)
+     206
+     (gcd 40 (remainder 206 40)))
+
+
+-> (gcd 40 (remainder 206 40))
+
+;; 1 call to remainder
+-> (gcd 40 6)
+
+-> (if (= 6 0)
+     40
+     (gcd 6 (remainder 40 6)))
+
+-> (gcd 6 (remainder 40 6))
+
+;; 1 call to remainder; total 2
+-> (gcd 6 4)
+
+-> (if (= 4 0)
+     6
+     (gcd 4 (remainder 6 4)))
+
+-> (gcd 4 (remainder 6 4))
+
+;; 1 call to remainder; total 3
+-> (gcd 4 2)
+
+-> (if (= 2 0)
+     4
+     (gcd 2 (remainder 4 2)))
+
+-> (gcd 2 (remainder 4 2))
+
+;; 1 call to remainder; total 4
+-> (gcd 2 0)
+
+-> (if (= 0 0)
+     2
+     (gcd 0 (remainder 2 0)))
+
+-> 2
+```
+
+
+As we can see, under the applicative order, we needed only 4 calls to
+`remainder`, whereas in the normal-order evaluation of the same expression, it
+took 18 calls to `remainder` to arrive at the same result. Also, one can
+readily see that the normal order of evaluation generally uses more space than
+applicative order, since it needs to keep all the unevaluated expressions
+somewhere in memory.
+
+
+[1]: http://en.wikipedia.org/wiki/Euclidean_algorithm
+[2]: http://en.wikipedia.org/wiki/Greatest_common_divisor

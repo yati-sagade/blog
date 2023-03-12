@@ -1,0 +1,34 @@
+---
+date: 2020-11-03
+
+layout: post
+title: What program does that dialog pop-up come from?
+tags:
+  - gnome
+  - linux
+
+---
+
+<img src="/whichwnd0.png" height="400px" width="800px" />
+
+I got this pop-up recently and while it must be from some desktop application
+that uses Electron.js, it's not apparent which.
+
+An easy way to tell is to run:
+
+```shell
+$ xprop
+```
+
+This will change the mouse pointer (to a cross-hair pointer on my Gnome
+3 desktop), as the `xprop` invocation waits. Clicking with this on the target
+window will make `xprop` print a bunch of information about it, including the
+name of the main application window and its pid:
+
+
+```shell
+...
+WM_CLASS(STRING) = "discord", "Discord"
+WM_ICON_NAME(STRING) = "Error"
+...
+```

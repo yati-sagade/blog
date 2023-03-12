@@ -1,0 +1,190 @@
+---
+date: 2020-01-04
+layout: post
+title: My first Chaos Communication Congress, 36c3
+---
+
+The 36th Chaos Communication Congress took place in Leipzig from 26-30 December,
+2019\. I'd always wanted to be part of the congress, but it is quite difficult
+to score a ticket if you're not part of a hackerspace. Last year though, I was
+determined, and managed to get a ticket to [36c3][1] during the second presale.
+
+I was quite excited, but also quite nervous, as I had no idea what to expect
+from this mega congress of _17000_ people!
+
+I was pleasantly surprised: I have not seen anything like this before, and you
+really need to be there to know what I am talking about. I do want to log my
+experience simply because I want to preserve it somewhere.
+
+## Be excellent to each other
+
+With 17k people, and with the word chaos in the name, and with no central
+authority to police people around, you need some guiding principle that everyone
+abides by. The simple guideline, _Be excellent to each other_, worked really
+well. Of course there were some rough edges here and there, and I did hear
+stories of rude behaviour from my new friends, but overall, the event went
+pretty smoothly.
+
+
+## Assemblies
+
+The large halls in the venue are divided up into blocks, and each block is
+transformed by like-minded hackers into assemblies. There were assemblies for
+local hacker spaces, for electronics/hardware hacking, and even a Perl hackers
+assembly. I learned there that there is a CCC Z�rich chapter too, and that
+they're visiting as part of the Swiss CCC assembly. So I had to go and say hi to
+them (Back in Z�rich, I also went to one _Chaostreff_, their weekly meeting).
+
+## Talks and workshops I found interesting
+
+The real meat of the conference are the [self-organized sessions][2], since you
+can watch most talks (modulo technical glitches) [online][3]. Nevertheless,
+I attended a good mix of workshops and talks, as I wanted to just soak in as
+much Congress as I could, without forcing myself into any one kind of thing.
+
+### [The case for scale in cybersecurity][4]
+
+The premise of this talk is that good security today research not only requires
+the traditional security related skills, but also engineering expertise
+to scale solutions.
+
+### [Large Hadron Collider infra talk][5]
+
+This one was fascinating. Go watch the talk (and other talks from the LHC team
+from previous Congresses). The highlights:
+
+* Charged particles are bent along the curvature of the collider using powerful
+  dipole electromagnets with a flux density of 8.3 Tesla. This requires about
+  118500 Amps of current.
+
+* This current is carried using a superconducting strip. The magnet coils are
+  also superconducting, and operate at 1.7 K (outer space is 2.9 K!).
+
+* Bunches of charged particles are accelerated together. Since these particles
+  carry the same kind of charge, they repel each other, and tend to "unbunch".
+  This is fixed by placing focusing magnets along the circumference of the tube.
+  Note that this focusing needs to be done both along and perpendicular to the
+  direction of travel of the particles.
+
+### [What the world can learn from Hong Kong][6]
+
+Hong Kongers have persistently protested against a proposed bill that will allow
+extradition to China. In spite of various atrocities inflicted by the government
+at the protesters, the protests are alive. This fascinating talk is an analysis
+of techniques used in these protests (and to an extent, also earlier protests).
+
+To me, the idea of "Climbing the same mountain, in different ways" really hit
+home. Authoritarian governments try to create division among protesters by
+highlighting one particular group's methods. This causes groups to oppose each
+other, often losing sight of the common goal. For example, during the Indian
+struggle for independence from British rule, Gandhi's non-violent
+non-cooperation movement was a fundamentally different approach compared to the
+more direct, offensive approach taken by the likes of Bhagat Singh. Both groups
+had the same high level goal, but Gandhi's group was opposed to _any_ form of
+violence, even if it was in direct response to British atrocities. Hong Kongers
+have figured out how to totally support fellow protesters, even if their means
+to the common goal are varied and sometimes opposed.
+
+Another interesting bit was how art and technology is used. Entire day's worth
+of events are condensed into sharp memes and infographics (also translated into
+many Western languages) so that everyone in the world can understand the
+protesters' side of the story. This is very important in face of state held
+press conferences that constantly condemn the protesters.  Telegram groups are
+used to dump locations of police cars, water cannons, tear gas, and other
+artifacts of interest. These are picked up and overlaid on a map so citizens can
+plan both protests and more ordinary things like trips to airports with ease.
+
+I also could draw parallels to the situation in India where, as I write this,
+there are protests against the proposed Citizenship Amendment Bill. It is
+striking how similar the government's response has been to that of the Hong Kong
+authorities. But the Indian government is not shy to exercise drastic measures
+like Internet shutdowns. This is not in small part due to the fact that a large
+fraction of educated Indians (around me, my sample) seem to not have a problem
+with the government interfering at this level, as long as it advertises its
+intent as nationalistic.
+
+### [A hacker's guide to healthcare][7]
+
+A short, sweet talk about the challenges of healthcare data, with emphasis on
+the privacy implications.
+ 
+Various data protection regulations speak of the distinction between narrow and
+broad consents that individuals can give on their health data. However, on the
+ground, individuals waiting for emergency treatment will seldom read the fine
+print on admission forms, much less push back on the broad-consent-by-default
+clauses in there.
+
+Then there are challenges around healthcare data produced by different
+organizations. Mixed units, different names for treatments, etc. are rampant,
+and hence data must be compiled with care. There is also confusion around the
+ground truth -- for a given condition, what diagnosis was "the right one"?
+Without robust ground truth, it is difficult to use such data for machine
+learning purposes.
+
+Speaking of ML, fairness is a tricky issue. Healthcare data is incomplete and
+far from representative. Models trained on this data are going to be biased.
+It is important then to quantify this bias using an appropriate definition of
+"fairness". For example, one might say that a fair model has equal false
+positive rates across groups defined by sensitive attributes. Another definition
+of fairness might assert that protected characteristics have no effect on
+classification. But then I ask why include them at all? And even if we identify
+and remove all sensitive attributes, can we guarantee that the model won't learn
+these attributes anyway from other attributes? In that sense, can we ever be
+confident that we've identified all sensitive attribute combinations?
+
+### The search for anonymous data
+
+This talk was unfortunately not recorded, but the premise is that conventional
+methods of scrubbing datasets clean of private and personally identifying
+information is not sufficient today.
+
+Even techniques like k-anonymity fall short (susceptible to differential
+attacks). The speaker proposes a move from released datasets to a query-response
+paradigm, where all data is accessed only via a trusted gateway, which responds
+only if the query is guaranteed to not leak private information (within the
+bounds promised by the system). For example, there was mention of the
+[Diffix][8], which is a system that works this way.
+
+### Quantum computing
+
+There was a lot of buzz about quantum computing in the Congress. I think this is
+because the CCC attracts security focussed individuals and professionals, and
+guess what promises to break RSA crypto one day?
+
+From a guy who is trying to [build a quantum computer][9] in his "backyard", to
+[an analysis of the current landscape of the field][10], to hallroom discussions
+around the topic, I found a lot of people taking interest in the topic. This
+also prompted me to finally pick up a book to study the basics of QM as
+applicable to QC.
+
+Some parties have [challenged][12] the recent [quantum supremacy claims][11] from
+Google. However, the general understanding in the CCC seemed to be that even if
+Google's experiment used an "artificial" problem, the fact that 53 qubits can be
+controlled in this manner is a great validation of the very idea of quantum
+computing.
+
+
+### Random stuff I learned about
+
+* Programming fractals
+* The golden ratio and how it manifests in nature
+* The Forth programming language
+* Proprietary firmware has a whitelist of network cards you are allowed to
+  install!
+* Bayesian thinking (how to respond to evidence systematically, courtesy of
+  LessWrong).
+
+
+[1]: https://events.ccc.de/congress/2019/wiki/index.php/Main_Page
+[2]: https://events.ccc.de/congress/2019/wiki/index.php/Static:Self-organized_Sessions
+[3]: https://media.ccc.de/
+[4]: https://media.ccc.de/v/36c3-11220-the_case_for_scale_in_cyber_security
+[5]: https://media.ccc.de/v/36c3-10760-the_large_hadron_collider_infrastructure_talk#t=1655
+[6]: https://media.ccc.de/v/36c3-10933-what_the_world_can_learn_from_hongkong
+[7]: https://www.youtube.com/watch?v=Zuq4kiYJKAk
+[8]: https://aircloak.com/solutions/how-it-works/
+[9]: https://media.ccc.de/v/36c3-10808-build_you_own_quantum_computer_home_-_99_of_discount_-_hacker_style
+[10]: https://media.ccc.de/v/36c3-11039-quantum_computing_are_we_there_yet
+[11]: https://ai.googleblog.com/2019/10/quantum-supremacy-using-programmable.html
+[12]: https://www.ibm.com/blogs/research/2019/10/on-quantum-supremacy/
+

@@ -1,0 +1,71 @@
+---
+date: 2020-02-08
+
+layout: post
+
+title: Starting Tabla
+
+---
+
+When I moved to Zürich last year, I was drawn to percussion in general. I played
+around with a drum-kit, and I loved it. The coordination required to keep time
+and play the right notes takes my mind somewhere else. I get to focus only on
+the current moment, because if I don't, I'm going to miss the next beat.
+
+I find the [tabla][1] unlike many other percussive instruments in that:
+
+- One of the drums (the _daāyā_) has to be tuned to the tonic of the scale on
+  which the melody is based and,
+- The other drum (the _baãyā_) is also tuned, but its pitch is manipulated during
+  play using the heel of the player's hand.
+
+It is the second point above that really drew me to the tabla. For instance,
+[this _jugalbandhi_ between Hariprasad Chaurasia's flute and Zakir Hussain's
+tabla][2] where he mimics the flute on the _baãyā_, or [this piece][3] where the
+player uses the bass drum to add a playful and fluid envelope around the
+percussive and unpredictable _daāyā_.
+
+Finding a Tabla teacher in Switzerland was surprisingly easy for me. I just
+posted on an internal mailing list at work, asking for a teacher, and got
+a contact. We first evaluated whether the instrument really was for me, and it
+turns out that I enjoy it a lot. It requires full concentration from me.
+I thought this could be an artifact of novelty, but I am told that this may not
+be the case, since there is always a way of stepping up the difficulty of any
+piece by breaking it down in different ways, or by accentuating different parts.
+
+For me though the most difficult part so far has been to play a clear and loud
+_Na_.  You see, each note that you can play on a tabla has a name, and together,
+they form a little language. In the Hindustani tradition, a tabla player must,
+in addition to playing them, be able to _say_ the notes. The next step is then
+to string together these notes into phrases, and players must also be able to
+sing these phrases. As an example, [check this piece out][4] where the tabla.
+
+To avoid picking up bad habits, one has to be extremely careful with the hand
+positioning. The problem for me is focusing on strength building in the hand
+while also making sure the hand is held in the right way, with the little and
+ring fingers relaxe, and the middle finger stretched out, and with the thumb
+not swaying too far from the index finger, and with only the tip of the index
+finger hitting the very edge of the drum,... you get the idea.
+
+But I now have a nice tabla. My teacher picked it for me, and it is beautiful.
+
+Here's a video of a friend (a very good tabla player) and me playing a basic
+piece he taught me. Notice how I struggle with my right hand to keep the ring
+finger straight, and how I forget to play the bass drum sometimes (the piece is
+_Dha Dha Thi Ta Dha Dha Tin Na; Ta Ta Thi Ta Dha Dha Dhin Na_):
+
+<video controls width="300">
+  <source src="/tabla-session.mp4"
+          type="video/mp4" />
+</video>
+
+I will make another video like this next year and play like my friend (and
+possibly be able to play faster).
+
+
+
+[1]: https://en.wikipedia.org/wiki/Tabla
+[2]: https://www.youtube.com/watch?v=TNMS3O3xDFc
+[3]: https://youtu.be/4HYr8bdoklI?t=45
+[4]: https://youtu.be/oHvw3ceVC1M?t=50
+

@@ -1,0 +1,63 @@
+---
+date: 2018-12-16
+
+layout: post
+
+title: Extended File Attributes on Linux
+
+---
+
+Files already have a lot of user accessible metadata associated with them -- the
+last time of modification, access control bits, etc.
+
+[Extended File Attributes][1] (xattr) is a mechanism to store extra metadata
+against files, in the filesystem. This metadata takes the form of key:value
+pairs, with certain (platform dependent!) size restrictions. As of now, xattr is
+not a POSIX standard, but is independently supported by many modern filesystems
+like ext2, ext3, ext4, XFS, ReiserFS, etc. The Linux kernel also needs to be
+compiled with support for xattr. On the latest Ubuntu, xattr is enabled by
+default for ext4 (which is what I happen to be using).
+
+To use extended attributes, install the xattr package (on Ubuntu):
+
+    $ sudo apt install xattr
+
+The usage itself is straightforward. Make a test file to play with:
+    
+    $ touch test-xattr-file
+
+Attach a few key:val pairs to this file:
+
+    $ setfattr -n user.category -v test test-xattr-file
+    $ setfattr -n user.foo -v bar test-xattr-file
+
+Dump all attributes:
+    
+    $ getfattr -d test-xattr-file 
+    # file: test-xattr-file
+    user.category="test"
+    user.foo="bar"
+
+Get a specifig attribute:
+    
+    $ getfattr -n user.category test-xattr-file 
+    # file: test-xattr-file
+    user.category="test"
+
+Notice that the attributes are namespaced. Currently, the top level namespaces
+are `security`, `system`, `trusted`, and `user`, of which only the `user`
+namespace is available for reading/writing from normal user programs. Check out
+`man xattr` for a detailed description of those namespaces.
+
+In Bitcask, the setuid bit is used on a data file to indicate that it is part of
+a currently running merge process. That made me wonder if there is a way to
+attach arbitrary metadata to files, and indeed xattr is the answer.
+
+Unfortunately, xattr is not very portable -- different operating systems impose
+different size limits on user attributes, and not all operating systems even
+support xattr. Also, something to keep in mind is that some standard programs
+like `rsync`, `cp` need to be told explicitly to deal with attributes (which is
+not so weird if you think about it).
+
+
+[1]: https://en.wikipedia.org/wiki/Extended_file_attributes

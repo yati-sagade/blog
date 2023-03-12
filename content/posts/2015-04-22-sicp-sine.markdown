@@ -1,0 +1,82 @@
+---
+title: SICP Exercise 1.15
+date: 2015-04-22
+layout: post
+math: true
+---
+
+
+Exercise 1.15 in [SICP][1] requires us to find the order of growth in time and
+space of a procedure that approximates the value of <span>$ \sin x $</span>
+by noting that <span>$\sin \left(x\right) \approx x$</span> when <span>$x$</span> is
+sufficiently small. For larger values of <span>$x$</span>, <span>$ \sin x $</span>
+can be recursively calculated using the trigonometric identity
+
+$$
+\sin x = 3 \sin \frac {x}{3} - 4 \sin^3 \frac {x}{3}
+$$
+
+Here is the implementation from the book:
+    
+    (define (cube x) (* x x x))
+    (define (p x) (- (* 3 x) (* 4 (cube x))))
+    (define (sine angle)
+       (if (not (> (abs angle) 0.1))
+           angle
+           (p (sine (/ angle 3.0)))))
+
+The first task is to calculate the number of times the procedure `p`
+is called for the invocation `(sine 12.15)`. This is straightforward using the
+substitution rule:
+    
+    (sine 12.15)
+    -> (p (sine (/ 12.15 3))
+    -> (p (sine 4.05))
+    -> (p (p (sine (/ 4.05 3))))
+    -> (p (p (sine 1.349999999999999)))
+    -> (p (p (p (sine (/ 1.349999999999999 3)))))
+    -> (p (p (p (sine .44999999999999996))))
+    -> (p (p (p (p (sine (/ .44999999999999996 3))))))
+    -> (p (p (p (p (sine .15)))))
+    -> (p (p (p (p (p (sine (/ .15 3)))))))
+    -> (p (p (p (p (p (sine .05))))))
+    -> (p (p (p (p (p 0.05)))))
+
+In the last line of the partial derivation above, we hit the base case and are
+left with a stack of five `p` calls, with no more recursion. Generally, for any
+angle value <span>$x$</span>, the number of `p` calls here will be
+<span>$[\log_3 x + 3]$</span>. To understand why, note that, given an angle
+<span>$x$</span>, to reach <span>$1$</span> by successively dividing by
+<span>$3$</span> (which our `sine` implementation does), we will need <span>$
+\log_3 x $</span> divisions. After that, to take <span>$1$</span> to a value
+less than <span>$0.1$</span>, it takes <span>$3$</span> more divisions (<span>$
+\frac { \frac { \frac {1} {3} } {3} } {3} = 0.037037037037037035 $<span>). This
+gives us a total of <span>$\left( \log_3 x + 3 \right)$</span> divisions, which
+corresponds to the number of times `p` is called. To account for angles which
+are not powers of three, we round that count to the nearest integer, resulting
+in <span>$[\log_3 x + 3]$</span>.
+
+Order of growth
+----------------
+It follows directly from the last paragraph that the space used by our `sine`
+procedure varies directly with the number of `p` calls, which we just
+established to be logarithmic in the angle <span>$a$</span>. To see it from
+another perspective, note that tripling the angle argument to `sine` only adds
+one to the number stacked calls to `p`. This is a tell-tale sign of
+a logarithmic order of growth. Therefore, the space consumed by `sine` is
+<span>$\Theta \left( \log a \right)$</span>.
+
+Now to examine the order of growth of the number of steps involved in the
+calculation of `(sine a)`, notice that there are as many divisions by
+<span>$3$</span> as there are calls to `p`, followed by the same number of
+calculations within `p` (because `p` itself runs in constant time). Since the
+number of calls to `p` is <span>$\Theta \left( \log a \right)$</span>, the
+number of total steps in calculating `(sine a)` is an integer multiple of
+<span>$\Theta \left( \log a \right)$</span>, which is again <span>$\Theta
+\left( \log a \right)$</span>.
+
+
+
+
+
+[1]: https://mitpress.mit.edu/sicp/

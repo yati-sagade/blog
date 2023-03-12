@@ -1,0 +1,118 @@
+---
+title: Spawn, log, reap children with IPC::Run
+layout: post
+tags:
+    - perl
+    - programming
+date: 2018-01-16
+
+---
+
+In testing my implementation of a [distributed failure detector][1], I needed to
+be able to:
+
+1. Spawn `n` instances of the detector, each listening on a different port on localost, making a small local cluster.
+2. Redirect each process' standard output and error streams to separate logfiles, named such that they can be tied back to the generating processes later.
+4. After running for some time, terminate all processes, and then analyse the generated logs.
+
+It turns out that getting step 1 right is nontrivial (but worth trying to
+understand what facilities your language offers to this end).
+
+I started out doing the regular `fork-exec` routine, except that the act of
+redirecting the output stream of the target process in `exec` was causing the
+_shell_ to be involved:
+
+```perl
+
+my @cmd = ( '/home/ys/bin/phifd', ... );
+...
+my @children;
+if ( my $pid = fork() ) {
+    push @children, $pid;
+} else {
+    # presence of a shell metachar automatically causes a shell to be spawned.
+    exec @cmd, '>', "$logfile";
+}
+
+```
+
+The problem here is that when reaping the children later on, the SIGTERM that
+we send to the child processes gets trapped by the shell, which dies, and then
+_its_ child, which is the actual process we wanted to kill, keeps running, now
+parented by init.
+
+One way to solve this is to avoid spawning a shell altogether, and relay
+the child output streams to respective log files in the parent process, and in
+Perl `IPC::Run` is a handy library for this. Here's the code:
+
+```perl
+use strict;
+use warnings;
+
+use IPC::Run qw(run timeout start harness);
+use File::Path qw(make_path remove_tree);
+use File::Slurp qw(read_dir read_file);
+
+my $log_root_dir = shift || 'logs/';
+
+my @cmds = (
+    [
+        'phifd', '-t', 1, '-a', '127.0.0.1:12345'
+    ],
+    [
+        'phifd',    '-t', 1, '-a', '127.0.0.1:12346', '-i', '127.0.0.1:12345'
+    ],
+    [
+        'phifd',    '-t', 1, '-a', '127.0.0.1:12347', '-i', '127.0.0.1:12346'
+    ],
+);
+
+my @handles;
+my @harnesses;
+for my $procnum ( 0 .. $#cmds ) {
+    my $logfile = File::Spec->catfile( $log_root_dir,
+        'proc_' . $procnum . '.log' );
+
+    # XXX: do we need an :encoding(utf8) discipline here?
+    open my $fh, '>', $logfile
+      or die "Cannot open $logfile for writing: $!";
+
+    my $harness = harness
+                    $cmds[$procnum],       # command to run
+                    \undef,                # input (goes to child's stdin)
+                    $fh,                   # output (from child's stdout)
+                    $fh,                   # error (from child's stderr)
+                    init => sub {
+                        # Any environment setup goes here
+                        $ENV{RUST_BACKTRACE} = 1;
+                    };
+
+    push @handles,   $fh;
+    push @harnesses, $harness;
+}
+
+my $start   = time;
+my $elapsed = 0;
+while ( $elapsed < $runtime ) {
+    # Nonblocking "pumping" -- in our case, we check if a child has output,
+    # and if so, write it to the respective log file handle. IPC::Run handles
+    # this for us.
+    $_->pump_nb for @harnesses;
+    $elapsed = time - $start;
+}
+
+# cleanup
+$_->kill_kill for @harnesses; # kill with progressively stiffer signals.
+@harnesses = ();
+close $_ for @handles;
+@handles = ();
+
+```
+
+That's it, `IPC::Run` is quite flexible, and the perldoc is quite well written.
+
+
+
+
+
+[1]: https://github.com/yati-sagade/phifd

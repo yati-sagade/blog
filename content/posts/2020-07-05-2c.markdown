@@ -1,0 +1,116 @@
+---
+date: 2020-07-05
+title: Two's complement arithmetic is magic
+layout: post
+math: true
+---
+
+Recently I revisited two's complement arithmetic. It's one of the coolest tricks
+I've seen.
+
+Computers internally represent integers (whole numbers like -1, 0, 42) with
+a a fixed number of bits. Consider a tiny computer that allows only 3-bit
+integers. So if we are talking only non-negative integers, 0 could be coded as
+the bit vector 000, 1 as 001, 2 as 010, ... 7 as 111. This is just one possible
+coding, probably the most obvious one.
+
+But say we also want to represent negative integers. A simple coding there could
+be to treat the most significant (leftmost) bit as the sign bit, and the
+remaining two bits for absolute value of the integer being represented. Here's
+a possible mapping:
+
+
+    000 --> +0
+    001 --> +1
+    010 --> +2
+    011 --> +3
+    100 --> -0
+    101 --> -1
+    110 --> -2
+    111 --> -3
+
+
+Note two points:
+
+1. There are two zeros, which means we waste one combination of bits (000 and
+   100 both are technically the number 0; we could have used one of them for an
+   extra integer, either in the negative or the positive half)
+2. We need to build circuitry to be aware of negative numbers for operations
+   like addition (adding a positive and a negative should produce a sign bit
+   equal to the larger of the two numbers, and should have the value equal to
+   the bitwise _subtractions_ of the respective values).
+
+
+Another coding of negative numbers, called the two's complement encoding,
+sidesteps both of these issues. Here's how the coding looks:
+
+
+    000 --> +0
+    001 --> +1
+    010 --> +2
+    011 --> +3
+    100 --> -4
+    101 --> -3
+    110 --> -2
+    111 --> -1
+
+
+In this approach, the core idea is this: When we *add* (using the usual bitwise
+addition rules) together the bitvector representing an integer N and its
+negative -N, the result should be a bit vector 1 followed by as many zeros as
+our representation's bit width. So adding +1 (001) and -1 (111) gives 1000. So
+does adding +2 (010) and -2 (110). Technically, these pairs are called two's
+complements of each other -- Any two numbers representable with <= $W$ bits
+that add up together to give exactly $2^W$ are two's complements of each
+other.  In our example, $W=3$, so $2^W = 8$, which is written 1000 in
+binary.
+
+One exception here is -4, which does not have its corresponding positive under
+this coding. That's because its two's complement for a 3-bit representation is
+itself! (100 + 100 = 1000). In general, in the 2c representation, the negative
+half is always exactly one element larger than the positive half, owing to one
+element in the positive half being allotted to 0.
+
+Here's the cool bit: Say we want to subtract a number from itself. One way to do
+this is to add the number to its negative. As shown above, in the two's
+complement representation, this operation always produces 1000. That's 4 bits,
+but we only have 3 bits. What happens in this case? The left most bit is simply
+discarded (it "overflows"), and we are left with 000, which is 0, which should
+be the result of subtracting a number from itself! Now this works no matter what
+representible numbers we pick: Consider subtracting 1 from 3. That's the same as
+adding -1 and 3:
+
+
+       111      (-1)
+       011      (+3)
+       ---------
+     1 010
+     ^ ^^^------(+2)
+     |
+     discard
+
+
+Note that one "feature" of this representation is that incrementing the highest
+positive value "wraps" the result to the most negative value (incrementing 011,
+which is +3 gives 100, which is -4).
+
+One way to easily compute the two's complement (for bit width W):
+
+1. First write down the number in binary, with necessary padding on the left with
+  0's to fill all of W bits.
+2. Flip the bits (0s become 1s, 1s become 0s).
+3. Add 1 to the result
+
+ BTW the result of step (2) above is called the one's complement of the original
+ number: When you add a number with its one's complement, you get a bitvector of
+ all 1's, W-bits wide (e.g., one's complement, for a 3-bit representation, of
+ 001 is 110, because adding them together gives 111).
+
+Today's computers do not have 3 bit integers: an `int64` is quite standard, and
+it stands for 64 bit wide bit-vector, internally represented exactly as above:
+The positive half goes from $0$ to $2^{63} - 1$, and the negative half from
+$-2^{63}$ to $-1$.
+
+See [this page](https://www.cs.cornell.edu/~tomf/notes/cps104/twoscomp.html) and
+the [Wikipedia entry](https://en.wikipedia.org/wiki/Two%27s_complement) for more
+discussion.
