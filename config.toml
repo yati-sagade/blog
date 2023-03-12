@@ -6,6 +6,9 @@ theme = "mini"
 math = true
 staticDir = ['static/', 'static/images/']
 
+[params]
+  avatarLink = '/'
+
 [markup.goldmark.renderer]
   unsafe= true
 
