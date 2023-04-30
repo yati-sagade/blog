@@ -1,0 +1,149 @@
+---
+title: Notes on CNNs
+date: 2023-04-30
+math: true
+---
+These are my notes about CNNs, some toy code in [this colab](https://colab.research.google.com/drive/1xz2XLOVK9NTTYGjhPcFvc5e5lDy0sgHR#scrollTo=dbM3v1sNNHOf).
+
+## Motivation for CNNs
+
+While MLPs are a very general class of models that work even for image data, they fail to take into account important properties that 2D images have.
+
+For instance, typical MLPs would take a flattened 1D vector of pixels from the image as input, and potentially ignore the rich 2D local information (although I wonder if with enough tuning, it could just learn the associations, since an image is also stored on the computer as a sequence of numbers).
+
+But the more insidious problem is that of the parameter space. Consider a reasonable input size of 100x100 images. A single fully connected layer with 1000 units would need $10^7$ parameters. But 1000 hidden units is usually too less.
+
+When we constrain these models by introducing good inductive biases, we can reduce the required number of parameters drastically.
+
+The main constraints we can put on 2D image data are:
+
+1. Translation equivariance: For most object detection style tasks, the earliest layers should not care where an object is in the image should not matter.
+1. The earliest layers of the network should focus on local regions. The local representations can eventually be pooled into higher level representations.
+
+## From fully connected to local convolutions
+
+Suppose we start with 2D inputs $X \in \mathbb{R}^{4x4}$ and want to compute 2D hidden representations $H \in \mathbb{R}^{2x2}$. 
+
+In a fully connected setting, we need a 4x4 weight matrix associated with _each_ $H_{i,j}$. We need 4 of these since $H$ is itself 2x2. So let's put these matrices in a 4D array (or "order 4 tensor"):
+
+$$
+H_{i,j} = U_{i,j} + \sum_k \sum_l W_{i, j, k, l} X_{k, l}
+$$
+
+Visualize $W$ a bit like this:
+```
+W = [
+  [( ), ( )],
+  [( ), ( )],
+]   ^-------------------\
+                        (
+                          [. . . .],
+                          [. . . .],
+                          [. . . .],
+                          [. . . .]
+                        )
+
+```
+
+Each of the four `( )` is itself a 4x4 matrix as shown at the bottom right of the figure. 
+
+When we want to compute, say, $H_{1,0}$, we pick the corresponding matrix from W (the one that the arrow points at in the figure), perform an element-wise multiplication with the input $X$, and sum up the resulting elements, and add up the bias $U_{1, 0}$ to produce the result.
+
+Let's change up the notation a bit now, and set $a = k - i$, $b = l - j$ to get
+
+
+$$
+H_{i,j} = U_{i,j} + \sum_a \sum_b W_{i, j, i + a, j + b} X_{i+a, j+b}
+$$
+
+Notice that $a, b$ can be negative as well as positive and take on values to ensure $i+a$ and $j+b$ range over the entire image.
+
+Setting $V_{i,j,a,b} = W_{i,j,i+a,j+b}$, we get
+
+$$
+H_{i,j} = U_{i,j} + \sum_a \sum_b V_{i, j, a, b} X_{i+a, j+b}
+$$
+
+Now for the hidden representation to be translation equivariant (invariant), we must have that translating the input $X$ also translates (leaves unchanged) the hidden representation. This is, in general, not true since we have 4 different linear actions in our case corresponding to each $H_{i,j}$. Sure maybe the model can _learn_ a set of matrices that roughly achieves this behaviour, but if we simply use _one_ weight matrix (and a single bias) for all hidden units, and say that $V_{i, j, a, b} = V_{a, b}$, then we get
+
+$$
+H_{i,j} = u + \sum_a \sum_b V_{a, b} X_{i+a, j+b}
+$$
+
+Notice that in the current form, since $a, b$ range over the entire image no matter where $i, j$ are fixed, the result activation for each hidden unit will be the same! We will fix that by making another simplification of assuming locality -- now, $a, b$ will only take on values in $[-Δ, Δ]$:
+
+$$
+H_{i,j} = u + \sum_{a=-\Delta}^\Delta \sum_{b=-\Delta}^\Delta V_{a, b} X_{i+a, j+b}
+$$
+
+Now, each $H_{i,j}$ gets a different patch of the input image to sum over. The "kernel" or the weight matrix stays the same.
+
+So far so good, but **image pixels can be colour and hence "multichannel" in how they are represented**.
+
+No worries though, we simply make the shift from $X_{i,j} → X_{i, j, k}$ and correspondingly from $V_{a, b} → V_{a, b, c}$.
+
+The idea is to also have multichannel hidden representations, because these also prove useful to learn multiple features from the same region. Therefore, we must also go from $V_{a, b, c} → V_{a, b, c, d}$ to finally have:
+
+$$
+H_{i, j, d} = \sum_{a=-\Delta}^\Delta \sum_{b=-\Delta}^\Delta \sum_c V_{a, b, c, d} X_{i+a, j+b, c}
+$$
+
+Assuming
+
+* Δ = 2
+* c\~3 input channels and d\~2 hidden channels,
+
+```
+V = [
+  [( ), ( )],
+  [( ), ( )],
+]   ^----------V[a, b]--=
+                        (
+                          [. .],
+                          [. .],
+                          [. .],
+                        ){3x2}
+```
+
+Now each $V_{a, b}$ is a 3x2 matrix.
+
+### Convolution or cross-correlation?
+
+In deep learning, the thing we call a convolution is technically the cross-correlation operation. This does not matter for convolutional models trained from data though, since they'd simply learn a flipped kernel if we use the true convolution operation.
+
+### Padding
+
+2D convolutions produce an output that is smaller than the input. For a `(h, w)` input and a `(kh, kw)` kernel, the output has the shape `(h - kh + 1, w - kw + 1)`.
+
+In a convolutional network, successive conv operations can diminish the size of the hidden representations drastically. e.g., if we start with a 200x200 input and apply 10 layers of convolutions with a 5x5 kernel each time, we end up with a size of 140x140.
+
+More problematic than this is perhaps how the boundary pixels are underutilized. The 4 corner pixels are only used once, for instance.
+
+A common mitigation for this is to apply padding (usually zeros) to the image.
+
+Adding a padding of `ph` pixels to the height (about half at the top, half at the bottom) and `pw` to the width, we get an output size of `(h + ph - kh + 1, w + pw - kw + 1)`. To preserve the size of the input, set `ph = kh - 1` and `pw = kw - 1`.
+
+### Strides
+
+Another technique to control the output image size involves controlling the stride of the sliding window. By default we slide 1px at at time, but we can jump over pixels to get a scaled down output.
+
+If the stride in the height and width directions is `(sh, sw)`, then the output is of size can be reasoned about as follows (only showing the derivation for the width, the height has a symmetrical derivation):
+
+1. Without any stride or padding, we have `(w - kw + 1)` output elements because you start with the kernel at the beginning, and can then slide it to the right `(w - kw)` times.
+2. But with a stride, one can only slide it `⌊(w - kw) / sw⌋` times. Therefore, with a stride, we have `⌊(w - kw) / sw⌋⌋+ 1` output elements.
+3. Adding padding to the mix, assume we add symmetric padding `p` on both sides for a total padding of `2p` horizontally, we get `⌊(w - kw + 2p)⌋ / sw⌋ + 1` as the final expression for the output size.
+
+Notes:
+
+* When `2p = kw-1` (so `kw` must be odd and >2), the output size can be written as `⌊(w - 1) / sw⌋ + 1` = `⌊(w + sw - 1) / sw⌋`.
+* When the width w is divisible by sw, this further simplifies to `w / sw`.
+
+Reference on more conv arithmetic: https://arxiv.org/pdf/1603.07285.pdf
+
+Fractional strides are possible when you pad between pixels.
+
+
+## Training
+I realized that cnns are incredibly finicky when it comes to things like the SGD batch size.
+
+
