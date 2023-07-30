@@ -9,7 +9,6 @@ categories: notes
 
 
 ---
-date: 2017-09-08
 
 Suppose we have a bunch of files we'd like to have backed up on a remote host
 periodically. In this post, I'll describe my setup that uses [rsync][1] with

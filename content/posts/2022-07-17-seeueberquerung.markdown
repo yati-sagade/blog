@@ -2,6 +2,7 @@
 date: 2022-07-17
 layout: post
 title: Seeüberquerung 2022
+summary: Crossing the Zürisee (partly)
 ---
 
 I participated in the [Seeüberquerung](https://www.seeueberquerung.ch/en/) this

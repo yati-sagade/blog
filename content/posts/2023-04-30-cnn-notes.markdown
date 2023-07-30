@@ -2,6 +2,7 @@
 title: Notes on CNNs
 date: 2023-04-30
 math: true
+summary: ...Because the shape-fu involved needs to be relearned everytime
 ---
 These are my notes about CNNs, some toy code in [this colab](https://colab.research.google.com/drive/1xz2XLOVK9NTTYGjhPcFvc5e5lDy0sgHR#scrollTo=dbM3v1sNNHOf).
 
@@ -145,5 +146,4 @@ Fractional strides are possible when you pad between pixels.
 
 ## Training
 I realized that cnns are incredibly finicky when it comes to things like the SGD batch size.
-
 

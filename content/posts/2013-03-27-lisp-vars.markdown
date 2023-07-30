@@ -1,12 +1,8 @@
 ---
-date: 2013-03-27
-
-layout: post
-
 title: Variables in Common Lisp
-
----
+layout: post
 date: 2013-03-27
+---
 
 Common Lisp is a dynamically, but strongly typed language. The variables
 carry the type information that can be fetched at runtime, and hence, the type

@@ -5,7 +5,6 @@ tags:
     - perl
     - programming
 date: 2018-01-16
-
 ---
 
 In testing my implementation of a [distributed failure detector][1], I needed to

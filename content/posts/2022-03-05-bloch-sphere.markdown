@@ -5,7 +5,7 @@ layout: post
 title: The Bloch sphere
 tags: [notes, qc]
 math: true
-
+summary: Notes on visualizing qubits with the Block sphere
 ---
 This video is the best derivation I found:
 [https://www.youtube.com/watch?v=a-dIl1Y1aTs](https://www.youtube.com/watch?v=a-dIl1Y1aTs).

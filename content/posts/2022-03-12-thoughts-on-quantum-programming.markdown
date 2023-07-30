@@ -2,6 +2,7 @@
 date: 2022-03-12
 layout: post
 title: Quantum programming baby steps
+summary: Quantum programming languages expose low-level detail; Opportunities abound for abstractions
 tags:
  - qc
 ---

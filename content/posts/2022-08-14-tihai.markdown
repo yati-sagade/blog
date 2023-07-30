@@ -3,6 +3,7 @@ date: 2022-08-14
 layout: post
 title: Tihai in Indian music
 math: true
+summary: Simple or complex rhythmic patterns designed to be played thrice as a bridge
 ---
 
 

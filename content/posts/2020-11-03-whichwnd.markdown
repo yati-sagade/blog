@@ -3,6 +3,7 @@ date: 2020-11-03
 
 layout: post
 title: What program does that dialog pop-up come from?
+summary: Because rogue dialogs are a thing
 tags:
   - gnome
   - linux
