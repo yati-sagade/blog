@@ -1,5 +1,5 @@
 ---
-title: "Writing a type-checking calculator - Part 1: Parsing"
+title: "Writing a type-checking calculator"
 date: 2023-06-18
 math: true
 showToc: true
