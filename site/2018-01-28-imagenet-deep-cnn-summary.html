@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="dcterms.date" content="2018-01-28" />
+  <title>Summary of “ImageNet Classification with Deep Convolutional Neural Networks”</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Summary of “ImageNet Classification with Deep
+Convolutional Neural Networks”</h1>
+<p class="date">2018-01-28</p>
+</header>
+<p>I decided to read interesting deep learning papers often and try to
+summarize them to aid my own understanding of the topics.</p>
+<p>This paper, <a
+href="http://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf">ImageNet
+Classification with Deep Convolutional Neural Networks</a> demonstrates
+a record breaking result on the ImageNet LSVRC-2012 competition. The
+authors participated in the competition under the name <a
+href="http://image-net.org/challenges/LSVRC/2012/results.html">SuperVision</a>
+(which is extremently difficult to Google, especially in the “deep
+learning” context, which makes Google surface supervised learning
+related results).</p>
+<h2 id="data">Data</h2>
+<p>They trained the model on the ImageNet dataset, which contains about
+1.2 million images of 1000 categories.</p>
+<h3 id="image-preprocessing">Image preprocessing</h3>
+<p>Since ImageNet images are variable resolution, and the model
+presented in this paper requires fixed size images, they scaled every
+image to 256x256 pixels. The scaling like so:</p>
+<ol type="1">
+<li>Scale a possibly rectangular image so that the shorter side is 256
+pixels.</li>
+<li>Take the middle 256x256 patch as the input image.</li>
+</ol>
+<h3 id="data-augmentation">Data augmentation</h3>
+<p>Actually, the network presented in the paper works with 224x224
+images, which are generated by randomly sampling patches of that size
+from each 256x256 image. This is one of the ways they did data
+augmentation.</p>
+<p>The other way they augmented the dataset involved perturbing the
+R,G,B values of each input image by a scaled version of the principal
+components (in RGB space) across the whole training set. If
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐩</mi><mn>𝟏</mn></msub><annotation encoding="application/x-tex">\mathbf{p_1}</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐩</mi><mn>𝟐</mn></msub><annotation encoding="application/x-tex">\mathbf{p_2}</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐩</mi><mn>𝟑</mn></msub><annotation encoding="application/x-tex">\mathbf{p_3}</annotation></semantics></math>
+be the eigenvectors and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>λ</mi><mn>1</mn></msub><annotation encoding="application/x-tex">\lambda_1</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>λ</mi><mn>2</mn></msub><annotation encoding="application/x-tex">\lambda_2</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>λ</mi><mn>3</mn></msub><annotation encoding="application/x-tex">\lambda_3</annotation></semantics></math>
+the corresponding eigenvalues, each pixel in a given image is perturbed
+such that:</p>
+<!-- TODO: Does not render in KaTeX on Hugo, but works in MathJax/Jekyll -->
+<p>$$
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mi>I</mi><mi>′</mi></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mi>I</mi><mo>+</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mo>←</mo><msup><msub><mi>𝐩</mi><mn>𝟏</mn></msub><mi>T</mi></msup><mo>→</mo></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mo>←</mo><msup><msub><mi>𝐩</mi><mn>𝟐</mn></msub><mi>T</mi></msup><mo>→</mo></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mo>←</mo><msup><msub><mi>𝐩</mi><mn>𝟑</mn></msub><mi>T</mi></msup><mo>→</mo></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>α</mi><mn>1</mn></msub><msub><mi>λ</mi><mn>1</mn></msub></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>α</mi><mn>2</mn></msub><msub><mi>λ</mi><mn>2</mn></msub></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>α</mi><mn>3</mn></msub><msub><mi>λ</mi><mn>3</mn></msub></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align}
+
+I&#39; &amp;= I + \begin{bmatrix}
+        \leftarrow \mathbf{p_1}^T \rightarrow \\
+        \leftarrow \mathbf{p_2}^T \rightarrow \\
+        \leftarrow \mathbf{p_3}^T \rightarrow \\
+      \end{bmatrix}
+
+      \begin{bmatrix}
+        \alpha_1 \lambda_1 \\
+        \alpha_2 \lambda_2 \\
+        \alpha_3 \lambda_3
+      \end{bmatrix}
+
+\end{align}</annotation></semantics></math> $$</p>
+<p>where each
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>α</mi><mn>1</mn></msub><annotation encoding="application/x-tex">\alpha_1</annotation></semantics></math>
+is picked from a Gaussian with 0 mean and 0.1 std every time an image is
+used for training (but the values are shared by all pixels in the image
+once picked). They claim this captured an invariance of object identity
+under changes in intensity and color of illumination, which seems to
+have accounted for a ~ 1% decrease in top-1 error rate.</p>
+<h2 id="model-architecture">Model architecture</h2>
+<p>The model has 5 convolutional layers and 3 fully-connected
+layers.</p>
+<p><img src="/assets/imagenet-cnn-model.png"
+     alt="image showing the convolutional network architecture, picked from the paper" /></p>
+<h3 id="choice-of-nonlinearity">Choice of nonlinearity</h3>
+<p>Authors chose the ReLU function (<code>ReLU(x) = max(0,x)</code>) and
+were I think one of the first to endorse it, and for good reasons. They
+saw that using the ReLU activation function, as opposed to the
+conventional tanh or sigmoid, yielded tremendous gains in training
+speed, owing to the non saturating nature of the function. When pitted
+against the tanh activation with no other changes, they were able to
+train their model to 25% error rate on the training set <em>6 times
+faster</em> with the ReLU activation.</p>
+<h3 id="pooling">Pooling</h3>
+<p>They use max pooling but with overlapping windows (filter size of 3
+and stride of 2). Max pooling is applied after response renormalization,
+described next.</p>
+<h3 id="local-response-renormalization">Local response
+renormalization</h3>
+<p>Activations from a given filter/kernel for a given location
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\left(x,y\right)</annotation></semantics></math>
+are scaled by a term involving the activations on
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
+adjacent kernels for the same location.
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
+and other terms in question are hyperparameters and described very well
+in the corresponding section in the paper. The inspiration seems to be
+biological in nature, and in effect causes filters in an
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
+group to “compete” for having larger activations. Of course they
+probably wouldn’t have kept it had it not given them a significant error
+rate reduction on their validation set (which it did).</p>
+<h3 id="dropout-momentum-and-weight-decay">Dropout, momentum and weight
+decay</h3>
+<p>Dropout is used in the first two fully-connected layers (layers 6 and
+7 in the overall network). Essentially, a given neuron is switched-off
+in a forward-backward cycle with probability <code>0.5</code>. This
+means that the model is forced to learn redundant representations with
+shared weights. During testing, they do not switch of neurons, but
+multiply their outputs by <code>0.5</code>. No one quite knows exactly
+why dropout works well, but indeed it has worked extremely well for the
+authors and for many other models that followed. It has become very
+commonplace today to incorporate dropout in FC layers to reduce
+overfitting. Dropout approximately doubled the training time.</p>
+<p>Momentum is a technique to speed up training by pushing batch
+gradient descent updates to move towards the optimum faster. This is
+especially important when the objective function is like a long ravine
+leading to the optimum with steep wells (or like a hammock with a heavy
+person inside, but in higher dimensions).</p>
+<p><img src="/assets/ravine.png"
+     alt="contours of an objective function which looks like a hammock" /></p>
+<p>In such an objective, plain batch gradient descent, if starting on
+the left side, will oscillate up and down, moving slowly towards the
+optimum. Momentum uses exponentially weighted averages to take into
+account previous gradient descent updates. This averaging has an effect
+of cancelling out the up and down oscillations, thus speeding up the
+learning significantly. Authors use a momentum parameter of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.9</mn><annotation encoding="application/x-tex">0.9</annotation></semantics></math>,
+which roughly keeps the past 10 values in the moving average memory.</p>
+<p>Weight decay is simply to scale down weights by a factor slightly
+less than 1 to prevent them from becoming too big. This can be seen as a
+regularizing technique. In all the gradient descent updates for the
+model weights look like the following:</p>
+<p><span class="math display">$$
+v \leftarrow 0.9 v - 0.0005.\epsilon.w  - \epsilon\frac{\partial
+L}{\partial w} \\
+w \leftarrow w + v
+$$</span></p>
+<h2 id="training">Training</h2>
+<p>The training is done on two GPUs for parallelism, and the setup is
+quite interesting. The GPUs used each have 3GB memory. The network is
+split into halves, as can be seen in the model description figure,
+across the two GPUs. The interesting bit is that while layer 4 (CONV)
+operates on input which comes from the layer 3 activations from
+<em>both</em> GPUs, other conv layers in the network do not have this
+cross GPU communication going on, and only work with activations from
+the GPU local half of the network.</p>
+<p>Selecting how many layers should have cross-GPU comms going on is a
+problem for cross-validation, and apparently this scheme seems to have
+worked well for them. In the following figure, we see the first conv
+layer weights visualized, the top half being the first GPU, and the
+bottom half the other. As the authors mention in the paper, the two
+halves of the network consistently specialized in features, with one
+focusing on frequency/orientation, and the other in coloured blob
+detection.</p>
+<p><img src="/assets/gpu-specific-learning.png"
+     alt="the first conv layer learned representations in both GPUs" /></p>
+<p>Because of the sheer number of parameters (60 million), the training
+still takes 5-6 days. The learning rate had to be manually decayed when
+progress plateaued.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>This work was the first of its kind to have trained deep
+convolutional networks on GPUs to achieve impressive results on the
+ImageNet dataset for object detection. To conclude, here’s a Google
+Trends visualization for the term “deep learning” over time:</p>
+<script type="text/javascript" src="https://ssl.gstatic.com/trends_nrtr/1294_RC01/embed_loader.js"></script>
+<script type="text/javascript">
+trends.embed.renderExploreWidget("TIMESERIES", {"comparisonItem":[{"keyword":"deep learning","geo":"","time":"2004-01-01 2018-01-28"}],"category":0,"property":""}, {"exploreQuery":"date=all&q=deep%20learning","guestPath":"https://trends.google.com:443/trends/embed/"});
+</script>
+<p>(the paper was presented in December 2012 at NIPS).</p>
+</body>
+</html>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="dcterms.date" content="2015-04-22" />
+  <title>SICP Exercise 1.16</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">SICP Exercise 1.16</h1>
+<p class="date">2015-04-22</p>
+</header>
+<p>This exercise requires the design of a procedure that evolves an
+iterative exponentiation process using successive squaring. It should
+use constant space and a logarithmic number of steps. The hint is to
+note that
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mrow><mo stretchy="true" form="prefix">(</mo><msup><mi>b</mi><mfrac><mi>n</mi><mn>2</mn></mfrac></msup><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mo>=</mo><msup><mrow><mo stretchy="true" form="prefix">(</mo><msup><mi>b</mi><mn>2</mn></msup><mo stretchy="true" form="postfix">)</mo></mrow><mfrac><mi>n</mi><mn>2</mn></mfrac></msup></mrow><annotation encoding="application/x-tex">\left( b^{
+\frac{n}{2} } \right)^2 = \left( b^2 \right)^{ \frac {n}{2} }</annotation></semantics></math></span>
+and to transform states such that
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><msup><mi>b</mi><mi>n</mi></msup></mrow><annotation encoding="application/x-tex">ab^n</annotation></semantics></math></span>
+is invariant, and equal to
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>b</mi><mi>n</mi></msup><annotation encoding="application/x-tex">b^n</annotation></semantics></math></span>
+where <code>a</code> is another state variable along with the base
+<code>b</code> and exponent <code>n</code>. Here is the
+implementation:</p>
+<pre><code>(define (even? x)
+  (= (remainder x 2) 0))
+
+(define (expt b n)
+  (expt-iter 1 b n))
+
+(define (expt-iter a b n)
+  (cond ((= n 0) a)
+        ((even? n) (expt-iter a (square b) (/ n 2)))
+        (else (expt-iter (* a b) b (- n 1)))))</code></pre>
+<p>Here, <code>expt-iter</code>starts with the state variables
+<code>a = 1</code>, <code>b</code>, the base, and <code>n</code>, the
+exponent.</p>
+<p>We will the use the notation
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>a</mi><mn>0</mn></msub><annotation encoding="application/x-tex">a_0</annotation></semantics></math></span>,
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>b</mi><mn>0</mn></msub><annotation encoding="application/x-tex">b_0</annotation></semantics></math></span>,
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>n</mi><mn>0</mn></msub><annotation encoding="application/x-tex">n_0</annotation></semantics></math></span>
+to denote the initial values, and
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>a</mi><mi>c</mi></msub><annotation encoding="application/x-tex">a_c</annotation></semantics></math></span>,
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>b</mi><mi>c</mi></msub><annotation encoding="application/x-tex">b_c</annotation></semantics></math></span>,
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>n</mi><mi>c</mi></msub><annotation encoding="application/x-tex">n_c</annotation></semantics></math></span>
+to denote the <em>current</em> values, of the state variables
+<code>a</code>, <code>b</code> and <code>n</code>, respectively.</p>
+<p>When the exponent <code>n</code> falls to zero, our invariant says
+that
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>a</mi><mi>c</mi></msub><msup><msub><mi>b</mi><mi>c</mi></msub><mn>0</mn></msup><mo>=</mo><msub><mi>a</mi><mi>c</mi></msub></mrow><annotation encoding="application/x-tex">a_c {b_c}
+^0 = a_c</annotation></semantics></math></span> must equal the final
+result
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><msub><mi>b</mi><mn>0</mn></msub><msub><mi>n</mi><mn>0</mn></msub></msup><annotation encoding="application/x-tex">{b_0}^{n_0}</annotation></semantics></math></span>.
+Hence in this case, we return
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>a</mi><mi>c</mi></msub><annotation encoding="application/x-tex">a_c</annotation></semantics></math></span>,
+the current value of <code>a</code>. The correctness of this can be
+readily verified for
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>n</mi><mn>0</mn></msub><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">n_0 = 0</annotation></semantics></math></span>.
+For other values of
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math></span>,
+we need to prove that given any call to <code>expr-iter</code> with
+arguments
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>a</mi><mi>c</mi></msub><annotation encoding="application/x-tex">a_c</annotation></semantics></math></span>,
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>b</mi><mi>c</mi></msub><annotation encoding="application/x-tex">b_c</annotation></semantics></math></span>,
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>n</mi><mi>c</mi></msub><annotation encoding="application/x-tex">n_c</annotation></semantics></math></span>
+such that the invariant is preserved, i.e., <span>$ a_c { b_c }^{n_c} =
+{b_0}^{n_0}$</span>, each arm of the <code>cond</code> in
+<code>expt-iter</code> preserves the invariant through the next
+recursive call to itself.</p>
+<p>For even values of
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math></span>,
+we use the first part of the hint to reduce the exponent by half while
+squaring
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math></span>.
+Let’s look at our invariant expression in this case. Suppose we are
+dealing with some even exponent
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>n</mi><mi>c</mi></msub><mo>=</mo><mn>2</mn><mi>k</mi></mrow><annotation encoding="application/x-tex">n_c = 2k</annotation></semantics></math></span>.
+Before our transformation, the invariant says that
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>a</mi><mi>c</mi></msub><msup><msub><mi>b</mi><mi>c</mi></msub><mrow><mn>2</mn><mi>k</mi></mrow></msup><mo>=</mo><msup><msub><mi>b</mi><mn>0</mn></msub><msub><mi>n</mi><mn>0</mn></msub></msup></mrow><annotation encoding="application/x-tex">a_c { b_c } ^{2k} = {b_0}^{n_0}</annotation></semantics></math></span>.
+After our transformation, the invariant is
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>a</mi><mi>c</mi></msub><msup><msup><msub><mi>b</mi><mi>c</mi></msub><mn>2</mn></msup><mi>k</mi></msup></mrow><annotation encoding="application/x-tex">a_c { {b_c}^2 }^k</annotation></semantics></math></span>,
+which is just a rearrangement of the invariant expression before the
+transformation, and hence, must also equal
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><msub><mi>b</mi><mn>0</mn></msub><msub><mi>n</mi><mn>0</mn></msub></msup><annotation encoding="application/x-tex">{b_0}^{n_0}</annotation></semantics></math></span>.</p>
+<p>For odd values of
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math></span>,
+we transform by changing
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math></span>
+to be the product
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mi>b</mi></mrow><annotation encoding="application/x-tex">ab</annotation></semantics></math></span>
+while reducing
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math></span>
+by
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math></span>.
+For some odd value of
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>n</mi><mi>c</mi></msub><mo>=</mo><mn>2</mn><mi>k</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">n_c = 2k+1</annotation></semantics></math></span>,
+the invariant before the transformation is
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>a</mi><mi>c</mi></msub><msup><msub><mi>b</mi><mi>c</mi></msub><mrow><mn>2</mn><mi>k</mi><mo>+</mo><mn>1</mn></mrow></msup></mrow><annotation encoding="application/x-tex">a_c {b_c}^{2k+1}</annotation></semantics></math></span>.
+After the transformation, it becomes <span>$ ( a_c b_c ) {b_c}^{2k}
+$</span>, which is only a rearrangement of the previous term, implying
+that our transformation correctly preserves the invariant.</p>
+<p>Maintaining an invariant across state transformations is a powerful
+way of designing iterative processes, and also makes it easy to reason
+for the correctness of the procedures behind such processes.</p>
+</body>
+</html>

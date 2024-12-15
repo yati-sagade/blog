@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="dcterms.date" content="2015-05-22" />
+  <title>Deriving the laws of reflection and refraction of light from Fermat’s principle</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Deriving the laws of reflection and refraction of
+light from Fermat’s principle</h1>
+<p class="date">2015-05-22</p>
+</header>
+<p><a
+href="http://en.wikipedia.org/wiki/Fermat&#39;s_principle">Fermat’s
+principle</a> of least time can be roughly stated as, <em>“The path
+taken between two points by a ray of light is the path that can be
+traversed in the least time”</em> (From Wikipedia). Fermat used this
+observation to derive the laws of reflection and refraction of
+light.</p>
+<h2 id="reflection-of-light">Reflection of light</h2>
+<p>The law of reflection of light states that the angle at which a ray
+is incident on a reflective surface is equal to the angle at which it is
+reflected from the surface. In other words, in the following diagram
+(light travels from
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math></span>
+to
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>O</mi><annotation encoding="application/x-tex">O</annotation></semantics></math></span>
+to
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>B</mi><annotation encoding="application/x-tex">B</annotation></semantics></math></span>),
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>θ</mi><mi>i</mi></msub><mo>=</mo><msub><mi>θ</mi><mi>r</mi></msub></mrow><annotation encoding="application/x-tex">{\theta}_i = {\theta}_r</annotation></semantics></math></span>.</p>
+<p><img src="/assets/reflection.svg" alt="reflection"
+     width="50%"
+     height="50%" /></p>
+Let’s try to derive this law from Fermat’s principle. The total distance
+that the ray of light has to travel from
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math></span>
+to
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>B</mi><annotation encoding="application/x-tex">B</annotation></semantics></math></span>
+with one reflection at
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>O</mi><annotation encoding="application/x-tex">O</annotation></semantics></math></span>
+is
+<div>
+$ L = +
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mi>/</mi><mi>d</mi><mi>i</mi><mi>v</mi><mo>&gt;</mo><mo>&lt;</mo><mi>d</mi><mi>i</mi><mi>v</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">&lt;/div&gt;
+&lt;div&gt;</annotation></semantics></math> = + $
+</div>
+<p>Now since the speed of light is constant, minimizing the time taken
+by light to take the path
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mi>O</mi><mi>B</mi></mrow><annotation encoding="application/x-tex">AOB</annotation></semantics></math></span>
+is equivalent to minimizing the path itself. To do this, we set
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mrow><mi>d</mi><mi>L</mi></mrow><mrow><mi>d</mi><mi>x</mi></mrow></mfrac><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\frac{dL}{dx} = 0</annotation></semantics></math></span>.</p>
+<div>
+$ = 0 $
+</div>
+<div>
+$ ( + ) = 0 $
+</div>
+<div>
+$ + = 0 $
+</div>
+<div>
+$ = $
+</div>
+<div>
+$ = $
+</div>
+<div>
+$ _i = {}_r , $
+</div>
+<div>
+$ $
+</div>
+<h2 id="refraction">Refraction</h2>
+<p>The law of refraction of light, or <a
+href="http://en.wikipedia.org/wiki/Snell&#39;s_law">Snell’s Law</a>
+states that the ratio of the sines of the angles of incidence and
+refraction is equal to the inverse ratio of the indices of refraction of
+the two media.</p>
+<p><img src="/assets/refraction.svg" alt="refraction"
+     width="50%"
+     height="50%" /></p>
+<p>With reference to the image above, Snell’s Law can be mathematically
+stated as,</p>
+<div>
+$ = $
+</div>
+<p>Now to prove this using Fermat’s principle.</p>
+We know that,
+<div>
+$ = $
+</div>
+Let the speeds of light in our media be
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>v</mi><mn>1</mn></msub><mo>=</mo><mfrac><mi>c</mi><msub><mi>n</mi><mn>1</mn></msub></mfrac></mrow><annotation encoding="application/x-tex">v_1 = \frac{c}{n_1}</annotation></semantics></math></span>
+and
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>v</mi><mn>2</mn></msub><mo>=</mo><mfrac><mi>c</mi><msub><mi>n</mi><mn>2</mn></msub></mfrac></mrow><annotation encoding="application/x-tex">v_2 = \frac{c}{n_2}</annotation></semantics></math></span>.
+Now the total time taken by light to travel from
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math></span>
+to
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>B</mi><annotation encoding="application/x-tex">B</annotation></semantics></math></span>
+with a refraction at
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>O</mi><annotation encoding="application/x-tex">O</annotation></semantics></math></span>
+is
+<div>
+$ t = +
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mi>/</mi><mi>d</mi><mi>i</mi><mi>v</mi><mo>&gt;</mo><mo>&lt;</mo><mi>d</mi><mi>i</mi><mi>v</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">&lt;/div&gt;
+&lt;div&gt;</annotation></semantics></math> = +
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mi>/</mi><mi>d</mi><mi>i</mi><mi>v</mi><mo>&gt;</mo><mo>&lt;</mo><mi>d</mi><mi>i</mi><mi>v</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">&lt;/div&gt;
+&lt;div&gt;</annotation></semantics></math> = + $
+</div>
+<p>To minimize
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math></span>,
+we’ll set
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mrow><mi>d</mi><mi>t</mi></mrow><mrow><mi>d</mi><mi>x</mi></mrow></mfrac><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\frac{dt}{dx} = 0</annotation></semantics></math></span></p>
+<div>
+$ ( + ) = 0$
+</div>
+<div>
+$ ( { n_1 } + { n_2 } ) = 0 $
+</div>
+<div>
+$ + = 0 $
+</div>
+<div>
+$ n_1 = n_2 $
+</div>
+<div>
+$ n_1 _i = n_2 _r $
+</div>
+<div>
+$ = , $
+</div>
+</body>
+</html>

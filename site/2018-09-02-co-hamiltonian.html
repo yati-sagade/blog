@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="dcterms.date" content="2018-09-02" />
+  <title>Why I believe P ≠ NP</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Why I believe P ≠ NP</h1>
+<p class="date">2018-09-02</p>
+</header>
+<h2 id="the-hamcycle-problem">The HAMCYCLE problem</h2>
+<p>If a graph
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>V</mi><mo>,</mo><mi>E</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">G\left(V, E\right)</annotation></semantics></math>
+contains a <a
+href="http://mathworld.wolfram.com/HamiltonianCycle.html">Hamiltonian
+cycle</a>, we can pick a subset
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><mi>′</mi><mo>⊆</mo><mi>E</mi></mrow><annotation encoding="application/x-tex">E&#39; ⊆ E</annotation></semantics></math>
+of edges in the graph such that:</p>
+<ol type="1">
+<li>All vertices in
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>G</mi><annotation encoding="application/x-tex">G</annotation></semantics></math>
+appear in the resulting subgraph and,</li>
+<li>Starting at any vertex, we are able to visit each vertex exactly
+once, except for the starting vertex, which is also the last vertex in
+the cycle.</li>
+</ol>
+<p>The Hamiltonian cycle problem asks if a graph
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>G</mi><annotation encoding="application/x-tex">G</annotation></semantics></math>
+contains a Hamiltonian cycle – i.e., a cycle on which each vertex
+appears exactly once, except for the first (and the last) vertex of the
+cycle.</p>
+<p>The problem is <a
+href="https://en.wikipedia.org/wiki/NP-completeness">NP-Complete</a>. It
+is in <a href="https://en.wikipedia.org/wiki/NP_(complexity)">NP</a>
+because while no polynomial time algorithm is known to solve it, given a
+graph and a “certificate” which consists of a set of vertices claimed to
+constitute a Hamiltonian cycle, one can decide in polynomial time if the
+certificate is bogus. Additionally, <em>any</em> problem in NP can be
+reduced in polynomial time to an instance of the Hamiltonian cycle
+problem, hence making it NP-Complete. <a
+href="https://www.geeksforgeeks.org/proof-hamiltonian-path-np-complete/">Here
+is such an example reduction</a>, which works on the related Hamiltonian
+Path problem, which in turn can be reduced in polynomial time to the
+Hamiltonian Cycle problem.</p>
+<h2 id="the-formal-language-described-by-hamcycle">The formal language
+described by HAMCYCLE</h2>
+<p>This problem describes a language
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mo>=</mo><mo stretchy="false" form="prefix">{</mo><mo>&lt;</mo><mi>G</mi><mo>&gt;</mo><mo>:</mo><mtext mathvariant="normal">G is Hamiltonian</mtext><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">L = \{&lt;G&gt;: \text{G is Hamiltonian}\}</annotation></semantics></math>
+which is in NP. Here, the notation
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mi>G</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">&lt;G&gt;</annotation></semantics></math>
+represents a suitable binary encoding of the graph G (i.e., a string
+over
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">{</mo><mn>0</mn><mo>,</mo><mn>1</mn><msup><mo stretchy="false" form="postfix">}</mo><mo>*</mo></msup></mrow><annotation encoding="application/x-tex">\{0, 1\}^*</annotation></semantics></math>).</p>
+<h2 id="co-hamcycle">Co-HAMCYCLE</h2>
+<p>Consider the complement of problem: Finding if a graph is
+<em>not</em> Hamiltonian. This problem is at least as hard as the
+original problem, since if there was a polynomial time algorithm to tell
+us whether a given graph G is non-Hamiltonian, we could just use this to
+solve the original problem of deciding whether G is Hamiltonian.</p>
+<p>This complement is in the co-NP class by definition, and it is an
+open problem whether co-NP = NP. Since P ⊆ NP, and P is closed under the
+complement, P ⊆ NP ∩ co-NP. And if P = NP, co-NP = NP (but the inverse
+does not hold), but if co-NP ≠ NP, then P ≠ NP.</p>
+<p><img src="/pconp-1.png"  /></p>
+<p>The figure above shows that if NP and co-NP are different, P has to
+be different than NP, since it must be a subset of both NP and
+co-NP.</p>
+<h2 id="what-if-co-np-np">What if co-NP = NP?</h2>
+<p>Again, proving that co-NP = NP does not show that P = NP (although it
+does address an important standing problem in its own right, and leaves
+the possibility open that P = NP).</p>
+<p>To show that co-NP = NP, we’d have to show that all problems in co-NP
+are verifiable in polynomial time. Let’s see what that means in the
+context of the co-HAMCYLE problem.</p>
+<p>To provide a certificate for the co-HAMCYCLE problem would require
+encoding the <em>impossibility</em> of the set of edges in G to be form
+a Hamiltonian graph. In other words, the certificate would have to
+provide a badge for a claim that the graph G is not Hamiltonian. An
+example certificate would be the enumeration of all possible cycles in
+the graph. The verification algorithm would then have to check each
+cycle for being non-Hamiltonian, and also check that the set of cycles
+in the certificate is exhaustive (because there might be a Hamiltonian
+cycle that the certificate simply does not contain).</p>
+<p>However, for this certificate to be verified in polynomial time, its
+length must be polynomial in the size of the graph, and the check for
+exhaustiveness of the certificate also needs to be carried out in
+polynomial time. I think this is pretty hard, if not impossible to do. I
+don’t know how to prove this of course, but if we prove that there can
+exist no certificate of length polynomial in the size of the input
+graph, we’d have proven that co-HAMCYCLE is <em>not</em> in NP, i.e., NP
+≠ co-NP, and by extension, since P must be contained in NP ∩ co-NP, P ≠
+NP.</p>
+</body>
+</html>

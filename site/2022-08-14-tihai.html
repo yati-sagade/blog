@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="dcterms.date" content="2022-08-14" />
+  <title>Tihai in Indian music</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Tihai in Indian music</h1>
+<p class="date">2022-08-14</p>
+</header>
+<p>The rhythmic aspect of Indian classical music uses cycles of a fixed
+number of beats. Familiar Western analogs are rhythmic accompaniments to
+12-bar Blues, which repeat in 12-bar cycle, each played in 4/4 time.</p>
+<p>One unique thing I’ve seen in Indian music is the concept of a
+<em>Tihai</em>. There are many variations, but the most popular variant
+refers to playing a rhythmic phrase, that, when repeated precisely three
+times, lands you on the beginning of the next cycle.</p>
+<p>For instance, consider the 16-beat <em>Teen Taal</em>:</p>
+<pre>
+Dha | Dhin | Dhin | Dha
+Dha | Dhin | Dhin | Dha
+Dha | Tin  | Tin  | Ta
+Ta  | Dhin | Dhin | Dha
+</pre>
+<p>And an example <em>Tihai</em> (in <strong>bold</strong>). My hacky
+notation can be read as follows:</p>
+<ul>
+<li>Pipe (<code>|</code>) delimits single beats.</li>
+<li>When needed, I use slashes (<code>/</code>) on top to divide the
+beat into equal parts and then to distribute them among the notes to be
+played in that beat.</li>
+</ul>
+<pre>
+Dha      | Dhin     | Dhin      | Dha
+Dha      | Dhin     | Dhin      | Dha
+// //      / / / /                // //
+<b>DhaDha   | TiReKeTe | Dha       | DhaDha
+/ / / /               // //       / / / /
+TiReKeTe | Dha      | DhaDha    | TiReKeTe
+----
+Dha</b>      | Dhin     | Dhin      | Dha
+...
+</pre>
+<p>Note how:</p>
+<ul>
+<li>The <em>Tihai</em> starts halfway (after the 8th beat, i.e., on the
+9th beat)</li>
+<li>The 3-beat phrase <strong>{DhaDha}{TiReKeTe}{Dha}</strong> (each {}
+takes one beat) repeats three times, for a total of 9 beats.</li>
+<li>Since we only have space for 8 beats in this cycle, the last beat
+starts the next cycle</li>
+</ul>
+<p>The first beat of the cycle is known as <em>Sam</em>, and is the
+highest emotional point of the cycle<em>.</em> When one emphasizes the
+landing on <em>Sam</em> properly, the <em>Tihai</em> serves to
+temporarily distort the listener’s rhythmic perception only to resolve
+it at the <em>Sam</em>.</p>
+<p>Here’s me speaking and playing this <em>Tihai</em> on the Tabla:</p>
+<iframe width="431" height="766" src="https://www.youtube.com/embed/wVhaVJNXBt0" title="Simple Teen Taal Tihai" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+</iframe>
+<h2 id="rhythm-math">Rhythm math</h2>
+<p>Let:</p>
+<ul>
+<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>
+be the number of beats in the <em>Tihai</em> phrase. The one above had
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">N=3</annotation></semantics></math>.</li>
+<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>T</mi><annotation encoding="application/x-tex">T</annotation></semantics></math>
+be the number of beats in the <em>Taal</em> chosen. e.g.,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mo>=</mo><mn>16</mn></mrow><annotation encoding="application/x-tex">T=16</annotation></semantics></math>
+for <em>Teen Taal</em>.</li>
+<li>Let
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>q</mi><annotation encoding="application/x-tex">q</annotation></semantics></math>
+be the beat number that should start the <em>Tihai</em>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>≤</mo><mi>q</mi><mo>≤</mo><mi>T</mi></mrow><annotation encoding="application/x-tex">1 \le q \le T</annotation></semantics></math>.
+In the above example,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>=</mo><mn>9</mn></mrow><annotation encoding="application/x-tex">q=9</annotation></semantics></math>,
+since we started on the 9th beat in the cycle.</li>
+</ul>
+<p>If we are to play the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>-beat
+phrase 3 times and land on the beginning of a rhythmic cycle, we must
+have:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>3</mn><mi>N</mi><mo>=</mo><mn>1</mn><mrow><mspace width="0.444em"></mspace><mo>mod</mo><mspace width="0.222em"></mspace><mrow><mi>T</mi><mo>−</mo><mi>q</mi><mo>+</mo><mn>1</mn></mrow></mrow></mrow><annotation encoding="application/x-tex">
+3N = 1\mod{T-q+1}
+</annotation></semantics></math></p>
+<p>In the preceding example, we have all the values match up
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">N=3</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>=</mo><mn>9</mn></mrow><annotation encoding="application/x-tex">q=9</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mo>=</mo><mn>16</mn></mrow><annotation encoding="application/x-tex">T=16</annotation></semantics></math>):</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>3</mn><mo>×</mo><mn>3</mn><mo>=</mo><mn>1</mn><mrow><mspace width="0.444em"></mspace><mo>mod</mo><mspace width="0.222em"></mspace><mrow><mo stretchy="true" form="prefix">(</mo><mn>16</mn><mo>−</mo><mn>9</mn><mo>+</mo><mn>1</mn><mo>=</mo><mn>8</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mrow><annotation encoding="application/x-tex">3 \times 3 = 1\mod{\left(16-9+1 = 8\right)}</annotation></semantics></math></p>
+<p>Here’s another example of a <em>Tihai</em> which starts on the first
+beat, and is 11 beats long (first 11 beats <u>underlined</u>, the entire
+<em>Tihai</em> is <strong>emboldened</strong>):</p>
+<pre>
+<b>
+// //      / / / /    // / /    / / //
+<u>DhaDha</u>   | <u>TiReKiTa</u> | <u>DhaTiRe</u> | <u>KiTaDha</u>
+//  //                // //     // //
+<u>DhinNa</u>   | <u>Dha</u>      | <u>DhaDhin</u> | <u>Na Dha</u>
+// //      //  //                // //
+<u>xx Dha</u>   | <u>DhinNa</u>   | <u>Dha</u>     | DhaDha
+/ / / /    // / /     / / //    //  //
+TiReKiTa | DhaTiRe  | KiTaDha | DhinNa
+-----
+////       // //      // //      // //
+Dha      | DhaDhin  | Na Dha   | xx Dha
+//  //                // //     / / / /
+DhinNa   | Dha      | DhaDha  | TiReKiTa
+// / /     / / //     //  //    
+DhaTiRe  | KiTaDha  | DhinNa  | Dha
+// //      // //      // //       //  //
+DhaDhin  | Na Dha   | xx Dha    | DhinNa
+-----
+Dha</b>  | Dhin ...
+</pre>
+<p>Note how this 11-beat phrase, when played 3 times, gives us a piece
+of 33 beats, which is 2 full 16-beat cycles, and the extra beat that
+starts the next one. This shows that <em>Tihai</em>s need not complete
+within a cycle – they can span multiple cycles, the only requirement
+seems to be to land on the <em>Sam</em> after 3 repetitions.</p>
+<p>Here,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>=</mo><mn>11</mn></mrow><annotation encoding="application/x-tex">N=11</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">q=1</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mo>=</mo><mn>16</mn></mrow><annotation encoding="application/x-tex">T=16</annotation></semantics></math>,
+and we can see that:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>3</mn><mi>N</mi><mo>=</mo><mn>3</mn><mo>×</mo><mn>11</mn><mo>=</mo><mn>33</mn></mrow><annotation encoding="application/x-tex">3N = 3 \times 11 = 33</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>=</mo><mn>1</mn><mrow><mspace width="0.444em"></mspace><mo>mod</mo><mspace width="0.222em"></mspace><mn>16</mn></mrow></mrow><annotation encoding="application/x-tex"> = 1 \mod{16} </annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>=</mo><mn>1</mn><mrow><mspace width="0.444em"></mspace><mo>mod</mo><mspace width="0.222em"></mspace><mrow><mn>16</mn><mo>−</mo><mn>1</mn><mo>+</mo><mn>1</mn></mrow></mrow></mrow><annotation encoding="application/x-tex"> = 1 \mod{16 - 1 + 1} </annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>=</mo><mn>1</mn><mrow><mspace width="0.444em"></mspace><mo>mod</mo><mspace width="0.222em"></mspace><mrow><mi>T</mi><mo>−</mo><mi>q</mi><mo>+</mo><mn>1</mn></mrow></mrow></mrow><annotation encoding="application/x-tex">= 1 \mod{T-q+1}</annotation></semantics></math></p>
+<h2 id="generalization">Generalization?</h2>
+<p>I have only ever heard this concept applied to 3x repetitions of
+fixed phrases (after all, the name <em>Tihai</em> does hint at 3’s). But
+out of curiosity, what if we want to generalize this to a
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math>-way
+repetition? e.g., we could invent a <em>Panchai</em> or something such
+that a fixed phrase, when repeated 5 times, has to end on the
+<em>Sam</em> of a rhythmic cycle.</p>
+<p>The simple calculations above should generalize to give us:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>×</mo><mi>N</mi><mo>=</mo><mn>1</mn><mrow><mspace width="0.444em"></mspace><mo>mod</mo><mspace width="0.222em"></mspace><mrow><mi>T</mi><mo>−</mo><mi>q</mi><mo>+</mo><mn>1</mn></mrow></mrow></mrow><annotation encoding="application/x-tex">K \times N = 1\mod{T-q+1}</annotation></semantics></math></p>
+<p>To jam with this idea with
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>=</mo><mn>5</mn></mrow><annotation encoding="application/x-tex">K=5</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">q=1</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mo>=</mo><mn>16</mn></mrow><annotation encoding="application/x-tex">T=16</annotation></semantics></math>,
+we need an
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>
+such that:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>5</mn><mi>N</mi><mo>=</mo><mn>1</mn><mrow><mspace width="0.444em"></mspace><mo>mod</mo><mspace width="0.222em"></mspace><mn>16</mn></mrow></mrow><annotation encoding="application/x-tex">5N = 1\mod{16}</annotation></semantics></math></p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> [n <span class="cf">for</span> n <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">50</span>) <span class="cf">if</span> (<span class="dv">5</span><span class="op">*</span>n) <span class="op">%</span> <span class="dv">16</span> <span class="op">==</span> <span class="dv">1</span>]</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>[<span class="dv">13</span>, <span class="dv">29</span>, <span class="dv">45</span>]</span></code></pre></div>
+<p>So there, our first option is a 13-beat phrase. When repeated 5
+times, this will be 65 beats, which is 4 cycles of 16 beats and our
+extra beat to start the next cycle.</p>
+<p>Do let me know if such a generalization exists, or if there is maybe
+some reason why artists choose not to incorporate it. I for one can see
+that there is something magical about the number 3 – it is an odd number
+that I, as a listener, seem to be able to keep in my head easily. Maybe
+5, 7 or higher odd numbers are just too complex? Maybe they just don’t
+sound good? I don’t know.</p>
+</body>
+</html>

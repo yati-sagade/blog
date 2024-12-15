@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="dcterms.date" content="2017-09-16" />
+  <title>Optimal failure detector performance</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Optimal failure detector performance</h1>
+<p class="date">2017-09-16</p>
+</header>
+<p>This is a note to self on computing the lower bound on number of
+messages each process in a distributed failure detector must send to
+guarantee adherence to pre-specified values for:</p>
+<ul>
+<li>Time to first detection of a true failure.</li>
+<li>False positive detection rate.</li>
+<li>Message loss rate.</li>
+</ul>
+<p>In other words, the failure detector accepts as parameters the above
+three values, and for those guarantees to be respected, each node in the
+failure detector cluster must send at least
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>m</mi><annotation encoding="application/x-tex">m</annotation></semantics></math>
+number of messages, which is what we are after.</p>
+<p>The original paper from which I learnt most of this is <a
+href="http://www.cs.cornell.edu/projects/quicksilver/public_pdfs/On%20Scalable.pdf">On
+Scalable and Efficient Distributed Failure Detectors</a>.</p>
+<p>We shall talk about eventually complete (<em>every</em> failure is
+eventually detected) failure detection, in a crash-stop failure model
+(actually it isn’t hard to extend the analysis to a crash-recovery
+model, but we don’t assume Byzantine failures).</p>
+<h2 id="parameters">Parameters</h2>
+<h3 id="time-to-first-detection-of-a-true-failure">1. Time to first
+detection of a true failure</h3>
+<p>The failure detector in question accepts a parameter
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>T</mi><annotation encoding="application/x-tex">T</annotation></semantics></math>,
+which is the maximum time in seconds between a process failing, and
+<em>some</em> other process detecting this. Note that this explicitly
+does <em>not</em> assume any dissemination mechanism, and depending on
+what it is, <em>first</em> detection may or may not mean detection by
+all non-faulty processes.</p>
+<h3 id="false-positive-detection-rate">2. False positive detection
+rate</h3>
+<p>The next parameter the failure detector accepts is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>α</mi><mi>T</mi></msub><annotation encoding="application/x-tex">\alpha_{T}</annotation></semantics></math>,
+the acceptable false failure detection rate till the first true failure
+detection. This is a bit tricky to understand. Consider at time
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>t</mi><mn>0</mn></msub><annotation encoding="application/x-tex">t_0</annotation></semantics></math>,
+we have a bunch of non-faulty processes
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mn>1</mn></msub><mo>,</mo><msub><mi>p</mi><mn>2</mn></msub><mo>,</mo><msub><mi>p</mi><mn>3</mn></msub><mi>.</mi><mi>.</mi><mo>,</mo><msub><mi>p</mi><mi>M</mi></msub></mrow><annotation encoding="application/x-tex">p_1, p_2, p_3.., p_M</annotation></semantics></math>
+that have not been marked failed yet. We want the probability that any
+<em>non faulty</em> process marks any of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mi>i</mi></msub><annotation encoding="application/x-tex">p_i</annotation></semantics></math>
+as failed till
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>t</mi><mn>0</mn></msub><mo>+</mo><mi>T</mi></mrow><annotation encoding="application/x-tex">t_0 + T</annotation></semantics></math>
+to be capped at
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>α</mi><mi>T</mi></msub><annotation encoding="application/x-tex">\alpha_{T}</annotation></semantics></math>.
+To look at this from another perspective, consider 1000 random time
+periods, each of length
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>T</mi><annotation encoding="application/x-tex">T</annotation></semantics></math>.
+For each time period, we count the number of false failure detections,
+and sum them up (good nodes marked as faulty by another good node). We
+want this number to be no more than
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1000</mn><msub><mi>α</mi><mi>T</mi></msub></mrow><annotation encoding="application/x-tex">1000\alpha_T</annotation></semantics></math>.</p>
+<h3 id="message-loss-rate">3. Message loss rate</h3>
+<p>The application also specifies the probability of any given message
+being lost. This is applied independently to each message, and hence may
+not be a true picture of what happens in the real world (correlated
+message losses around congested network zones), but hey at least <a
+href="http://abstrusegoose.com/406">we are not talking about a spherical
+cow in vaccum</a>. We call this parameter
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mrow><mi>m</mi><mi>l</mi></mrow></msub><annotation encoding="application/x-tex">p_{ml}</annotation></semantics></math>.</p>
+<h2 id="result">Result</h2>
+<p>With the parameters specified as above, in an
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>
+node distributed failure detector, the <em>minimum</em> number of
+messages each node has to send per second is given by</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>m</mi><mrow><mi>m</mi><mi>i</mi><mi>n</mi></mrow></msub><mo>=</mo><mfrac><mn>1</mn><mi>T</mi></mfrac><mfrac><mrow><mo>log</mo><msub><mi>α</mi><mi>T</mi></msub></mrow><mrow><mo>log</mo><msub><mi>p</mi><mrow><mi>m</mi><mi>l</mi></mrow></msub></mrow></mfrac></mrow><annotation encoding="application/x-tex">
+    m_{min} = \frac{1}{T} \frac{\log\alpha_T}{\log{p_{ml}}}
+</annotation></semantics></math></p>
+<p>This is neat, because it does not depend on the cluster size
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>!</p>
+<h2 id="proof">Proof</h2>
+<p>Suppose each node sends
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>m</mi><annotation encoding="application/x-tex">m</annotation></semantics></math>
+messages out (as heartbeats or pings to other nodes) in a time period
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>T</mi><annotation encoding="application/x-tex">T</annotation></semantics></math>.
+The only way a non-faulty process can appear as faulty to all others is
+if <em>all</em> its outgoing messages are dropped in the time-period of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>T</mi><annotation encoding="application/x-tex">T</annotation></semantics></math>
+seconds. This happens with probability
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>p</mi><mrow><mi>m</mi><mi>l</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mi>m</mi></msup><annotation encoding="application/x-tex">\left(p_{ml}\right)^m</annotation></semantics></math>.
+We want this probability to be capped at
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>α</mi><mi>T</mi></msub><annotation encoding="application/x-tex">\alpha_T</annotation></semantics></math>.
+So,</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>α</mi><mi>T</mi></msub><mo>≥</mo><msup><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>p</mi><mrow><mi>m</mi><mi>l</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mi>m</mi></msup></mrow><annotation encoding="application/x-tex">
+\alpha_T \ge \left(p_{ml}\right)^m
+</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>⟹</mo><mo>log</mo><msub><mi>α</mi><mi>T</mi></msub><mo>≥</mo><mi>m</mi><mo>log</mo><msub><mi>p</mi><mrow><mi>m</mi><mi>l</mi></mrow></msub></mrow><annotation encoding="application/x-tex">
+\implies \log{\alpha_T} \ge m\log{p_{ml}}
+</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>⟹</mo><mi>m</mi><mo>≥</mo><mfrac><mrow><mo>log</mo><msub><mi>α</mi><mi>T</mi></msub></mrow><mrow><mo>log</mo><msub><mi>p</mi><mrow><mi>m</mi><mi>l</mi></mrow></msub></mrow></mfrac><mrow><mo stretchy="true" form="prefix">(</mo><mi>∵</mi><mn>0</mn><mo>&lt;</mo><msub><mi>p</mi><mrow><mi>m</mi><mi>l</mi></mrow></msub><mo>&lt;</mo><mn>1</mn><mo>,</mo><mn>0</mn><mo>&lt;</mo><msub><mi>α</mi><mi>T</mi></msub><mo>&lt;</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">
+\implies m  \ge \frac{\log\alpha_T}{\log{p_{ml}}}
+\left(\because 0 \lt p_{ml}
+\lt 1, 0 \lt \alpha_T \lt 1 \right)
+</annotation></semantics></math></p>
+<p>Since
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>m</mi><annotation encoding="application/x-tex">m</annotation></semantics></math>
+is the number of messages sent <em>every T seconds</em>, the number of
+messages per second
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>m</mi><mi>r</mi></msub><mo>≥</mo><mfrac><mn>1</mn><mi>T</mi></mfrac><mfrac><mrow><mo>log</mo><msub><mi>α</mi><mi>T</mi></msub></mrow><mrow><mo>log</mo><msub><mi>p</mi><mrow><mi>m</mi><mi>l</mi></mrow></msub></mrow></mfrac></mrow><annotation encoding="application/x-tex">m_r \ge \frac{1}{T} \frac{\log\alpha_T}{\log{p_{ml}}}</annotation></semantics></math>,
+and hence,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>m</mi><mrow><mi>m</mi><mi>i</mi><mi>n</mi></mrow></msub><mo>=</mo><mfrac><mn>1</mn><mi>T</mi></mfrac><mfrac><mrow><mo>log</mo><msub><mi>α</mi><mi>T</mi></msub></mrow><mrow><mo>log</mo><msub><mi>p</mi><mrow><mi>m</mi><mi>l</mi></mrow></msub></mrow></mfrac></mrow><annotation encoding="application/x-tex">m_{min} = \frac{1}{T} \frac{\log\alpha_T}{\log{p_{ml}}}</annotation></semantics></math>.</p>
+</body>
+</html>

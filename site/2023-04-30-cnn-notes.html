@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="dcterms.date" content="2023-04-30" />
+  <title>Notes on CNNs</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Notes on CNNs</h1>
+<p class="date">2023-04-30</p>
+</header>
+<p>These are my notes about CNNs, some toy code in <a
+href="https://colab.research.google.com/drive/1xz2XLOVK9NTTYGjhPcFvc5e5lDy0sgHR#scrollTo=dbM3v1sNNHOf">this
+colab</a>.</p>
+<h2 id="motivation-for-cnns">Motivation for CNNs</h2>
+<p>While MLPs are a very general class of models that work even for
+image data, they fail to take into account important properties that 2D
+images have.</p>
+<p>For instance, typical MLPs would take a flattened 1D vector of pixels
+from the image as input, and potentially ignore the rich 2D local
+information (although I wonder if with enough tuning, it could just
+learn the associations, since an image is also stored on the computer as
+a sequence of numbers).</p>
+<p>But the more insidious problem is that of the parameter space.
+Consider a reasonable input size of 100x100 images. A single fully
+connected layer with 1000 units would need
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mn>10</mn><mn>7</mn></msup><annotation encoding="application/x-tex">10^7</annotation></semantics></math>
+parameters. But 1000 hidden units is usually too less.</p>
+<p>When we constrain these models by introducing good inductive biases,
+we can reduce the required number of parameters drastically.</p>
+<p>The main constraints we can put on 2D image data are:</p>
+<ol type="1">
+<li>Translation equivariance: For most object detection style tasks, the
+earliest layers should not care where an object is in the image should
+not matter.</li>
+<li>The earliest layers of the network should focus on local regions.
+The local representations can eventually be pooled into higher level
+representations.</li>
+</ol>
+<h2 id="from-fully-connected-to-local-convolutions">From fully connected
+to local convolutions</h2>
+<p>Suppose we start with 2D inputs
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>X</mi><mo>∈</mo><msup><mi>ℝ</mi><mrow><mn>4</mn><mi>x</mi><mn>4</mn></mrow></msup></mrow><annotation encoding="application/x-tex">X \in \mathbb{R}^{4x4}</annotation></semantics></math>
+and want to compute 2D hidden representations
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>H</mi><mo>∈</mo><msup><mi>ℝ</mi><mrow><mn>2</mn><mi>x</mi><mn>2</mn></mrow></msup></mrow><annotation encoding="application/x-tex">H \in \mathbb{R}^{2x2}</annotation></semantics></math>.</p>
+<p>In a fully connected setting, we need a 4x4 weight matrix associated
+with <em>each</em>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>H</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">H_{i,j}</annotation></semantics></math>.
+We need 4 of these since
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>H</mi><annotation encoding="application/x-tex">H</annotation></semantics></math>
+is itself 2x2. So let’s put these matrices in a 4D array (or “order 4
+tensor”):</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>H</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub><mo>=</mo><msub><mi>U</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub><mo>+</mo><munder><mo>∑</mo><mi>k</mi></munder><munder><mo>∑</mo><mi>l</mi></munder><msub><mi>W</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mi>k</mi><mo>,</mo><mi>l</mi></mrow></msub><msub><mi>X</mi><mrow><mi>k</mi><mo>,</mo><mi>l</mi></mrow></msub></mrow><annotation encoding="application/x-tex">
+H_{i,j} = U_{i,j} + \sum_k \sum_l W_{i, j, k, l} X_{k, l}
+</annotation></semantics></math></p>
+<p>Visualize
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>W</mi><annotation encoding="application/x-tex">W</annotation></semantics></math>
+a bit like this:</p>
+<pre><code>W = [
+  [( ), ( )],
+  [( ), ( )],
+]   ^-------------------\
+                        (
+                          [. . . .],
+                          [. . . .],
+                          [. . . .],
+                          [. . . .]
+                        )
+</code></pre>
+<p>Each of the four <code>( )</code> is itself a 4x4 matrix as shown at
+the bottom right of the figure.</p>
+<p>When we want to compute, say,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>H</mi><mrow><mn>1</mn><mo>,</mo><mn>0</mn></mrow></msub><annotation encoding="application/x-tex">H_{1,0}</annotation></semantics></math>,
+we pick the corresponding matrix from W (the one that the arrow points
+at in the figure), perform an element-wise multiplication with the input
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>X</mi><annotation encoding="application/x-tex">X</annotation></semantics></math>,
+and sum up the resulting elements, and add up the bias
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>U</mi><mrow><mn>1</mn><mo>,</mo><mn>0</mn></mrow></msub><annotation encoding="application/x-tex">U_{1, 0}</annotation></semantics></math>
+to produce the result.</p>
+<p>Let’s change up the notation a bit now, and set
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>=</mo><mi>k</mi><mo>−</mo><mi>i</mi></mrow><annotation encoding="application/x-tex">a = k - i</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>b</mi><mo>=</mo><mi>l</mi><mo>−</mo><mi>j</mi></mrow><annotation encoding="application/x-tex">b = l - j</annotation></semantics></math>
+to get</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>H</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub><mo>=</mo><msub><mi>U</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub><mo>+</mo><munder><mo>∑</mo><mi>a</mi></munder><munder><mo>∑</mo><mi>b</mi></munder><msub><mi>W</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mi>i</mi><mo>+</mo><mi>a</mi><mo>,</mo><mi>j</mi><mo>+</mo><mi>b</mi></mrow></msub><msub><mi>X</mi><mrow><mi>i</mi><mo>+</mo><mi>a</mi><mo>,</mo><mi>j</mi><mo>+</mo><mi>b</mi></mrow></msub></mrow><annotation encoding="application/x-tex">
+H_{i,j} = U_{i,j} + \sum_a \sum_b W_{i, j, i + a, j + b} X_{i+a, j+b}
+</annotation></semantics></math></p>
+<p>Notice that
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>,</mo><mi>b</mi></mrow><annotation encoding="application/x-tex">a, b</annotation></semantics></math>
+can be negative as well as positive and take on values to ensure
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi><mo>+</mo><mi>a</mi></mrow><annotation encoding="application/x-tex">i+a</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>j</mi><mo>+</mo><mi>b</mi></mrow><annotation encoding="application/x-tex">j+b</annotation></semantics></math>
+range over the entire image.</p>
+<p>Setting
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>V</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>b</mi></mrow></msub><mo>=</mo><msub><mi>W</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mi>i</mi><mo>+</mo><mi>a</mi><mo>,</mo><mi>j</mi><mo>+</mo><mi>b</mi></mrow></msub></mrow><annotation encoding="application/x-tex">V_{i,j,a,b} = W_{i,j,i+a,j+b}</annotation></semantics></math>,
+we get</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>H</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub><mo>=</mo><msub><mi>U</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub><mo>+</mo><munder><mo>∑</mo><mi>a</mi></munder><munder><mo>∑</mo><mi>b</mi></munder><msub><mi>V</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>b</mi></mrow></msub><msub><mi>X</mi><mrow><mi>i</mi><mo>+</mo><mi>a</mi><mo>,</mo><mi>j</mi><mo>+</mo><mi>b</mi></mrow></msub></mrow><annotation encoding="application/x-tex">
+H_{i,j} = U_{i,j} + \sum_a \sum_b V_{i, j, a, b} X_{i+a, j+b}
+</annotation></semantics></math></p>
+<p>Now for the hidden representation to be translation equivariant
+(invariant), we must have that translating the input
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>X</mi><annotation encoding="application/x-tex">X</annotation></semantics></math>
+also translates (leaves unchanged) the hidden representation. This is,
+in general, not true since we have 4 different linear actions in our
+case corresponding to each
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>H</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">H_{i,j}</annotation></semantics></math>.
+Sure maybe the model can <em>learn</em> a set of matrices that roughly
+achieves this behaviour, but if we simply use <em>one</em> weight matrix
+(and a single bias) for all hidden units, and say that
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>V</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mi>a</mi><mo>,</mo><mi>b</mi></mrow></msub><mo>=</mo><msub><mi>V</mi><mrow><mi>a</mi><mo>,</mo><mi>b</mi></mrow></msub></mrow><annotation encoding="application/x-tex">V_{i, j, a, b} = V_{a, b}</annotation></semantics></math>,
+then we get</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>H</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub><mo>=</mo><mi>u</mi><mo>+</mo><munder><mo>∑</mo><mi>a</mi></munder><munder><mo>∑</mo><mi>b</mi></munder><msub><mi>V</mi><mrow><mi>a</mi><mo>,</mo><mi>b</mi></mrow></msub><msub><mi>X</mi><mrow><mi>i</mi><mo>+</mo><mi>a</mi><mo>,</mo><mi>j</mi><mo>+</mo><mi>b</mi></mrow></msub></mrow><annotation encoding="application/x-tex">
+H_{i,j} = u + \sum_a \sum_b V_{a, b} X_{i+a, j+b}
+</annotation></semantics></math></p>
+<p>Notice that in the current form, since
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>,</mo><mi>b</mi></mrow><annotation encoding="application/x-tex">a, b</annotation></semantics></math>
+range over the entire image no matter where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow><annotation encoding="application/x-tex">i, j</annotation></semantics></math>
+are fixed, the result activation for each hidden unit will be the same!
+We will fix that by making another simplification of assuming locality –
+now,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>,</mo><mi>b</mi></mrow><annotation encoding="application/x-tex">a, b</annotation></semantics></math>
+will only take on values in
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">[</mo><mo>−</mo><mi>Δ</mi><mo>,</mo><mi>Δ</mi><mo stretchy="true" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[-Δ, Δ]</annotation></semantics></math>:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>H</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub><mo>=</mo><mi>u</mi><mo>+</mo><munderover><mo>∑</mo><mrow><mi>a</mi><mo>=</mo><mo>−</mo><mi>Δ</mi></mrow><mi>Δ</mi></munderover><munderover><mo>∑</mo><mrow><mi>b</mi><mo>=</mo><mo>−</mo><mi>Δ</mi></mrow><mi>Δ</mi></munderover><msub><mi>V</mi><mrow><mi>a</mi><mo>,</mo><mi>b</mi></mrow></msub><msub><mi>X</mi><mrow><mi>i</mi><mo>+</mo><mi>a</mi><mo>,</mo><mi>j</mi><mo>+</mo><mi>b</mi></mrow></msub></mrow><annotation encoding="application/x-tex">
+H_{i,j} = u + \sum_{a=-\Delta}^\Delta \sum_{b=-\Delta}^\Delta V_{a, b} X_{i+a, j+b}
+</annotation></semantics></math></p>
+<p>Now, each
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>H</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub><annotation encoding="application/x-tex">H_{i,j}</annotation></semantics></math>
+gets a different patch of the input image to sum over. The “kernel” or
+the weight matrix stays the same.</p>
+<p>So far so good, but <strong>image pixels can be colour and hence
+“multichannel” in how they are represented</strong>.</p>
+<p>No worries though, we simply make the shift from
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi></mrow></msub><mo>→</mo><msub><mi>X</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mi>k</mi></mrow></msub></mrow><annotation encoding="application/x-tex">X_{i,j} → X_{i, j, k}</annotation></semantics></math>
+and correspondingly from
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>V</mi><mrow><mi>a</mi><mo>,</mo><mi>b</mi></mrow></msub><mo>→</mo><msub><mi>V</mi><mrow><mi>a</mi><mo>,</mo><mi>b</mi><mo>,</mo><mi>c</mi></mrow></msub></mrow><annotation encoding="application/x-tex">V_{a, b} → V_{a, b, c}</annotation></semantics></math>.</p>
+<p>The idea is to also have multichannel hidden representations, because
+these also prove useful to learn multiple features from the same region.
+Therefore, we must also go from
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>V</mi><mrow><mi>a</mi><mo>,</mo><mi>b</mi><mo>,</mo><mi>c</mi></mrow></msub><mo>→</mo><msub><mi>V</mi><mrow><mi>a</mi><mo>,</mo><mi>b</mi><mo>,</mo><mi>c</mi><mo>,</mo><mi>d</mi></mrow></msub></mrow><annotation encoding="application/x-tex">V_{a, b, c} → V_{a, b, c, d}</annotation></semantics></math>
+to finally have:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>H</mi><mrow><mi>i</mi><mo>,</mo><mi>j</mi><mo>,</mo><mi>d</mi></mrow></msub><mo>=</mo><munderover><mo>∑</mo><mrow><mi>a</mi><mo>=</mo><mo>−</mo><mi>Δ</mi></mrow><mi>Δ</mi></munderover><munderover><mo>∑</mo><mrow><mi>b</mi><mo>=</mo><mo>−</mo><mi>Δ</mi></mrow><mi>Δ</mi></munderover><munder><mo>∑</mo><mi>c</mi></munder><msub><mi>V</mi><mrow><mi>a</mi><mo>,</mo><mi>b</mi><mo>,</mo><mi>c</mi><mo>,</mo><mi>d</mi></mrow></msub><msub><mi>X</mi><mrow><mi>i</mi><mo>+</mo><mi>a</mi><mo>,</mo><mi>j</mi><mo>+</mo><mi>b</mi><mo>,</mo><mi>c</mi></mrow></msub></mrow><annotation encoding="application/x-tex">
+H_{i, j, d} = \sum_{a=-\Delta}^\Delta \sum_{b=-\Delta}^\Delta \sum_c V_{a, b, c, d} X_{i+a, j+b, c}
+</annotation></semantics></math></p>
+<p>Assuming</p>
+<ul>
+<li>Δ = 2</li>
+<li>c~3 input channels and d~2 hidden channels,</li>
+</ul>
+<pre><code>V = [
+  [( ), ( )],
+  [( ), ( )],
+]   ^----------V[a, b]--=
+                        (
+                          [. .],
+                          [. .],
+                          [. .],
+                        ){3x2}</code></pre>
+<p>Now each
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>V</mi><mrow><mi>a</mi><mo>,</mo><mi>b</mi></mrow></msub><annotation encoding="application/x-tex">V_{a, b}</annotation></semantics></math>
+is a 3x2 matrix.</p>
+<h3 id="convolution-or-cross-correlation">Convolution or
+cross-correlation?</h3>
+<p>In deep learning, the thing we call a convolution is technically the
+cross-correlation operation. This does not matter for convolutional
+models trained from data though, since they’d simply learn a flipped
+kernel if we use the true convolution operation.</p>
+<h3 id="padding">Padding</h3>
+<p>2D convolutions produce an output that is smaller than the input. For
+a <code>(h, w)</code> input and a <code>(kh, kw)</code> kernel, the
+output has the shape <code>(h - kh + 1, w - kw + 1)</code>.</p>
+<p>In a convolutional network, successive conv operations can diminish
+the size of the hidden representations drastically. e.g., if we start
+with a 200x200 input and apply 10 layers of convolutions with a 5x5
+kernel each time, we end up with a size of 140x140.</p>
+<p>More problematic than this is perhaps how the boundary pixels are
+underutilized. The 4 corner pixels are only used once, for instance.</p>
+<p>A common mitigation for this is to apply padding (usually zeros) to
+the image.</p>
+<p>Adding a padding of <code>ph</code> pixels to the height (about half
+at the top, half at the bottom) and <code>pw</code> to the width, we get
+an output size of <code>(h + ph - kh + 1, w + pw - kw + 1)</code>. To
+preserve the size of the input, set <code>ph = kh - 1</code> and
+<code>pw = kw - 1</code>.</p>
+<h3 id="strides">Strides</h3>
+<p>Another technique to control the output image size involves
+controlling the stride of the sliding window. By default we slide 1px at
+at time, but we can jump over pixels to get a scaled down output.</p>
+<p>If the stride in the height and width directions is
+<code>(sh, sw)</code>, then the output is of size can be reasoned about
+as follows (only showing the derivation for the width, the height has a
+symmetrical derivation):</p>
+<ol type="1">
+<li>Without any stride or padding, we have <code>(w - kw + 1)</code>
+output elements because you start with the kernel at the beginning, and
+can then slide it to the right <code>(w - kw)</code> times.</li>
+<li>But with a stride, one can only slide it
+<code>⌊(w - kw) / sw⌋</code> times. Therefore, with a stride, we have
+<code>⌊(w - kw) / sw⌋⌋+ 1</code> output elements.</li>
+<li>Adding padding to the mix, assume we add symmetric padding
+<code>p</code> on both sides for a total padding of <code>2p</code>
+horizontally, we get <code>⌊(w - kw + 2p)⌋ / sw⌋ + 1</code> as the final
+expression for the output size.</li>
+</ol>
+<p>Notes:</p>
+<ul>
+<li>When <code>2p = kw-1</code> (so <code>kw</code> must be odd and
+&gt;2), the output size can be written as
+<code>⌊(w - 1) / sw⌋ + 1</code> = <code>⌊(w + sw - 1) / sw⌋</code>.</li>
+<li>When the width w is divisible by sw, this further simplifies to
+<code>w / sw</code>.</li>
+</ul>
+<p>Reference on more conv arithmetic:
+https://arxiv.org/pdf/1603.07285.pdf</p>
+<p>Fractional strides are possible when you pad between pixels.</p>
+<h2 id="training">Training</h2>
+<p>I realized that cnns are incredibly finicky when it comes to things
+like the SGD batch size.</p>
+</body>
+</html>

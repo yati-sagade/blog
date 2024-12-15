@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="dcterms.date" content="2023-06-18" />
+  <title>Writing a type-checking calculator</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Writing a type-checking calculator</h1>
+<p class="date">2023-06-18</p>
+</header>
+<p>To learn about typecheckers, I decided to make a small typed
+calculator. I figured this could be useful to other folks trying to
+learn about implementing typed languages.</p>
+<h2 id="high-level-requirements">High-level requirements</h2>
+<ul>
+<li>Support integer, float and boolean datatypes and common operations
+on them</li>
+<li>Support typechecking of expressions</li>
+<li>Support variables</li>
+<li>Take multiple expressions, one per line, and evaluate each in order:
+<ul>
+<li>Report type errors if any</li>
+<li>Print evaluation result if no errors</li>
+<li>An expression can use variables set in previous expressions</li>
+</ul></li>
+</ul>
+<h3 id="example-program">Example program</h3>
+<div class="sourceCode" id="cb1"><pre class="sourceCode py"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> <span class="dv">42</span><span class="op">;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> <span class="dv">10</span><span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>a <span class="op">+</span> b <span class="op">&lt;</span> <span class="dv">100</span><span class="op">;</span></span></code></pre></div>
+<p>Running the above should print</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode py"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> <span class="dv">42</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    [<span class="op">&lt;</span><span class="bu">type</span>:Int<span class="op">&gt;</span>] <span class="dv">42</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>b <span class="op">=</span> <span class="dv">10</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    [<span class="op">&lt;</span><span class="bu">type</span>:Int<span class="op">&gt;</span>] <span class="dv">10</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>a <span class="op">+</span> b <span class="op">&lt;</span> <span class="dv">100</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    [<span class="op">&lt;</span><span class="bu">type</span>:Bool<span class="op">&gt;</span>] true</span></code></pre></div>
+<h2 id="implementation-design">Implementation design</h2>
+<p>The calculator is structured like a very typical amateur interpreter
+project:</p>
+<p><img src="/images/tycalc-arch.svg"
+    width="80%"
+     alt="program text is tokenized into tokens by a scanner; tokens are parsed into parse trees by the parser; the parse trees are then type-checked by the typechecker, which produces annotated trees with type information; finally, these typed trees are interpreted to produce values" /></p>
+<p>The scanner first splits the input program into a list of tokens. For
+our program, this step produces the tokens
+<code>[Ident(a), Sym(=), Int(10), Sym(;), Ident(b), Sym(=), Int(42), ...]</code>.
+Note how no meaning is ascribed to groups of symbols yet, this is all
+about grouping characters into meaningful symbols.</p>
+<p>Next, the parser groups tokens together into expressions, and emits a
+list of parse trees, one per expression. Note how our expressions are
+delimited by the <code>;</code> symbol, and just splitting the input
+text on the semicolon would also be kind of a grouping of expressions.
+But our parser produces a richer, tree structure that encodes
+precedence. In each expression tree node, any child expressions need to
+be evaluated before evaluating the node itself. For example, the last
+expression in our program, <code>a + b &lt; 100;</code> is parsed
+into</p>
+<pre><code>    BinaryExpr(Sym(&lt;), 
+        BinaryExpr(Sym(+),
+           IdentExpr(Ident(a); attrs={}),
+           IdentExpr(Ident(b); attrs={}); attrs={}),
+        Literal(Int(100); attrs={}); attrs={})</code></pre>
+<p>Note how the <code>+</code> operation is a child of the
+<code>&lt;</code> operation, indicating that <code>+</code> should be
+evaluated first (i.e., binary <code>+</code> has a higher precedence
+than binary <code>&lt;</code> in our language).</p>
+<p>Next, the typechecker attaches type information to each expression.
+That’s what will go in the <code>attrs</code> attached to each parse
+tree node. For instance, this is how the above tree for
+<code>a + b &lt; 100;</code> looks when type-annotated:</p>
+<pre><code>    BinaryExpr(Sym(&lt;),
+      BinaryExpr(Sym(+),
+        IdentExpr(Ident(a); attrs={&#39;type&#39;: &lt;type:Int&gt;}),
+        IdentExpr(Ident(b); attrs={&#39;type&#39;: &lt;type:Int&gt;}); attrs={&#39;type&#39;: &lt;type:Int&gt;}),
+      Literal(Int(100); attrs={&#39;type&#39;: &lt;type:Int&gt;}); attrs={&#39;type&#39;: &lt;type:Bool&gt;})</code></pre>
+<p>See how each sub-expression is now annotated with its deduced type,
+and so is the top-level expression.</p>
+<p>Finally, the interpreter walks the list of expression trees,
+evaluating each in post-order.</p>
+<p>At any point, any of the components can have a fatal error that
+causes the program to halt with an exception.</p>
+<h2 id="grammar">Grammar</h2>
+<p>To implement the scanner and parser components, it is useful to write
+down the the grammar of our little expression language. Here’s the
+grammar in <a
+href="https://en.wikipedia.org/wiki/Parsing_expression_grammar">PEG</a>
+syntax:</p>
+<pre class="peg"><code>TyCalc {
+  Prog = Stmt*
+  Stmt = Expr &quot;;&quot;
+  Expr = Assignment
+  Assignment = AssignmentAux | LogicalOr
+  AssignmentAux = ident &quot;=&quot; Assignment
+  LogicalOr = LogicalAnd (&quot;||&quot; LogicalAnd)*
+  LogicalAnd = Equality (&quot;&amp;&amp;&quot; Equality)*
+  Equality = Comparison ((&quot;!=&quot; | &quot;==&quot;) Comparison)*
+  Comparison = Term ((&quot;&lt;=&quot; | &quot;&lt;&quot; | &quot;&gt;&quot; | &quot;&gt;=&quot;) Term)*
+  Term = Factor ((&quot;+&quot; | &quot;-&quot;) Factor)*
+  Factor = Unary ((&quot;*&quot; | &quot;/&quot; | &quot;%&quot;) Unary)*
+  Unary = (&quot;+&quot; | &quot;-&quot;)? Exponent
+  Exponent = ExponentExpr | Primary
+  ExponentExpr = Exponent (&quot;**&quot; Exponent)*
+  Primary = ParenExpr | ident | numlit | boollit
+  ParenExpr = &quot;(&quot; Expr &quot;)&quot;
+  ident = letter alnum*
+  numlit = fractional | integral
+  fractional = digit* &quot;.&quot; digit+
+  integral = digit+
+  boollit = &quot;true&quot; | &quot;false&quot;
+}</code></pre>
+<p>My favorite tool to play with a grammar is the online <a
+href="https://ohmjs.org/editor/">OhmJS editor</a>. Paste this grammar,
+add examples and see the editor explain the parses.</p>
+<p>Nothing fancy, most of the complexity in the grammar is to properly
+encode operator precedence, and some quirks of the Ohm PEG notation.
+Here’s some examples:</p>
+<ul>
+<li>Variable assignment <code>c     a = 1     b = true</code></li>
+<li>Arithmetic <code>c     a + 12.3 ** 6</code></li>
+<li>Logic <code>c     b &amp;&amp; true</code></li>
+<li>Equality <code>c     b &amp;&amp; a &lt; 10</code></li>
+<li>Parenthesized expressions <code>c     (2 + a) * 4</code></li>
+</ul>
+<h2 id="parsing">Parsing</h2>
+<p>Once the grammar is written down, you can either generate a parser
+for it using <a href="https://ohmjs.org/">OhmJS</a> or <a
+href="https://www.antlr.org/">ANTLR</a>, or roll your own <a
+href="https://en.wikipedia.org/wiki/Recursive_descent_parser">recursive-descent
+parser</a>. I rolled my <a
+href="https://github.com/yati-sagade/tycalc/blob/main/parsing.py">own
+parser</a>, and if you are new to this, I highly recommend <a
+href="https://craftinginterpreters.com/contents.html">Crafting
+Interpreters</a>.</p>
+<p>You can print the parse tree of any tycalc program by invoking <a
+href="https://github.com/yati-sagade/tycalc/blob/main/parsing.py">parsing.py</a>
+as follows:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> python parsing.py FILENAME <span class="co"># -OR-</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> echo <span class="st">&#39;a + b;&#39;</span> <span class="kw">|</span><span class="ex">python</span> parsing.py</span></code></pre></div>
+<h2 id="typechecking">Typechecking</h2>
+<p><em>Typechecking is implemented in <a
+href="https://github.com/yati-sagade/tycalc/blob/main/typechecking.py">typechecking.py</a></em>.</p>
+<p>The goal of the typechecking phase is to assign a type to each
+expression in the program, producing an error if this is not possible.
+Modern languages have sophisticated type inference, and it is not always
+an “error” if the typechecker cannot figure out the type of an
+expression – it just might need more type annotations to eliminate
+ambiguity. Our language is, however, very small, and the typechecker is
+also quite simple. Here are the rules for type assignment:</p>
+<ol type="1">
+<li><p>Literals get their types trivially:</p>
+<ul>
+<li><code>true</code> is always a <code>Bool</code></li>
+<li><code>1234</code> is an <code>Int</code></li>
+<li><code>12.3</code>, <code>.4</code>, <code>99.</code> are all
+<code>Float</code>s</li>
+</ul></li>
+<li><p>Each variable assignments sets the type of the variable to the
+assignment’s right hand side, and this is the type of the variable until
+it is reassigned later.</p></li>
+<li><p>Arithmetic operations (<code>+</code>, <code>-</code>,
+<code>*</code>, <code>/</code>) expect numeric arguments (either
+<code>Int</code> or <code>Float</code>). If either of the arguments is a
+<code>Float</code>, the result is also a <code>Float</code>, else it is
+an <code>Int</code>.</p></li>
+<li><p>The integer division remainder (mod) operation (<code>%</code>)
+expects <code>Int</code> arguments.</p></li>
+<li><p>The operators (<code>&lt;=</code>, <code>&gt;=</code>,
+<code>&lt;</code>, <code>&gt;</code>) expect numeric arguments and
+produce a <code>Bool</code>.</p></li>
+<li><p>The operators <code>==</code> and <code>!=</code> expect either
+two numeric arguments, or two <code>Bool</code> arguments, and produce a
+<code>Bool</code>.</p></li>
+<li><p>Logic operators (<code>&amp;&amp;</code>, <code>||</code>) take
+two <code>Bool</code>s and produce a <code>Bool</code>.</p></li>
+</ol>
+<p>We can model type assignment of an expression as a recursive problem
+of assigning types to the child expressions in the expression’s AST, and
+then calculating the resulting type using the rules above.</p>
+<p>Let’s look at an example:</p>
+<pre><code>a = 42;
+b = 10.;
+a + b &lt; 100;</code></pre>
+<p>Here’s the result of running our parser on it.</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>python parsing.py <span class="op">&lt;</span>(echo <span class="st">&quot;a = 42; b = 10.; a + b &lt; 100;&quot;</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="op">======</span> Input program <span class="op">=========</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> <span class="dv">42</span><span class="op">;</span> b <span class="op">=</span> <span class="fl">10.</span><span class="op">;</span> a <span class="op">+</span> b <span class="op">&lt;</span> <span class="dv">100</span><span class="op">;</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="op">======</span> Parse trees (one line per <span class="bu">input</span> expr) <span class="op">=========</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a> BinaryExpr(Sym(<span class="op">=</span>), IdentExpr(Ident(a)<span class="op">;</span> attrs<span class="op">=</span>{}), Literal(Int(<span class="dv">42</span>)<span class="op">;</span> attrs<span class="op">=</span>{})<span class="op">;</span> attrs<span class="op">=</span>{})</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a> BinaryExpr(Sym(<span class="op">=</span>), IdentExpr(Ident(b)<span class="op">;</span> attrs<span class="op">=</span>{}), Literal(Float(<span class="fl">10.0</span>)<span class="op">;</span> attrs<span class="op">=</span>{})<span class="op">;</span> attrs<span class="op">=</span>{})</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a> BinaryExpr(Sym(<span class="op">&lt;</span>), BinaryExpr(Sym(<span class="op">+</span>), IdentExpr(Ident(a)<span class="op">;</span> attrs<span class="op">=</span>{}), IdentExpr(Ident(b)<span class="op">;</span> attrs<span class="op">=</span>{})<span class="op">;</span> attrs<span class="op">=</span>{}), Literal(Int(<span class="dv">100</span>)<span class="op">;</span> attrs<span class="op">=</span>{})<span class="op">;</span> attrs<span class="op">=</span>{})</span></code></pre></div>
+<p>The empty <code>attrs</code> associated with each subexpression will
+eventually contain the type. Let’s work out the type deduction by
+hand.</p>
+<p>For the first expression assigns the integer literal <code>42</code>
+to <code>a</code>. The result of this assignment expression is
+twofold:</p>
+<ul>
+<li>The binary assignment expression itself is typed as
+<code>Int</code>,</li>
+<li>The typechecker remembers that subsequent references to the variable
+<code>a</code> are <code>Int</code>-typed, until <code>a</code> is
+redefined.</li>
+</ul>
+<p>Similarly, the next expression assigns the <code>Float</code> literal
+<code>10.</code> to the variable <code>b</code>, so the expression has
+type <code>Float</code>, and the typechecker remembers that
+<code>b</code> has type <code>Float</code>.</p>
+<p>Now let’s zoom into the last expression:</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>BinaryExpr(Sym(<span class="op">&lt;</span>), <span class="co"># .......................... toplevel expr</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    BinaryExpr(Sym(<span class="op">+</span>), <span class="co"># .......................|- subexpr 1</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>      IdentExpr(Ident(a)<span class="op">;</span> attrs<span class="op">=</span>{}), <span class="co"># ............|- subexpr 1.1</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>      IdentExpr(Ident(b)<span class="op">;</span> attrs<span class="op">=</span>{})<span class="op">;</span> attrs<span class="op">=</span>{} <span class="co"># ...|- subexpr 1.2</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    ),                                        <span class="co"># | </span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    Literal(Int(<span class="dv">100</span>)<span class="op">;</span> attrs<span class="op">=</span>{}) <span class="co"># ..............|- subexpr 2</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a> <span class="op">;</span> attrs<span class="op">=</span>{})</span></code></pre></div>
+<p>We know that the type of a valid <code>&lt;</code> operation is
+always a boolean, and the operation is valid if both its arguments are
+numbers. Therefore, we need to first find the types of
+<code>subexpr 1</code> and <code>subexpr 2</code>.</p>
+<ul>
+<li><p>To find the type of subexpr 1, we need the types of subexprs 1.1
+and 1.2</p>
+<ul>
+<li>subexpr 1.1 is a variable reference to <code>a</code>, and
+<code>a</code> is previously defined as an <code>Int</code> in
+<code>a = 42;</code>.</li>
+<li>subexpr 1.2 is a variable reference to <code>b</code>, and
+<code>b</code> is previously defined as a <code>Float</code> in
+<code>a = 10.;</code></li>
+<li>Therefore, subexpr 1 is typed as a <code>Float</code> by rule (3)
+above.</li>
+</ul></li>
+<li><p>subexpr 2 is easy, it is an <code>Int</code> literal, which
+always has the type <code>Int</code>.</p></li>
+<li><p>Therefore, the arguments to our <code>&lt;</code> operation have
+types <code>Float</code> and <code>Int</code>. This is a valid
+operation, and the result has the type <code>Bool</code>.</p></li>
+</ul>
+<p>Here’s the result of running the typechecker alone on our program
+above:</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode py"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>$ python typechecking.py <span class="op">&lt;</span>(echo <span class="st">&quot;a = 42; b = 10.; a + b &lt; 100;&quot;</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="op">======</span> Input program <span class="op">=========</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> <span class="dv">42</span><span class="op">;</span> b <span class="op">=</span> <span class="fl">10.</span><span class="op">;</span> a <span class="op">+</span> b <span class="op">&lt;</span> <span class="dv">100</span><span class="op">;</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="op">======</span> Typed parse trees (one line per <span class="bu">input</span> expr) <span class="op">=========</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a> BinaryExpr(Sym(<span class="op">=</span>), IdentExpr(Ident(a)<span class="op">;</span> attrs<span class="op">=</span>{}), Literal(Int(<span class="dv">42</span>)<span class="op">;</span> attrs<span class="op">=</span>{<span class="st">&#39;type&#39;</span>: <span class="op">&lt;</span><span class="bu">type</span>:Int<span class="op">&gt;</span>})<span class="op">;</span> attrs<span class="op">=</span>{<span class="st">&#39;type&#39;</span>: <span class="op">&lt;</span><span class="bu">type</span>:Int<span class="op">&gt;</span>})</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a> BinaryExpr(Sym(<span class="op">=</span>), IdentExpr(Ident(b)<span class="op">;</span> attrs<span class="op">=</span>{}), Literal(Float(<span class="fl">10.0</span>)<span class="op">;</span> attrs<span class="op">=</span>{<span class="st">&#39;type&#39;</span>: <span class="op">&lt;</span><span class="bu">type</span>:Float<span class="op">&gt;</span>})<span class="op">;</span> attrs<span class="op">=</span>{<span class="st">&#39;type&#39;</span>: <span class="op">&lt;</span><span class="bu">type</span>:Float<span class="op">&gt;</span>})</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a> BinaryExpr(Sym(<span class="op">&lt;</span>), BinaryExpr(Sym(<span class="op">+</span>), IdentExpr(Ident(a)<span class="op">;</span> attrs<span class="op">=</span>{<span class="st">&#39;type&#39;</span>: <span class="op">&lt;</span><span class="bu">type</span>:Int<span class="op">&gt;</span>}), IdentExpr(Ident(b)<span class="op">;</span> attrs<span class="op">=</span>{<span class="st">&#39;type&#39;</span>: <span class="op">&lt;</span><span class="bu">type</span>:Float<span class="op">&gt;</span>})<span class="op">;</span> attrs<span class="op">=</span>{<span class="st">&#39;type&#39;</span>: <span class="op">&lt;</span><span class="bu">type</span>:Float<span class="op">&gt;</span>}), Literal(Int(<span class="dv">100</span>)<span class="op">;</span> attrs<span class="op">=</span>{<span class="st">&#39;type&#39;</span>: <span class="op">&lt;</span><span class="bu">type</span>:Int<span class="op">&gt;</span>})<span class="op">;</span> attrs<span class="op">=</span>{<span class="st">&#39;type&#39;</span>: <span class="op">&lt;</span><span class="bu">type</span>:Bool<span class="op">&gt;</span>})</span></code></pre></div>
+<p>Notice how each subexpression now has types, the same ones we worked
+out manually.</p>
+<p>Now let’s look at an example where the typechecking fails:</p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode py"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>python typechecking.py <span class="op">&lt;</span>(echo <span class="st">&quot;a = 42; b = true; a + b;&quot;</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="op">======</span> Input program <span class="op">=========</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>a <span class="op">=</span> <span class="dv">42</span><span class="op">;</span> b <span class="op">=</span> true<span class="op">;</span> a <span class="op">+</span> b<span class="op">;</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="op">======</span> Typed parse trees (one line per <span class="bu">input</span> expr) <span class="op">=========</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a> BinaryExpr(Sym(<span class="op">=</span>), IdentExpr(Ident(a)<span class="op">;</span> attrs<span class="op">=</span>{}), Literal(Int(<span class="dv">42</span>)<span class="op">;</span> attrs<span class="op">=</span>{<span class="st">&#39;type&#39;</span>: <span class="op">&lt;</span><span class="bu">type</span>:Int<span class="op">&gt;</span>})<span class="op">;</span> attrs<span class="op">=</span>{<span class="st">&#39;type&#39;</span>: <span class="op">&lt;</span><span class="bu">type</span>:Int<span class="op">&gt;</span>})</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a> BinaryExpr(Sym(<span class="op">=</span>), IdentExpr(Ident(b)<span class="op">;</span> attrs<span class="op">=</span>{}), Literal(Bool(<span class="va">True</span>)<span class="op">;</span> attrs<span class="op">=</span>{<span class="st">&#39;type&#39;</span>: <span class="op">&lt;</span><span class="bu">type</span>:Bool<span class="op">&gt;</span>})<span class="op">;</span> attrs<span class="op">=</span>{<span class="st">&#39;type&#39;</span>: <span class="op">&lt;</span><span class="bu">type</span>:Bool<span class="op">&gt;</span>})</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a> BinaryExpr(Sym(<span class="op">+</span>), IdentExpr(Ident(a)<span class="op">;</span> attrs<span class="op">=</span>{<span class="st">&#39;type&#39;</span>: <span class="op">&lt;</span><span class="bu">type</span>:Int<span class="op">&gt;</span>}), IdentExpr(Ident(b)<span class="op">;</span> attrs<span class="op">=</span>{<span class="st">&#39;type&#39;</span>: <span class="op">&lt;</span><span class="bu">type</span>:Bool<span class="op">&gt;</span>})<span class="op">;</span> attrs<span class="op">=</span>{<span class="st">&#39;type&#39;</span>: <span class="op">&lt;</span>badtype:Invalid operand types <span class="cf">for</span> Sym(<span class="op">+</span>): <span class="op">&lt;</span><span class="bu">type</span>:Int<span class="op">&gt;</span>, <span class="op">&lt;</span><span class="bu">type</span>:Bool<span class="op">&gt;&gt;</span>})</span></code></pre></div>
+<p>So here, we attempted to add an <code>Int</code> and a
+<code>Bool</code>, and the typechcker produced the “type” of the final
+expression as a special type, which actually represents a typecheck
+error. This strategy, of progressively typing as many expressions as
+possible without breaking the program, allows catching multiple errors
+at once.</p>
+<h2 id="evaluation">Evaluation</h2>
+<p><em>Evaluation is implemented in <a
+href="https://github.com/yati-sagade/tycalc/blob/main/interp.py">interp.py</a></em>.</p>
+<p>The evaluation is very simple, it just visits the type-annotated
+expression trees, remembering values of variables, and evaluates each
+expression by walking its tree. In fact, for this simple calculator, we
+did not need a separate typechecking pass, and could have bundled
+typechecking along with evaluation. But in a more interesting language,
+it is almost always a good idea to keep typechecking and evaluation as
+different passes. This will make your life easier as you add more
+features to the language.</p>
+</body>
+</html>

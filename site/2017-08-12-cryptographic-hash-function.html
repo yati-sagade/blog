@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="dcterms.date" content="2017-08-12" />
+  <title>Cryptographic hash functions</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Cryptographic hash functions</h1>
+<p class="date">2017-08-12</p>
+</header>
+<p>Hashing is commonly used when we want to reduce a message of an
+arbitrary size to a fixed length “digest”, for purposes ranging from
+integrity checking of files downloaded from the internet to building
+blocks for cryptocurrencies. There are many functions one can use to map
+the input message to its hash. The only requirement is that the output
+be of a known, fixed size. For example, consider the function</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>H</mi><mrow><mi>m</mi><mi>o</mi><mi>d</mi><mn>3</mn></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>x</mi><mrow><mspace width="0.444em"></mspace><mo>mod</mo><mspace width="0.222em"></mspace><mn>3</mn></mrow></mrow><annotation encoding="application/x-tex">
+H_{mod3}\left(x\right) = x \mod 3
+</annotation></semantics></math></p>
+<p>which maps an arbitrarily large value
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>
+to a value in the set <span class="math inline">$\left\\{ 0,1,2
+\right\\}$</span>. Such hash functions (i.e., based on simple modulo
+arithmetic) are used (with other, more complicated hash functions) in
+distributed systems (see <a
+href="https://en.wikipedia.org/wiki/Consistent_hashing">consistent
+hashing</a>). However, this simple function has little utility when it
+comes to integrity checking. For example, we would like to download a
+file and check if the file we downloaded was indeed the one that we
+intended to download. This can be solved as follows:</p>
+<ul>
+<li><p>Website offering the file lists the file’s hash along with the
+hashing function used.</p></li>
+<li><p>We download the file and use the same hashing function on the
+contents of the file to get its hash.</p></li>
+<li><p>Next, we compare the hash published on the site with the answer
+we got, and conclude that the integrity check passed if the hashes are
+equal.</p></li>
+</ul>
+<p>It is easy to see that the simple modulo function based hashing will
+not work at all here, since given any message value
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>
+(the contents of the file), every third value, i.e.,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>+</mo><mn>3</mn><mo>,</mo><mi>x</mi><mo>+</mo><mn>6</mn><mo>,</mo><mi>.</mi><mi>.</mi><mi>.</mi></mrow><annotation encoding="application/x-tex">x+3, x+6, ...</annotation></semantics></math>
+will have the <em>same</em> hash, and an attacker could fool our
+integrity checking by adding appropriate content to the original
+file.</p>
+<p>So what do we need from a good hash function for integrity
+checking?</p>
+<h2 id="collision-freedom">1. Collision freedom</h2>
+<p>In the above example, we found <em>collisions</em> under the function
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>H</mi><mrow><mi>m</mi><mi>o</mi><mi>d</mi><mn>3</mn></mrow></msub><annotation encoding="application/x-tex">H_{mod3}</annotation></semantics></math>
+– i.e., we could easily craft a message
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mi>′</mi></mrow><annotation encoding="application/x-tex">x&#39;</annotation></semantics></math>
+such that
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>H</mi><mrow><mi>m</mi><mi>o</mi><mi>d</mi><mn>3</mn></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msub><mi>H</mi><mrow><mi>m</mi><mi>o</mi><mi>d</mi><mn>3</mn></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mi>′</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">H_{mod3}\left(x\right)
+= H_{mod3}\left(x&#39;\right)</annotation></semantics></math> (just pick
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mi>′</mi><mo>=</mo><mi>x</mi><mo>+</mo><mn>3</mn><mi>k</mi></mrow><annotation encoding="application/x-tex">x&#39; = x + 3k</annotation></semantics></math>
+for any
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mo>&gt;</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">k \gt 1</annotation></semantics></math>).
+We want a hash function
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>H</mi><annotation encoding="application/x-tex">H</annotation></semantics></math>
+such that it is extremely hard to find collisions under it. Note that
+since a hash function must transform an arbitrary message into a
+<em>fixed size</em> output that is often much smaller than the input
+size, there will necessarily be collisions – a large number of them
+indeed. What is important is that it is extremely hard to craft a
+message that does not equal the original message, but whose hash still
+matches that of the original message.</p>
+<h2 id="hiding">2. Hiding</h2>
+<p>It should be extremely hard to figure out the original message
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>
+from its hash
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>H</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">H\left(x\right)</annotation></semantics></math>.
+Our modulo function
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>H</mi><mrow><mi>m</mi><mi>o</mi><mi>d</mi><mn>3</mn></mrow></msub><annotation encoding="application/x-tex">H_{mod3}</annotation></semantics></math>
+is actually pretty good at this — given the remainder of a number of
+when divided by 3, you cannot figure out the original number at all,
+even though you <em>can</em> reduce the number of candidates by only
+looking at the numbers that produce the given remainder when divided by
+3. As you might notice, the degree of hiding offered by the hashing
+function depends on the range of values that the message variable
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>
+can take up: consider trying to hide the outcome of a coin toss. We’ll
+encode
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">HEAD</mtext><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\text{HEAD}=0</annotation></semantics></math>,
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mtext mathvariant="normal">TAIL</mtext><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\text{TAIL}=1</annotation></semantics></math>.</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>H</mi><mrow><mi>t</mi><mi>o</mi><mi>s</mi><mi>s</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="normal">outcome</mtext><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>+</mo><mtext mathvariant="normal">outcome</mtext><mo stretchy="true" form="postfix">)</mo></mrow><mrow><mspace width="0.444em"></mspace><mo>mod</mo><mspace width="0.222em"></mspace><mn>2</mn></mrow></mrow><annotation encoding="application/x-tex">
+H_{toss}\left(\text{outcome}\right) = \left(1 + \text{outcome}\right) \mod 2
+</annotation></semantics></math></p>
+<p>such that
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>H</mi><mrow><mi>t</mi><mi>o</mi><mi>s</mi><mi>s</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="normal">HEAD</mtext><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">H_{toss}\left(\text{HEAD}\right) = 1</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>H</mi><mrow><mi>t</mi><mi>o</mi><mi>s</mi><mi>s</mi></mrow></msub><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="normal">TAIL</mtext><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">H_{toss}\left(\text{TAIL}\right) = 0</annotation></semantics></math>.</p>
+<p>Now if the domain (<span
+class="math inline">$\left\\{\text{HEAD},\text{TAIL}\right\\}$</span>)
+is known to the attacker, given a hash value 1, they might simply try
+hashing each value in the set to find out that the original message was
+HEAD. The problem here is that the message domain is easily enumerable.
+Now if we pick a random integer of, say 256 bits,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>r</mi><annotation encoding="application/x-tex">r</annotation></semantics></math>
+from a distribution with a high <a
+href="https://en.wikipedia.org/wiki/Min_entropy">min entropy</a>, and
+use its bits appended to the original message’s bits, we suddenly have
+an input space which is extremely hard to enumerate
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mn>2</mn><mn>257</mn></msup><annotation encoding="application/x-tex">2^257</annotation></semantics></math>
+possibilities). So, now, given a hash value of 1, it is extremely hard
+for an attacker without the knowledge of the random key
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>r</mi><annotation encoding="application/x-tex">r</annotation></semantics></math>
+to deduce the outcome of the toss. Min entropy of a distribution is
+simply the negative logarithm of the probability of the <em>most
+probable</em> value being taken up by the random variable distributed
+according to that distribution. For example, if you have a loaded die
+that shows a 6 50% of the times, with the other faces each having a
+probability of 10%, the min entropy of this distribution would be
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>−</mo><mo>lg</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">-\lg{\frac{1}{2}} = 1</annotation></semantics></math>,
+since the most probable value, 6, comes up with a probability $$.
+Intuitively, when all values in a distribution are negligibly likely,
+and no particular value is more likely than others, the distribution has
+a high min entropy, and it is increasingly difficult to enumerate such a
+distribution’s values to break the hiding property of a hash
+function.</p>
+<h2 id="puzzle-friendliness">3 “Puzzle friendliness”</h2>
+<p>For the sake of using hashes as challenges, as is done in
+cryptocurrency implementations, we need an additional property from a
+good hash function. Given a key
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>
+chosen from a distribution with high min entropy, and a set of target
+hash values
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Y</mi><annotation encoding="application/x-tex">Y</annotation></semantics></math>,
+it should be hard to find a value
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>
+such that the concatenation of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>
+hashes to a value in
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Y</mi><annotation encoding="application/x-tex">Y</annotation></semantics></math>.
+More precisely, by “hard” we mean that no strategy of picking
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>
+values should be better than randomly picking
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>
+values and trying if <span class="math inline">$H\(k|x\) \in
+Y$</span>.</p>
+</body>
+</html>

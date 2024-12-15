@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="dcterms.date" content="2017-09-10" />
+  <title>Analysis of gossip based dissemination</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Analysis of gossip based dissemination</h1>
+<p class="date">2017-09-10</p>
+</header>
+<p>Gossip based protocols are widely used in distributed systems for
+robust dissemination of information. The problem: spreading a message
+among a set of processes. For example, in the Bitcoin P2P network,
+whenever a new transaction happens, it needs to be broadcast to all
+peers in order for it to end up on the blockchain. Typically, such
+information originates at one of the nodes in the network, and needs to
+be communicated to the rest of the peers.</p>
+<p>One elegant solution to this problem mimics how rumours spread in the
+society by word of mouth, namely “gossip” based protocols. The gossip
+component of every non-faulty process in the network maintains two main
+pieces of state: a list of other known live peers, and a buffer of
+recent messages. Then every <code>T</code> seconds, (called the
+<em>gossip period</em>), every node executes the following:</p>
+<ol type="1">
+<li>Pick <code>f</code> peers from the membership list at random. Here,
+<code>f</code> is called the gossip fanout.</li>
+<li>Send recent messages from our messages buffer to each of these
+peers.</li>
+</ol>
+<p>Of course, in parallel, each node must listen for messages and update
+its message buffer.</p>
+<p>The details like the value of the gossip fanout, and what exact
+messages to relay, and for how many rounds, etc. are what make different
+gossip protocols different, but we aren’t going to talk much about it
+here.</p>
+<h2 id="analysis">Analysis</h2>
+<p>The analysis focuses on finding upper bounds for:</p>
+<ul>
+<li>The number of rounds needed to get an update to all
+participants.</li>
+<li>The load on each participating peer.</li>
+</ul>
+<p>To begin with, we note that the inherent random nature of the
+algorithm means that we can only comment about the <em>expected</em>
+behaviour of the protocol — i.e., we are after the number of rounds that
+a cluster of <code>N</code> nodes needs to have a message disseminated
+across the cluster <em>with high probability</em>.</p>
+<h3 id="dissemination-time">Dissemination time</h3>
+<p>This refers to the number of gossip rounds before we can be
+reasonably sure about a message having been disseminated across the
+cluster.</p>
+<p>This analysis is borrowed (indirectly) from work on epidemiology —
+our problem is not so different from a situation where an infected
+organism comes in contact with random uninfected individuals, thereby
+infecting them. These individuals in turn go on to infect others and so
+on.</p>
+<p>For our purpose, we shall say that a node in possession of a
+particular message <code>M</code> is “infected”, while nodes which don’t
+know about <code>M</code> yet are uninfected. Let’s further suppose that
+after round <code>T</code>, <code>x</code> nodes are still uninfected,
+and <code>y</code> nodes are infected. Of course, at <code>T=0</code>,
+<code>x=N-1</code>, and <code>y=1</code> (i.e., we have one “infected”
+node that knows of the message <code>M</code> and is now out to infect
+others with this knowledge). Now because each node picks <code>f</code>
+others at random to gossip with, and because the proportion of
+uninfected nodes in the cluster is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mfrac><mi>x</mi><mi>N</mi></mfrac><annotation encoding="application/x-tex">\frac{x}{N}</annotation></semantics></math>,
+on average any given infected node will pick
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mi>x</mi><mi>N</mi></mfrac><mi>f</mi></mrow><annotation encoding="application/x-tex">\frac{x}{N}f</annotation></semantics></math>
+uninfected nodes. Since there are
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>y</mi><annotation encoding="application/x-tex">y</annotation></semantics></math>
+such infected nodes, on average, we’ll see
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mi>f</mi><mi>N</mi></mfrac><mi>x</mi><mi>y</mi></mrow><annotation encoding="application/x-tex">\frac{f}{N}xy</annotation></semantics></math>
+infected-uninfected interactions in a round. Since an uninfected node
+turns into an infected node after receiving the message <code>M</code>,
+on average, each round results in a <em>decrease</em> in the number of
+uninfected nodes
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>)
+by this quantity
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mi>f</mi><mi>N</mi></mfrac><mi>x</mi><mi>y</mi></mrow><annotation encoding="application/x-tex">\frac{f}{N}xy</annotation></semantics></math>.
+Therefore,</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mrow><mi>d</mi><mi>x</mi></mrow><mrow><mi>d</mi><mi>T</mi></mrow></mfrac><mo>=</mo><mo>−</mo><mfrac><mi>f</mi><mi>N</mi></mfrac><mi>x</mi><mi>y</mi></mrow><annotation encoding="application/x-tex">
+\frac{dx}{dT} = -\frac{f}{N}xy
+</annotation></semantics></math></p>
+<p>Let $ = $</p>
+<p>Then,</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mfrac><mrow><mi>d</mi><mi>x</mi></mrow><mrow><mi>d</mi><mi>T</mi></mrow></mfrac></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mo>−</mo><mi>β</mi><mi>x</mi><mi>y</mi></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mo>⟹</mo><mfrac><mrow><mi>d</mi><mi>x</mi></mrow><mrow><mi>d</mi><mi>T</mi></mrow></mfrac></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mo>−</mo><mi>β</mi><mi>x</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>N</mi><mo>−</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mo>⟹</mo><mfrac><mrow><mi>d</mi><mi>x</mi></mrow><mrow><mi>x</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>N</mi><mo>−</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mo>−</mo><mi>β</mi><mi>d</mi><mi>T</mi></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mo>⟹</mo><mo>∫</mo><mfrac><mrow><mi>d</mi><mi>x</mi></mrow><mrow><mi>x</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>N</mi><mo>−</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mo>−</mo><mi>β</mi><mo>∫</mo><mi>d</mi><mi>T</mi></mtd></mtr></mtable><annotation encoding="application/x-tex">
+\begin{align*}
+\frac{dx}{dT} &amp;= -\beta xy \\\\
+\implies \frac{dx}{dT} &amp;= -\beta x\left(N-x\right) \\\\
+\implies \frac{dx}{x\left(N-x\right)} &amp;= -\beta dT \\\\
+\implies \int \frac{dx}{x\left(N-x\right)} &amp;= -\beta \int dT \tag{eqn1} \label{eqn1}
+\end{align*}
+</annotation></semantics></math></p>
+<p>Let
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mn>1</mn><mrow><mi>x</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>N</mi><mo>−</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo>=</mo><mfrac><mi>A</mi><mi>x</mi></mfrac><mo>+</mo><mfrac><mi>B</mi><mrow><mi>N</mi><mo>−</mo><mi>x</mi></mrow></mfrac><mo>⟹</mo><mi>A</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>N</mi><mo>−</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mi>B</mi><mi>x</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\frac{1}{x\left(N-x\right)} = \frac{A}{x} + \frac{B}{N-x} \implies A\left(N-x\right) + Bx = 1</annotation></semantics></math>.</p>
+<p>Now setting
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>=</mo><mn>0</mn><mo>⟹</mo><mi>A</mi><mo>=</mo><mfrac><mn>1</mn><mi>N</mi></mfrac></mrow><annotation encoding="application/x-tex">x=0 \implies A = \frac{1}{N}</annotation></semantics></math>,
+and setting
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>=</mo><mi>N</mi><mo>⟹</mo><mi>B</mi><mo>=</mo><mfrac><mn>1</mn><mi>N</mi></mfrac></mrow><annotation encoding="application/x-tex">x=N \implies
+B = \frac{1}{N}</annotation></semantics></math>. Using this in <span
+class="math inline">$\eqref{eqn1}$</span>, we have</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mfrac><mn>1</mn><mi>N</mi></mfrac><mo>∫</mo><mfrac><mrow><mi>d</mi><mi>x</mi></mrow><mi>x</mi></mfrac><mo>+</mo><mfrac><mn>1</mn><mi>N</mi></mfrac><mo>∫</mo><mfrac><mrow><mi>d</mi><mi>x</mi></mrow><mrow><mi>N</mi><mo>−</mo><mi>x</mi></mrow></mfrac></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mo>−</mo><mi>β</mi><mo>∫</mo><mi>d</mi><mi>T</mi></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mo>⟹</mo><mfrac><mn>1</mn><mi>N</mi></mfrac><mrow><mo stretchy="true" form="prefix">(</mo><mo>ln</mo><mi>x</mi><mo>−</mo><mo>ln</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>N</mi><mo>−</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mi>C</mi></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mo>−</mo><mi>β</mi><mi>T</mi></mtd></mtr></mtable><annotation encoding="application/x-tex">
+\begin{align*}
+\frac{1}{N}\int \frac{dx}{x} + \frac{1}{N} \int \frac{dx}{N-x}  &amp;= -\beta \int dT \\\\
+\implies \frac{1}{N} \left( \ln{x} - \ln{\left(N-x\right)} \right) + C &amp;= -\beta T \tag{eqn2} \label{eqn2}
+\end{align*}
+</annotation></semantics></math></p>
+<p>Where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>C</mi><annotation encoding="application/x-tex">C</annotation></semantics></math>
+is the constant of integration. To find it, we note that at
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mo>=</mo><mn>0</mn><mo>,</mo><mi>x</mi><mo>=</mo><mi>N</mi><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">T=0,
+x=N-1</annotation></semantics></math>. Using this in <span
+class="math inline">$\eqref{eqn2}$</span>, we find that
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><mo>=</mo><mo>−</mo><mfrac><mrow><mi>l</mi><mi>n</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>N</mi><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mi>N</mi></mfrac></mrow><annotation encoding="application/x-tex">C=-\frac{ln\left(N-1\right)}{N}</annotation></semantics></math>.
+Substituting this value for
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>C</mi><annotation encoding="application/x-tex">C</annotation></semantics></math>
+in then yields:</p>
+<p><span class="math display">$$
+\begin{align*}
+\frac{1}{N} \left( \ln{x} - \ln{\left(N-x\right)} -
+\ln{\left(N-1\right)} \right) &amp;= -\beta T \\\\
+\implies \ln{\frac{x}{N-x}} - \ln{\left(N-1\right)} &amp;= -N\beta T
+\\\\
+\implies \ln{\frac{x}{N-x}}  &amp;= -N\beta T + \ln{\left(N-1\right)}
+\\\\
+\implies \frac{x}{N-x} &amp;= e^{-N\beta T + \ln{\left(N-1\right)} } =
+\left(N-1\right)e^{-N\beta T}  \\\\
+\implies \frac{N-x}{x} &amp;= {e^{N\beta T}\over N-1} \\\\
+\implies \frac{N}{x} &amp;= 1 + {e^{N\beta T}\over N-1} \\\\
+\implies \frac{x}{N} &amp;= {1\over {1 + {e^{N\beta T}\over N-1}}} =
+\frac{N-1}{N-1+e^{N\beta T}} \\\\
+\end{align*}
+$$</span></p>
+<p>So, as
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>T</mi><annotation encoding="application/x-tex">T</annotation></semantics></math>
+(number of gossip rounds) grows, the expected value of the fraction
+<span class="math inline">$x\over N$</span> of uninfected nodes rapidly
+approaches zero. Since the number of <em>infected</em> nodes
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>y</mi><mo>=</mo><mi>N</mi><mo>−</mo><mi>x</mi></mrow><annotation encoding="application/x-tex">y=N-x</annotation></semantics></math>,
+we have the proportion of uninfected nodes</p>
+<p><span class="math display">$$
+\begin{align*}
+{y\over N} &amp;= 1 - {x\over N} \\\\
+&amp;= 1 - \frac{N-1}{N-1+e^{N\beta T}} \\\\
+&amp;= \frac{e^{N\beta T}}{N-1+e^{N\beta T}}
+\end{align*}
+$$</span></p>
+<p>As we grow
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mo>→</mo><mi>∞</mi></mrow><annotation encoding="application/x-tex">T\to\infty</annotation></semantics></math>,</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><munder><mo>lim</mo><mrow><mi>T</mi><mo>→</mo><mi>∞</mi></mrow></munder><mfrac><msup><mi>e</mi><mrow><mi>N</mi><mi>β</mi><mi>T</mi></mrow></msup><mrow><mi>N</mi><mo>−</mo><mn>1</mn><mo>+</mo><msup><mi>e</mi><mrow><mi>N</mi><mi>β</mi><mi>T</mi></mrow></msup></mrow></mfrac></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><munder><mo>lim</mo><mrow><mi>T</mi><mo>→</mo><mi>∞</mi></mrow></munder><mfrac><mn>1</mn><mrow><mfrac><mrow><mi>N</mi><mo>−</mo><mn>1</mn></mrow><msup><mi>e</mi><mrow><mi>N</mi><mi>β</mi><mi>T</mi></mrow></msup></mfrac><mo>+</mo><mn>1</mn></mrow></mfrac></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mfrac><mn>1</mn><mrow><munder><mo>lim</mo><mrow><mi>T</mi><mo>→</mo><mi>∞</mi></mrow></munder><mfrac><mrow><mi>N</mi><mo>−</mo><mn>1</mn></mrow><msup><mi>e</mi><mrow><mi>N</mi><mi>β</mi><mi>T</mi></mrow></msup></mfrac><mo>+</mo><mn>1</mn></mrow></mfrac></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mfrac><mn>1</mn><mrow><mn>0</mn><mo>+</mo><mn>1</mn></mrow></mfrac></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mn>1</mn></mtd></mtr></mtable><annotation encoding="application/x-tex">
+\begin{align*}
+\lim_{T\to\infty}\frac{e^{N\beta T}}{N-1+e^{N\beta T}} &amp;= \\\\
+&amp;= \lim_{T\to\infty}\frac{1}{\frac{N-1}{e^{N\beta T}}+1} \\\\
+&amp;= \frac{1}{\lim_{T\to\infty}\frac{N-1}{e^{N\beta T}}+1} \\\\
+&amp;= \frac{1}{0+1} \\\\
+&amp;= 1
+\end{align*}
+</annotation></semantics></math></p>
+<p>Hence the expected proportion of infected nodes reaches 100% as the
+protocol keeps running. But this begs the question, how long in practice
+do we have to wait before the whole cluster gets the new message with
+high probability? Let’s call <span
+class="math inline">$T_{1\over2}$</span> the number of rounds when
+<em>half</em> of the cluster gets the update, i.e., at
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mo>=</mo><msub><mi>T</mi><mi>h</mi></msub></mrow><annotation encoding="application/x-tex">T=T_{h}</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mi>x</mi><mi>N</mi></mfrac><mo>=</mo><mfrac><mi>y</mi><mi>N</mi></mfrac><mo>=</mo><mfrac><mn>1</mn><mn>2</mn></mfrac></mrow><annotation encoding="application/x-tex">\frac{x}{N}=\frac{y}{N}=\frac{1}{2}</annotation></semantics></math>.
+Therefore, from the expression for
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mfrac><mi>x</mi><mi>N</mi></mfrac><annotation encoding="application/x-tex">\frac{x}{N}</annotation></semantics></math>
+above,</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mfrac><mn>1</mn><mn>2</mn></mfrac></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mfrac><mrow><mi>N</mi><mo>−</mo><mn>1</mn></mrow><mrow><mi>N</mi><mo>−</mo><mn>1</mn><mo>+</mo><msup><mi>e</mi><mrow><mi>N</mi><mi>β</mi><msub><mi>T</mi><mi>h</mi></msub></mrow></msup></mrow></mfrac></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mo>⟹</mo><msup><mi>e</mi><mrow><mi>N</mi><mi>β</mi><msub><mi>T</mi><mi>h</mi></msub></mrow></msup></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mi>N</mi><mo>−</mo><mn>1</mn></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mo>⟹</mo><mi>N</mi><mi>β</mi><msub><mi>T</mi><mi>h</mi></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mo>ln</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>N</mi><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mo>⟹</mo><msub><mi>T</mi><mi>h</mi></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mfrac><mn>1</mn><mrow><mi>N</mi><mi>β</mi></mrow></mfrac><mo>ln</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>N</mi><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr></mtable><annotation encoding="application/x-tex">
+\begin{align*}
+\frac{1}{2} &amp;= \frac{N-1}{N-1+e^{N\beta T_{h}}} \\\\
+\implies e^{N\beta T_{h}} &amp;= N-1 \\\\
+\implies N\beta T_h &amp;= \ln\left({N-1}\right) \\\\
+\implies T_h &amp;= \frac{1}{N\beta}\ln\left({N-1}\right)
+\end{align*}
+</annotation></semantics></math></p>
+<p>Now using <span class="math inline">$\beta = {f\over N}$</span>, we
+get
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mi>h</mi></msub><mo>=</mo><mfrac><mn>1</mn><mi>f</mi></mfrac><mo>ln</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>N</mi><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>O</mi><mrow><mo stretchy="true" form="prefix">(</mo><mo>ln</mo><mi>N</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">T_h = \frac{1}{f}\ln{\left(N-1\right)}
+= O\left(\ln{N}\right)</annotation></semantics></math>. Hence, the half
+life of the process is logarithmic in the number of participants
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>.
+Now, to find the number of rounds it takes for
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>99</mn><mi>%</mi></mrow><annotation encoding="application/x-tex">99\%</annotation></semantics></math>
+of the uninfected nodes to befome infected can be computed as:</p>
+<p><span class="math display">$$
+\begin{align*}
+\frac{N-1}{N-1+e^{N\beta T_{0.99}}} = 0.99 \\\\
+\implies N\beta T_{0.99} &amp;= \ln\left(\frac{N-1}{9}\right) \\\\
+\implies  T_{0.99} &amp;= {\ln\left(\frac{N-1}{9}\right) \over N\beta }
+= O\left(\ln{N}\right)\\\\
+\end{align*}
+$$</span></p>
+<p>So we see that within a logarithmic number of rounds, a <em>most</em>
+of the nodes get infected with high probability.</p>
+<h3 id="message-load-per-member">Message load per member</h3>
+<p>A dissemination mechanism is no good if it puts unreasonable load on
+member nodes, and/or fails to spread out the load evenly across the
+cluster. In gossip based dissemination, each node sends out
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>f</mi><annotation encoding="application/x-tex">f</annotation></semantics></math>
+messages, and receives on expectation <span class="math inline">$f\over
+N$</span> messages <em>per round</em>. Since
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Θ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mo>ln</mo><mi>N</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\Theta\left(\ln{N}\right)</annotation></semantics></math>
+rounds are needed for a message to get to the whole cluster, the load on
+each node is also logarithmic in
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>,
+and every node has similar load. This is quite nice, since one can grow
+the cluster to very huge sizes, and even then the load on each node
+remains reasonably low.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>Gossip based protocols are amazingly simple and robust, which is why
+they form crucial elements of failure detection and membership layers of
+many large scale distributed systems. Note that I did not talk about
+nodes failing in this post, and the focus was on the use of gossip for
+dissemination. However, gossip itself can be used to implement failure
+detectors, like the <a
+href="https://www.cs.cornell.edu/~asdas/research/dsn02-swim.pdf">SWIM
+failure detector</a>(very readable paper). Here, every node periodically
+gossips cluster membership updates. The protocol is augmented with
+several features like acknowledgements and indirect acknowledgements
+allows the failure detector to scale with tunable false positive
+characteristics.</p>
+</body>
+</html>

@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="dcterms.date" content="2015-04-05" />
+  <title>SICP Exercise 1.13</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">SICP Exercise 1.13</h1>
+<p class="date">2015-04-05</p>
+</header>
+<p>The Fibonacci sequence is given by,</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>F</mi><mi>i</mi><mi>b</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>n</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mrow><mo stretchy="true" form="prefix">{</mo><mtable><mtr><mtd columnalign="left" style="text-align: left"><mn>0</mn></mtd><mtd columnalign="left" style="text-align: left"><mi>n</mi><mo>=</mo><mn>0</mn></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><mn>1</mn></mtd><mtd columnalign="left" style="text-align: left"><mi>n</mi><mo>=</mo><mn>1</mn></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><mi>F</mi><mi>i</mi><mi>b</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>n</mi><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mi>F</mi><mi>i</mi><mi>b</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>n</mi><mo>−</mo><mn>2</mn><mo stretchy="true" form="postfix">)</mo></mrow></mtd><mtd columnalign="left" style="text-align: left"><mi>n</mi><mo>&gt;</mo><mn>1</mn></mtd></mtr></mtable></mrow></mrow><annotation encoding="application/x-tex">
+Fib(n) = {
+   \begin{cases}
+    0 &amp; n = 0 \\
+    1 &amp; n = 1 \\
+    Fib(n - 1) + Fib(n - 2) &amp; n \gt 1
+   \end{cases}
+}
+</annotation></semantics></math></p>
+<p>Exercise 1.13 in <a href="https://mitpress.mit.edu/sicp/">SICP</a>
+asks you to prove that the
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>n</mi><mrow><mi>t</mi><mi>h</mi></mrow></msup><annotation encoding="application/x-tex">n^{th}</annotation></semantics></math></span>
+Fibonacci number
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><mi>n</mi><mo>=</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo>,</mo><mi>.</mi><mi>.</mi><mi>.</mi><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(n = 0, 1,...)</annotation></semantics></math></span>
+is equal to the <em>closest integer</em> to
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mfrac><msup><mi>ϕ</mi><mi>n</mi></msup><msqrt><mn>5</mn></msqrt></mfrac><annotation encoding="application/x-tex">\frac{ { \phi } ^ { n } } { \sqrt 5 }</annotation></semantics></math></span>,
+where
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϕ</mi><mo>=</mo><mfrac><mrow><mn>1</mn><mo>+</mo><msqrt><mn>5</mn></msqrt></mrow><mn>2</mn></mfrac></mrow><annotation encoding="application/x-tex">{ \phi } = { \frac { 1 + { \sqrt 5 } } { 2 } }</annotation></semantics></math></span>.
+The given hint is to use
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ψ</mi><mo>=</mo><mfrac><mrow><mn>1</mn><mo>−</mo><msqrt><mn>5</mn></msqrt></mrow><mn>2</mn></mfrac></mrow><annotation encoding="application/x-tex">{ \psi } = { \frac { 1 - { \sqrt 5 } } { 2 } }</annotation></semantics></math></span>
+to prove that
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi>F</mi><mi>i</mi><mi>b</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>n</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mo>=</mo><mfrac><mrow><msup><mi>ϕ</mi><mi>n</mi></msup><mo>−</mo><msup><mi>ψ</mi><mi>n</mi></msup></mrow><msqrt><mn>5</mn></msqrt></mfrac></mrow><annotation encoding="application/x-tex">{Fib(n)} = { \frac { {\phi}^{n} - {\psi}^{n} } { \sqrt 5 } }</annotation></semantics></math></span>.</p>
+<p>Some will recognize the constant
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ϕ</mi><annotation encoding="application/x-tex">\phi</annotation></semantics></math></span>
+as the <a href="http://en.wikipedia.org/wiki/Golden_ratio">Golden
+Ratio</a>. While knowing this fact allows one to use some useful
+properties of
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ϕ</mi><annotation encoding="application/x-tex">\phi</annotation></semantics></math></span>
+and
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ψ</mi><annotation encoding="application/x-tex">\psi</annotation></semantics></math></span>,
+I am not going to use them in my proof.</p>
+We will first prove by induction that
+<div>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi>F</mi><mi>i</mi><mi>b</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>n</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mo>=</mo><mfrac><mrow><msup><mi>ϕ</mi><mi>n</mi></msup><mo>−</mo><msup><mi>ψ</mi><mi>n</mi></msup></mrow><msqrt><mn>5</mn></msqrt></mfrac></mrow><annotation encoding="application/x-tex">
+{Fib(n)} = { \frac { {\phi}^{n} - {\psi}^{n} } { \sqrt 5 } }
+</annotation></semantics></math></p>
+</div>
+And then use this result to prove that
+<div>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi>F</mi><mi>i</mi><mi>b</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>n</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mo>=</mo><mi>n</mi><mi>i</mi><mi>n</mi><mi>t</mi><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><msup><mi>ϕ</mi><mi>n</mi></msup><msqrt><mn>5</mn></msqrt></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">
+{Fib(n)} = nint \left( { \frac{ { \phi } ^ { n } } { \sqrt 5 } } \right)
+</annotation></semantics></math></p>
+</div>
+<p>Where
+<span><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mi>i</mi><mi>n</mi><mi>t</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex"> nint(x) </annotation></semantics></math></span>
+is the nearest integer to
+<span><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">
+x </annotation></semantics></math></span>.</p>
+<h2 id="inductive-base-cases">Inductive base cases</h2>
+<p>For
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">n = 0</annotation></semantics></math>,
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mrow><msup><mi>ϕ</mi><mi>n</mi></msup><mo>−</mo><msup><mi>ψ</mi><mi>n</mi></msup></mrow><msqrt><mn>5</mn></msqrt></mfrac><mo>=</mo><mfrac><mrow><msup><mi>ϕ</mi><mn>0</mn></msup><mo>−</mo><msup><mi>ψ</mi><mn>0</mn></msup></mrow><msqrt><mn>5</mn></msqrt></mfrac><mo>=</mo><mfrac><mrow><mn>1</mn><mo>−</mo><mn>1</mn></mrow><msqrt><mn>5</mn></msqrt></mfrac><mo>=</mo><mn>0</mn><mo>=</mo><mrow><mi>F</mi><mi>i</mi><mi>b</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mrow><annotation encoding="application/x-tex">
+{ \frac { {\phi}^{n} - {\psi}^{n} } { \sqrt 5 } }
+ = { \frac { {\phi}^{0} - {\psi}^{0} } { \sqrt 5 } } = { \frac { 1 - 1 } { \sqrt 5 } } = 0 = { Fib(0) }
+</annotation></semantics></math></p>
+<p>For
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">n = 1</annotation></semantics></math>,
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mrow><msup><mi>ϕ</mi><mi>n</mi></msup><mo>−</mo><msup><mi>ψ</mi><mi>n</mi></msup></mrow><msqrt><mn>5</mn></msqrt></mfrac><mo>=</mo><mfrac><mrow><msup><mi>ϕ</mi><mn>1</mn></msup><mo>−</mo><msup><mi>ψ</mi><mn>1</mn></msup></mrow><msqrt><mn>5</mn></msqrt></mfrac><mo>=</mo><mfrac><mrow><mi>ϕ</mi><mo>−</mo><mi>ψ</mi></mrow><msqrt><mn>5</mn></msqrt></mfrac><mo>=</mo><mfrac><mrow><mfrac><mrow><mn>1</mn><mo>+</mo><msqrt><mn>5</mn></msqrt></mrow><mn>2</mn></mfrac><mo>−</mo><mfrac><mrow><mn>1</mn><mo>−</mo><msqrt><mn>5</mn></msqrt></mrow><mn>2</mn></mfrac></mrow><msqrt><mn>5</mn></msqrt></mfrac><mo>=</mo><mfrac><mrow><mn>2</mn><msqrt><mn>5</mn></msqrt></mrow><mrow><mn>2</mn><msqrt><mn>5</mn></msqrt></mrow></mfrac><mo>=</mo><mn>1</mn><mo>=</mo><mrow><mi>F</mi><mi>i</mi><mi>b</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mrow><annotation encoding="application/x-tex">
+{ \frac { {\phi}^{n} - {\psi}^{n} } { \sqrt 5 } }
+ = { \frac { {\phi}^{1} - {\psi}^{1} } { \sqrt 5 } }
+ = { \frac { {\phi} - {\psi} } { \sqrt 5 } }
+ = { \frac { { \frac { 1 + { \sqrt 5 } } { 2 } } - { \frac { 1 - { \sqrt 5 } } { 2 } } } { \sqrt 5 } }
+ = { \frac { 2 { \sqrt 5 } } { 2 { \sqrt 5 } } }
+ = 1 = { Fib(1) }
+</annotation></semantics></math></p>
+<p>For $ n = 2
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>,</mo><annotation encoding="application/x-tex">,</annotation></semantics></math>$
+{ { } } = { { } } = { { } } = { { 4} } = { { 4 { } } } = 1 = { Fib(2) }
+$$</p>
+<h2 id="inductive-step">Inductive step</h2>
+<p>Assume that the relation we seek to prove holds for <span>$ n = m
+$</span> and $ n = m - 1 $ for some $ m $. That is,</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>F</mi><mi>i</mi><mi>b</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>m</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mfrac><mrow><msup><mi>ϕ</mi><mi>m</mi></msup><mo>−</mo><msup><mi>ψ</mi><mi>m</mi></msup></mrow><msqrt><mn>5</mn></msqrt></mfrac><mo>,</mo><mi>F</mi><mi>i</mi><mi>b</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>m</mi><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mfrac><mrow><msup><mi>ϕ</mi><mrow><mi>m</mi><mo>−</mo><mn>1</mn></mrow></msup><mo>−</mo><msup><mi>ψ</mi><mrow><mi>m</mi><mo>−</mo><mn>1</mn></mrow></msup></mrow><msqrt><mn>5</mn></msqrt></mfrac></mrow><annotation encoding="application/x-tex">
+Fib(m) = { \frac { {\phi}^{m} - {\psi}^{m} } { \sqrt 5 } },
+Fib(m-1) = { \frac { {\phi}^{m-1} - {\psi}^{m-1} } { \sqrt 5 } }
+</annotation></semantics></math></p>
+<p><em>We need to prove</em> that,
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>F</mi><mi>i</mi><mi>b</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>m</mi><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mfrac><mrow><msup><mi>ϕ</mi><mrow><mi>m</mi><mo>+</mo><mn>1</mn></mrow></msup><mo>−</mo><msup><mi>ψ</mi><mrow><mi>m</mi><mo>+</mo><mn>1</mn></mrow></msup></mrow><msqrt><mn>5</mn></msqrt></mfrac></mrow><annotation encoding="application/x-tex">
+Fib(m+1) = { \frac { {\phi}^{m+1} - {\psi}^{m+1} } { \sqrt 5 } }
+</annotation></semantics></math></p>
+<p>Now,</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>F</mi><mi>i</mi><mi>b</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>m</mi><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>F</mi><mi>i</mi><mi>b</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>m</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mi>F</mi><mi>i</mi><mi>b</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>m</mi><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">
+Fib(m+1) = Fib(m) + Fib(m-1)
+</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>=</mo><mrow><mfrac><mrow><msup><mi>ϕ</mi><mi>m</mi></msup><mo>−</mo><msup><mi>ψ</mi><mi>m</mi></msup></mrow><msqrt><mn>5</mn></msqrt></mfrac><mo>+</mo><mfrac><mrow><msup><mi>ϕ</mi><mrow><mi>m</mi><mo>−</mo><mn>1</mn></mrow></msup><mo>−</mo><msup><mi>ψ</mi><mrow><mi>m</mi><mo>−</mo><mn>1</mn></mrow></msup></mrow><msqrt><mn>5</mn></msqrt></mfrac></mrow></mrow><annotation encoding="application/x-tex">
+= { { \frac { {\phi}^{m} - {\psi}^{m} } { \sqrt 5 } } + { \frac { {\phi}^{m-1} - {\psi}^{m-1} } { \sqrt 5 } } }
+</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>=</mo><mfrac><mrow><mrow><mo stretchy="true" form="prefix">(</mo><msup><mi>ϕ</mi><mi>m</mi></msup><mo>+</mo><msup><mi>ϕ</mi><mrow><mi>m</mi><mo>−</mo><mn>1</mn></mrow></msup><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mrow><mo stretchy="true" form="prefix">(</mo><msup><mi>ψ</mi><mi>m</mi></msup><mo>+</mo><msup><mi>ψ</mi><mrow><mi>m</mi><mo>−</mo><mn>1</mn></mrow></msup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><msqrt><mn>5</mn></msqrt></mfrac></mrow><annotation encoding="application/x-tex">
+= { \frac { \left( {\phi}^{m} + {\phi}^{m-1} \right) - \left( {\psi}^{m} + {\psi}^{m-1} \right) } { \sqrt 5 } }
+</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>=</mo><mfrac><mrow><msup><mi>ϕ</mi><mrow><mi>m</mi><mo>−</mo><mn>1</mn></mrow></msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>ϕ</mi><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><msup><mi>ψ</mi><mrow><mi>m</mi><mo>−</mo><mn>1</mn></mrow></msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>ψ</mi><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><msqrt><mn>5</mn></msqrt></mfrac></mrow><annotation encoding="application/x-tex">
+= { \frac { {\phi}^{m-1} \left( \phi + 1 \right) - {\psi}^{m-1} \left( \psi + 1 \right) } { \sqrt 5 }  \tag{1}\label{eq1} }
+</annotation></semantics></math></p>
+<p>Let’s look at the term <span>$ {}^{m-1} ( + 1 ) $</span>
+separately.</p>
+<p><span class="math display">$$
+{\phi}^{m-1} \left( \phi + 1 \right) \\\\
+={\phi}^{m-1} \left( { \frac {1 + \sqrt 5} {2}} + 1 \right) \\\\
+={\phi}^{m-1} \left( { \frac {3 + \sqrt 5} {2} } \right)
+$$</span></p>
+<p>Multiplying numerator and denominator by
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>2</mn><annotation encoding="application/x-tex">2</annotation></semantics></math></span>,
+we have</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>ϕ</mi><mrow><mi>m</mi><mo>−</mo><mn>1</mn></mrow></msup><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mrow><mn>6</mn><mo>+</mo><mn>2</mn><msqrt><mn>5</mn></msqrt></mrow><mn>4</mn></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">
+{\phi}^{m-1} \left( { \frac {6 + 2\sqrt 5} {4} } \right)
+</annotation></semantics></math></p>
+<p><span class="math display">$$
+={\phi}^{m-1} \left( { \frac {1 + 2\sqrt 5 + 5} {4} } \right) \\\\
+={\phi}^{m-1} \left( { \frac {1 + 2\sqrt 5 + {\left( \sqrt 5 \right)} ^
+{2} } {4} } \right)
+$$</span></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>=</mo><msup><mi>ϕ</mi><mrow><mi>m</mi><mo>−</mo><mn>1</mn></mrow></msup><mfrac><msup><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>+</mo><msqrt><mn>5</mn></msqrt><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><msup><mn>2</mn><mn>2</mn></msup></mfrac><mo>=</mo><msup><mi>ϕ</mi><mrow><mi>m</mi><mo>−</mo><mn>1</mn></mrow></msup><msup><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mrow><mn>1</mn><mo>+</mo><msqrt><mn>5</mn></msqrt></mrow><mn>2</mn></mfrac><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">
+={\phi}^{m-1} \frac { { \left( 1 + \sqrt 5 \right) } ^ {2} } { {2}^{2} }
+={\phi}^{m-1} { \left( { \frac { 1 + \sqrt 5 } { 2 } } \right) } ^ {2}
+</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>=</mo><msup><mi>ϕ</mi><mrow><mi>m</mi><mo>−</mo><mn>1</mn></mrow></msup><msup><mi>ϕ</mi><mn>2</mn></msup><mo>=</mo><msup><mi>ϕ</mi><mrow><mi>m</mi><mo>+</mo><mn>1</mn></mrow></msup></mrow><annotation encoding="application/x-tex">
+={\phi}^{m-1} {\phi}^{2}
+={\phi}^{m+1}
+</annotation></semantics></math></p>
+<p>Similarly, it can be deduced that <span>$ {}^{m-1} ( + 1 ) = {}^{m+1}
+$</span>.</p>
+<p>Now plugging in these values for <span>$ {}^{m-1} ( + 1 )
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mi>/</mi><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo><mi>a</mi><mi>n</mi><mi>d</mi><mo>&lt;</mo><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">&lt;/span&gt; and &lt;span&gt;</annotation></semantics></math>
+{}^{m-1} ( + 1 ) $</span> in , we have</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mfrac><mrow><msup><mi>ϕ</mi><mrow><mi>m</mi><mo>−</mo><mn>1</mn></mrow></msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>ϕ</mi><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><msup><mi>ψ</mi><mrow><mi>m</mi><mo>−</mo><mn>1</mn></mrow></msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>ψ</mi><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><msqrt><mn>5</mn></msqrt></mfrac><annotation encoding="application/x-tex">
+{ \frac { {\phi}^{m-1} \left( \phi + 1 \right) - {\psi}^{m-1} \left( \psi + 1 \right) } { \sqrt 5 } }
+</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>=</mo><mfrac><mrow><msup><mi>ϕ</mi><mrow><mi>m</mi><mo>+</mo><mn>1</mn></mrow></msup><mo>−</mo><msup><mi>ψ</mi><mrow><mi>m</mi><mo>+</mo><mn>1</mn></mrow></msup></mrow><msqrt><mn>5</mn></msqrt></mfrac></mrow><annotation encoding="application/x-tex">
+={ \frac { {\phi}^{m+1} - {\psi}^{m+1} } { \sqrt 5 } }
+</annotation></semantics></math></p>
+<p>Hence, we have just proved that <span>$ Fib(m+1) = { { } }
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mi>/</mi><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo><mo>,</mo><mi>w</mi><mi>h</mi><mi>i</mi><mi>c</mi><mi>h</mi><mi>c</mi><mi>o</mi><mi>m</mi><mi>p</mi><mi>l</mi><mi>e</mi><mi>t</mi><mi>e</mi><mi>s</mi><mi>o</mi><mi>u</mi><mi>r</mi><mi>i</mi><mi>n</mi><mi>d</mi><mi>u</mi><mi>c</mi><mi>t</mi><mi>i</mi><mi>v</mi><mi>e</mi><mi>p</mi><mi>r</mi><mi>o</mi><mi>o</mi><mi>f</mi><mi>o</mi><mi>f</mi><mi>t</mi><mi>h</mi><mi>e</mi><mi>r</mi><mi>e</mi><mi>l</mi><mi>a</mi><mi>t</mi><mi>i</mi><mi>o</mi><mi>n</mi><mo>&lt;</mo><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">&lt;/span&gt;, which
+completes our inductive proof of the relation &lt;span&gt;</annotation></semantics></math>
+Fib(n) = { { } } $</span>.</p>
+<h2 id="final-proof">Final proof</h2>
+<p>Now to prove that <span>$ Fib(n) = nint ( { } ) $ </span>. Note that
+when we say
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math></span>
+is the nearest integer to
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math></span>,
+we are implying that <span>$ N - x &lt;
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mi>/</mi><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo><mi>.</mi><mi>W</mi><mi>e</mi><mi>h</mi><mi>a</mi><mi>v</mi><mi>e</mi><mi>a</mi><mi>l</mi><mi>r</mi><mi>e</mi><mi>a</mi><mi>d</mi><mi>y</mi><mi>p</mi><mi>r</mi><mi>o</mi><mi>v</mi><mi>e</mi><mi>d</mi><mi>t</mi><mi>h</mi><mi>a</mi><mi>t</mi><mo>&lt;</mo><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">&lt;/span&gt;. We
+have already proved that &lt;span&gt;</annotation></semantics></math>
+Fib(n) = { { } } $</span>. Or,</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>F</mi><mi>i</mi><mi>b</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>n</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mfrac><msup><mi>ϕ</mi><mi>n</mi></msup><msqrt><mn>5</mn></msqrt></mfrac><mo>−</mo><mfrac><msup><mi>ψ</mi><mi>n</mi></msup><msqrt><mn>5</mn></msqrt></mfrac></mrow><annotation encoding="application/x-tex">
+Fib(n) = \frac{ {\phi}^{n} } { \sqrt 5 } - \frac{ {\psi}^{n} } { \sqrt 5 }
+</annotation></semantics></math></p>
+<p>or,</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>F</mi><mi>i</mi><mi>b</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>n</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mfrac><msup><mi>ϕ</mi><mi>n</mi></msup><msqrt><mn>5</mn></msqrt></mfrac><mo>=</mo><mfrac><msup><mi>ψ</mi><mi>n</mi></msup><msqrt><mn>5</mn></msqrt></mfrac></mrow><annotation encoding="application/x-tex">
+Fib(n) - \frac{ {\phi}^{n} } { \sqrt 5 } = \frac{ {\psi}^{n} } { \sqrt 5 }
+</annotation></semantics></math></p>
+<p>Taking absolute value on both sides,</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">|</mo><mrow><mi>F</mi><mi>i</mi><mi>b</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>n</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mfrac><msup><mi>ϕ</mi><mi>n</mi></msup><msqrt><mn>5</mn></msqrt></mfrac></mrow><mo stretchy="false" form="postfix">|</mo><mo>=</mo><mo stretchy="false" form="prefix">|</mo><mfrac><msup><mi>ψ</mi><mi>n</mi></msup><msqrt><mn>5</mn></msqrt></mfrac><mo stretchy="false" form="postfix">|</mo></mrow><annotation encoding="application/x-tex">
+\lvert { Fib(n) - \frac{ {\phi}^{n} } { \sqrt 5 } } \rvert = \lvert \frac{ {\psi}^{n} } { \sqrt 5 } \rvert
+</annotation></semantics></math></p>
+<p>As noted before, if <span>$ Fib(n)
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mi>/</mi><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo><mi>i</mi><mi>s</mi><mi>t</mi><mi>h</mi><mi>e</mi><mi>n</mi><mi>e</mi><mi>a</mi><mi>r</mi><mi>e</mi><mi>s</mi><mi>t</mi><mi>i</mi><mi>n</mi><mi>t</mi><mi>e</mi><mi>g</mi><mi>e</mi><mi>r</mi><mi>t</mi><mi>o</mi><mo>&lt;</mo><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">&lt;/span&gt; is the nearest integer to
+&lt;span&gt;</annotation></semantics></math> { }
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mi>/</mi><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo><mo>,</mo><mi>t</mi><mi>h</mi><mi>e</mi><mi>a</mi><mi>b</mi><mi>s</mi><mi>o</mi><mi>l</mi><mi>u</mi><mi>t</mi><mi>e</mi><mi>v</mi><mi>a</mi><mi>l</mi><mi>u</mi><mi>e</mi><mi>o</mi><mi>f</mi><mi>t</mi><mi>h</mi><mi>e</mi><mi>i</mi><mi>r</mi><mi>d</mi><mi>i</mi><mi>f</mi><mi>f</mi><mi>e</mi><mi>r</mi><mi>e</mi><mi>n</mi><mi>c</mi><mi>e</mi><mi>m</mi><mi>u</mi><mi>s</mi><mi>t</mi><mi>b</mi><mi>e</mi><mi>l</mi><mi>e</mi><mi>s</mi><mi>s</mi><mi>t</mi><mi>h</mi><mi>a</mi><mi>n</mi><mo>&lt;</mo><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">&lt;/span&gt;, the absolute value of their
+difference must be less than &lt;span&gt;</annotation></semantics></math>
+$</span>. That is,</p>
+<div>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">|</mo><mrow><mi>F</mi><mi>i</mi><mi>b</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>n</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mfrac><msup><mi>ϕ</mi><mi>n</mi></msup><msqrt><mn>5</mn></msqrt></mfrac></mrow><mo stretchy="false" form="postfix">|</mo><mo>&lt;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>⟹</mo><mo stretchy="false" form="prefix">|</mo><mfrac><msup><mi>ψ</mi><mi>n</mi></msup><msqrt><mn>5</mn></msqrt></mfrac><mo stretchy="false" form="postfix">|</mo><mo>&lt;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac></mrow><annotation encoding="application/x-tex">
+\lvert { Fib(n) - \frac{ {\phi}^{n} } { \sqrt 5 } } \rvert \lt \frac {1}{2} \implies \lvert \frac{ {\psi}^{n} } { \sqrt 5 } \rvert \lt \frac {1}{2}
+</annotation></semantics></math></p>
+</div>
+<p>So, to prove that <span>$ Fib(n) = nint ( { } )
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mi>/</mi><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo><mo>,</mo><mi>i</mi><mi>t</mi><mi>s</mi><mi>u</mi><mi>f</mi><mi>f</mi><mi>i</mi><mi>c</mi><mi>e</mi><mi>s</mi><mi>t</mi><mi>o</mi><mi>p</mi><mi>r</mi><mi>o</mi><mi>v</mi><mi>e</mi><mi>t</mi><mi>h</mi><mi>a</mi><mi>t</mi><mo>&lt;</mo><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">&lt;/span&gt;, it suffices to prove that
+&lt;span&gt;</annotation></semantics></math> { } $</span>.</p>
+<p>Let’s print out the first 10 values of
+<span><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">|</mo><mfrac><msup><mi>ψ</mi><mi>n</mi></msup><msqrt><mn>5</mn></msqrt></mfrac><mo stretchy="false" form="postfix">|</mo></mrow><annotation encoding="application/x-tex"> \lvert \frac { {\psi}^{n} } {\sqrt 5} \rvert </annotation></semantics></math></span>
+for <span>$ n = (0,1…9) $</span>.</p>
+<pre><code>&gt; (map (lambda (n)
+         (abs (/ (^ psi n)
+                 (sqrt 5))))
+       &#39;(0 1 2 3 4 5 6 7 8 9))
+
+;(.4472135954999579 .27639320225002106 .17082039324993692 .10557280900008414
+  .06524758424985282 4.0325224750231356e-2 2.4922359499621467e-2 1.5402865250609892e-2
+  .00951949424901158 5.883371001598312e-3)</code></pre>
+<p>Clearly, these are all less than <span>$ 0.5 $</span>. But we can
+prove this fact using induction.</p>
+<p>For <span>$ n = 0 $</span>,</p>
+<div>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">|</mo><mfrac><msup><mi>ψ</mi><mi>n</mi></msup><msqrt><mn>5</mn></msqrt></mfrac><mo stretchy="false" form="postfix">|</mo><mo>=</mo><mo stretchy="false" form="prefix">|</mo><mfrac><msup><mi>ψ</mi><mn>0</mn></msup><msqrt><mn>5</mn></msqrt></mfrac><mo stretchy="false" form="postfix">|</mo><mo>=</mo><mfrac><mn>1</mn><msqrt><mn>5</mn></msqrt></mfrac><mo>=</mo><mfrac><mn>1</mn><msup><mn>2</mn><mo>+</mo></msup></mfrac><mo>&lt;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac></mrow><annotation encoding="application/x-tex">
+\lvert \frac { {\psi}^{n} } { \sqrt 5 } \rvert 
+= \lvert \frac { {\psi}^{0} } { \sqrt 5 } \rvert
+= \frac {1}{\sqrt 5}  = \frac {1}{ {2}^{+} } \lt \frac {1}{2} 
+</annotation></semantics></math></p>
+</div>
+<p>Here, we used that fact that
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msqrt><mn>5</mn></msqrt><mo>&gt;</mo><msqrt><mn>4</mn></msqrt></mrow><annotation encoding="application/x-tex">\sqrt 5 \gt \sqrt 4</annotation></semantics></math></span>.
+We do not need the exact value of
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msqrt><mn>5</mn></msqrt><annotation encoding="application/x-tex">\sqrt 5</annotation></semantics></math></span>.
+We just need to know that it is greater than 2, but not 3, which we
+write as <span>$ {2}^{+}
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mi>/</mi><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo><mi>.</mi><mi>T</mi><mi>h</mi><mi>i</mi><mi>s</mi><mi>m</mi><mi>e</mi><mi>a</mi><mi>n</mi><mi>s</mi><mi>t</mi><mi>h</mi><mi>a</mi><mi>t</mi><mi>t</mi><mi>h</mi><mi>e</mi><mi>f</mi><mi>r</mi><mi>a</mi><mi>c</mi><mi>t</mi><mi>i</mi><mi>o</mi><mi>n</mi><mo>&lt;</mo><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">&lt;/span&gt;. This means that the
+fraction &lt;span&gt;</annotation></semantics></math> $</span> has a
+denominator of more than
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>2</mn><annotation encoding="application/x-tex">2</annotation></semantics></math></span>,
+making the fraction itself less than
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mfrac><mn>1</mn><mn>2</mn></mfrac><annotation encoding="application/x-tex">\frac {1}{2}</annotation></semantics></math></span>.</p>
+<p>For <span>$ n = 1 $</span>,</p>
+<div>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">|</mo><mfrac><msup><mi>ψ</mi><mi>n</mi></msup><msqrt><mn>5</mn></msqrt></mfrac><mo stretchy="false" form="postfix">|</mo><mo>=</mo><mo stretchy="false" form="prefix">|</mo><mfrac><mi>ψ</mi><msqrt><mn>5</mn></msqrt></mfrac><mo stretchy="false" form="postfix">|</mo><mo>=</mo><mo stretchy="false" form="prefix">|</mo><mfrac><mfrac><mrow><mn>1</mn><mo>−</mo><msqrt><mn>5</mn></msqrt></mrow><mn>2</mn></mfrac><msqrt><mn>5</mn></msqrt></mfrac><mo stretchy="false" form="postfix">|</mo><mo>=</mo><mfrac><mrow><msqrt><mn>5</mn></msqrt><mo>−</mo><mn>1</mn></mrow><mrow><mn>2</mn><msqrt><mn>5</mn></msqrt></mrow></mfrac><mo>=</mo><mfrac><msqrt><mn>5</mn></msqrt><mrow><mn>2</mn><msqrt><mn>5</mn></msqrt></mrow></mfrac><mo>−</mo><mfrac><mn>1</mn><mrow><mn>2</mn><msqrt><mn>5</mn></msqrt></mrow></mfrac><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>−</mo><mfrac><mn>1</mn><mrow><mn>2</mn><msqrt><mn>5</mn></msqrt></mrow></mfrac><mo stretchy="true" form="postfix">)</mo></mrow><mo>&lt;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mrow><mo stretchy="true" form="prefix">(</mo><mi>∵</mi><mfrac><mn>1</mn><mrow><mn>2</mn><msqrt><mn>5</mn></msqrt></mrow></mfrac><mo>&gt;</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">
+\lvert \frac { {\psi}^{n} } { \sqrt 5 } \rvert 
+= \lvert \frac {\psi} { \sqrt 5 } \rvert
+= \lvert \frac { \frac {1 - \sqrt 5} {2} } { \sqrt 5 } \rvert
+= \frac {\sqrt 5 - 1} { 2 \sqrt 5 }
+= \frac {\sqrt 5 } { 2 \sqrt 5 } - \frac {1} { 2 \sqrt 5}
+= \left( \frac {1}{2} - \frac {1} { 2 \sqrt 5} \right) &lt; \frac {1}{2} (\because \frac {1} {2 \sqrt 5} \gt 0)
+</annotation></semantics></math></p>
+</div>
+<p>Now let us assume that for some
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>=</mo><mi>m</mi></mrow><annotation encoding="application/x-tex">n = m</annotation></semantics></math></span>,
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">|</mo><mfrac><msup><mi>ψ</mi><mi>m</mi></msup><msqrt><mn>5</mn></msqrt></mfrac><mo stretchy="false" form="postfix">|</mo><mo>&lt;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac></mrow><annotation encoding="application/x-tex">\lvert \frac { {\psi}^{m} } { \sqrt 5 } \rvert \lt \frac {1}{2}</annotation></semantics></math></span>.
+Using this, we need to prove that
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">|</mo><mfrac><msup><mi>ψ</mi><mrow><mi>m</mi><mo>+</mo><mn>1</mn></mrow></msup><msqrt><mn>5</mn></msqrt></mfrac><mo stretchy="false" form="postfix">|</mo><mo>&lt;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac></mrow><annotation encoding="application/x-tex">\lvert \frac { {\psi}^{m+1} } { \sqrt 5 } \rvert \lt \frac {1}{2}</annotation></semantics></math></span>.</p>
+<div>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">|</mo><mfrac><msup><mi>ψ</mi><mrow><mi>m</mi><mo>+</mo><mn>1</mn></mrow></msup><msqrt><mn>5</mn></msqrt></mfrac><mo stretchy="false" form="postfix">|</mo><mo>=</mo><mo stretchy="false" form="prefix">|</mo><mfrac><mrow><mi>ψ</mi><msup><mi>ψ</mi><mi>m</mi></msup></mrow><msqrt><mn>5</mn></msqrt></mfrac><mo stretchy="false" form="postfix">|</mo><mo>=</mo><mo stretchy="false" form="prefix">|</mo><mi>ψ</mi><mo stretchy="false" form="postfix">|</mo><mo stretchy="false" form="prefix">|</mo><mfrac><msup><mi>ψ</mi><mi>m</mi></msup><msqrt><mn>5</mn></msqrt></mfrac><mo stretchy="false" form="postfix">|</mo></mrow><annotation encoding="application/x-tex">
+\lvert \frac { {\psi}^{m+1} } { \sqrt 5 } \rvert
+=\lvert \frac { \psi {\psi}^{m} } { \sqrt 5 } \rvert
+=\lvert \psi \rvert \lvert \frac { {\psi}^{m} } { \sqrt 5 } \rvert
+</annotation></semantics></math></p>
+</div>
+We know that <span>$ { }
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mi>/</mi><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo><mo>,</mo><mi>w</mi><mi>h</mi><mi>i</mi><mi>c</mi><mi>h</mi><mi>w</mi><mi>a</mi><mi>s</mi><mi>o</mi><mi>u</mi><mi>r</mi><mi>a</mi><mi>s</mi><mi>s</mi><mi>u</mi><mi>m</mi><mi>p</mi><mi>t</mi><mi>i</mi><mi>o</mi><mi>n</mi><mi>i</mi><mi>n</mi><mi>t</mi><mi>h</mi><mi>e</mi><mi>i</mi><mi>n</mi><mi>d</mi><mi>u</mi><mi>c</mi><mi>t</mi><mi>i</mi><mi>v</mi><mi>e</mi><mi>s</mi><mi>t</mi><mi>e</mi><mi>p</mi><mi>.</mi><mi>B</mi><mi>u</mi><mi>t</mi><mo>&lt;</mo><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">&lt;/span&gt;, which was
+our assumption in the inductive step. But &lt;span&gt;</annotation></semantics></math>
+-.6180339887498949 = .6180339887498949 $</span>. A number less than half
+times a number less than
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math></span>
+<em>has</em> to result in a number less than half. That is,
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>−</mo></msup><mo>×</mo><msup><mn>1</mn><mo>−</mo></msup><mo>=</mo><msup><mfrac><mn>1</mn><mn>2</mn></mfrac><mo>−</mo></msup></mrow><annotation encoding="application/x-tex">{\frac {1}{2}}^{-} \times {1}^{-} = {\frac {1}{2}}^{-}</annotation></semantics></math></span>.
+Which means,
+<div>
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">|</mo><mi>ψ</mi><mo stretchy="false" form="postfix">|</mo><mo stretchy="false" form="prefix">|</mo><mfrac><msup><mi>ψ</mi><mi>m</mi></msup><msqrt><mn>5</mn></msqrt></mfrac><mo stretchy="false" form="postfix">|</mo><mo>&lt;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac><mi>∵</mi><mo stretchy="false" form="prefix">|</mo><mi>ψ</mi><mo stretchy="false" form="postfix">|</mo><mo>&lt;</mo><mn>1</mn><mo>,</mo><mo stretchy="false" form="prefix">|</mo><mfrac><msup><mi>ψ</mi><mi>m</mi></msup><msqrt><mn>5</mn></msqrt></mfrac><mo stretchy="false" form="postfix">|</mo><mo>&lt;</mo><mfrac><mn>1</mn><mn>2</mn></mfrac></mrow><annotation encoding="application/x-tex">
+\lvert \psi \rvert \lvert \frac { {\psi}^{m} } { \sqrt 5 } \rvert \lt \frac {1}{2} \because \lvert \psi \rvert \lt 1, \lvert \frac { {\psi}^{m} } { \sqrt 5 } \rvert \lt \frac {1}{2}
+</annotation></semantics></math>
+</div>
+<p>.</p>
+This completes our proof of the relation <span>$ { } n
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mi>/</mi><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo><mi>.</mi><mi>W</mi><mi>h</mi><mi>i</mi><mi>c</mi><mi>h</mi><mi>i</mi><mi>m</mi><mi>m</mi><mi>e</mi><mi>d</mi><mi>i</mi><mi>a</mi><mi>t</mi><mi>e</mi><mi>l</mi><mi>y</mi><mi>l</mi><mi>e</mi><mi>a</mi><mi>d</mi><mi>s</mi><mi>t</mi><mi>o</mi><mi>t</mi><mi>h</mi><mi>e</mi><mi>f</mi><mi>i</mi><mi>n</mi><mi>a</mi><mi>l</mi><mi>p</mi><mi>r</mi><mi>o</mi><mi>o</mi><mi>f</mi><mi>t</mi><mi>h</mi><mi>a</mi><mi>t</mi><mo>,</mo><mo>&lt;</mo><mi>d</mi><mi>i</mi><mi>v</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">&lt;/span&gt;. Which immediately leads to the final proof that,
+&lt;div&gt;</annotation></semantics></math>$ Fib(n) = nint(), n $$
+</div>
+</body>
+</html>

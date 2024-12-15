@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="dcterms.date" content="2012-10-02" />
+  <title>Decorators with optional arguments in Python</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Decorators with optional arguments in Python</h1>
+<p class="date">2012-10-02</p>
+</header>
+<p>Python decorators are one of the best features of the language, and I
+think that <a href="http://stackoverflow.com/a/1594484">this SO
+answer</a> describes them the best. I’ll take an example similar to the
+example from that question itself. We want to write a decorator that,
+when used to decorate a function that returns a string, will wrap that
+string with the HTML bold tags.</p>
+<p>Concretely, given a function <code>say_hello()</code>,</p>
+<pre><code>def say_hello(user):
+    return &#39;hello, {}&#39;.format(user)</code></pre>
+<p>We should be able to do this</p>
+<pre><code>@makebold
+def say_hello(user):
+    return &#39;hello, {}&#39;.format(user)</code></pre>
+<p>And call it to get this:</p>
+<pre><code>&gt;&gt;&gt; say_hello(&#39;lama&#39;)
+&#39;&lt;b&gt;hello, lama&lt;/b&gt;&#39;
+&gt;&gt;&gt;</code></pre>
+<p>Doing that is simple. The makebold <code>decorator</code> can be
+written as</p>
+<pre><code>def makebold(func):
+    def inner(*args, **kwargs):
+        return &#39;&lt;b&gt;{}&lt;/b&gt;&#39;.format(func(*args, **kwargs))
+    return inner</code></pre>
+<p>Now what if we wanted to optionally specify a colour for the
+greeting? Sure, we could write another decorator <code>colour</code>
+that takes as an argument the colour. But to build up on this contrived
+example, say I want to pass that colour on to the makebold decorator
+when I want to specify a colour other than black. Concretely, we should
+be able to do this</p>
+<pre><code>@makebold
+def say_hello(user):
+    return &#39;hello, {}&#39;.format(user)
+
+@makebold(colour=&#39;red&#39;)
+def say_bye(user):
+    return &#39;See you, {}&#39;.format(user)</code></pre>
+<p>And get output like this</p>
+<pre><code>&gt;&gt;&gt; say_hello(&#39;Lama&#39;) 
+&lt;b&gt;hello, Lama&lt;/b&gt;
+&gt;&gt;&gt; say_bye(&#39;Lama&#39;)
+&lt;span style=&quot;color: red;&quot;&gt;&lt;b&gt;See you, Lama&lt;/b&gt;&lt;/span&gt;
+&gt;&gt;&gt; </code></pre>
+<p>Now if we simply add an optional colour parameter to our
+<code>makebold</code> decorator, it will look like this</p>
+<pre><code>def makebold(colour=None):
+    def decorator(func):
+        colour_open = (&#39;&lt;span style=&quot;color: {};&quot;&gt;&#39;.format(colour)
+                       if colour else &#39;&#39;)
+        colour_close = &#39;&lt;/span&gt;&#39; if colour else &#39;&#39;
+        def inner(*args, **kwargs):
+            return (&#39;{colour_open}&lt;b&gt;{message}&lt;/b&gt;{colour_close}&#39;
+                    .format(colour_open=colour_open,
+                            colour_close=colour_close,
+                            message=func(*args, **kwargs)))
+        return inner
+return decorator</code></pre>
+<p>The thing to note is that we can no longer just return a function
+from the decorator that does the boldification. We must, instead, return
+a function that is the actual decorator that takes the function.</p>
+<p>But then, the decoration syntax changes to</p>
+<pre><code>@makebold()
+def say_hello(user):
+    return &#39;hello, {}&#39;.format(user)
+
+@makebold(colour=&#39;red&#39;)
+def say_bye(user):
+    return &#39;See you, {}&#39;.format(user)</code></pre>
+<p>Close enough, but definitely very ugly.</p>
+<p>To achieve what we are after, we’ll exploit the default function
+arguments in Python. It turns out that the decorator we are after can be
+written like this</p>
+<pre><code>def makebold(func=None, colour=None):
+    def decorator(func):
+        colour_open = (&#39;&lt;span style=&quot;color: {};&quot;&gt;&#39;.format(colour)
+                       if colour else &#39;&#39;)
+        colour_close = &#39;&lt;/span&gt;&#39; if colour else &#39;&#39;
+        def inner(*args, **kwargs):
+            return (&#39;{colour_open}&lt;b&gt;{message}&lt;/b&gt;{colour_close}&#39;
+                    .format(colour_open=colour_open,
+                            colour_close=colour_close,
+                            message=func(*args, **kwargs)))
+        return inner
+    if func is not None:
+        return decorator(func)
+    return decorator</code></pre>
+<p>Now we can say this</p>
+<pre><code>@makebold
+def say_hello(user):
+    return &#39;hello, {}&#39;.format(user)
+
+@makebold(colour=&#39;red&#39;)
+def say_bye(user):
+    return &#39;See you, {}&#39;.format(user)</code></pre>
+<p>And the calls will give us the expected output:</p>
+<pre><code>&gt;&gt;&gt; say_hello(&#39;Lama&#39;) 
+&lt;b&gt;hello, Lama&lt;/b&gt;
+&gt;&gt;&gt; say_bye(&#39;Lama&#39;)
+&lt;span style=&quot;color: red;&quot;&gt;&lt;b&gt;See you, Lama&lt;/b&gt;&lt;/span&gt;
+&gt;&gt;&gt; </code></pre>
+<h2 id="explanation">Explanation</h2>
+<p>In the first decoration, we just decorate using
+<code>@makebold</code> and not <code>@makebold()</code>. That passes our
+<code>say_hello()</code> function as the first parameter
+<code>func</code> to the <code>makebold</code> decorator, as we we meant
+this</p>
+<pre><code>say_hello = makebold(say_hello)</code></pre>
+<p><code>say_hello</code> is passed as the first positional argument,
+which is, according to the signature of <code>makebold</code>,
+<code>func</code>. Now, on line 12 in the latest definition of
+<code>makebold</code>, we check if the <code>func</code> argument is
+<code>None</code>, which it isn’t and hence, we pass <code>func</code>
+to the actual <code>decorator()</code> function and return whatever is
+returned - which we know, will be the function <code>inner()</code>
+defined inside <code>decorator()</code>. Hence, everytime this decorated
+<code>say_hello()</code> is called, it is actually a version of
+<code>inner()</code> being called.</p>
+<p>In the second case, we decorate by specifying the <code>colour</code>
+keyword argument, and very importantly, we make an <em>explicit
+call</em> to the decorator. In short, we are asking for this:</p>
+<pre><code>say_bye = makebold(colour=&#39;red&#39;)(say_hello)</code></pre>
+<p>which is conceptually equivalent to:</p>
+<pre><code>real_decorator = makebold(colour=&#39;red&#39;)
+say_bye = real_decorator(say_bye)</code></pre>
+<p>In the call to <code>makebold()</code>, we specify <em>just</em> the
+<code>colour</code> kwarg, which leaves the <code>func</code> kwarg None
+(the default value). Now, on line 12, the check for
+non-<code>None</code>ness of <code>func</code> fails and hence, we
+return the inner decorator function(which is the one that is assigned to
+<code>real_decorator</code> above), which can in turn, take
+<code>say_bye()</code> as its parameter.</p>
+<h2 id="caveats">Caveats</h2>
+<p>This method relies on the default argument mechanism of Python. But
+code like this could break it:</p>
+<pre><code>@makebold(colour=&#39;blue&#39;, func=&#39;yada&#39;)
+def curse(user):
+    return &#39;$%$%#@$^#%^@ {}&#39;.format(user)</code></pre>
+<p>This will raise a <code>TypeError</code> saying that an
+<code>str</code> is not callable, which happens as our decorator tries
+to call its <code>func</code> parameter. I personally don’t think this
+is a problem, as if we added a check to see if <code>func</code> was
+callable in <code>makebold()</code>, we’d also likely raise a similar
+<code>TypeError</code> if it was not.</p>
+<p>Additionally, this method requires the decorating code to always use
+kwargs, which, again, is fine with me, as decorators are most of the
+time, part of a library and calling them with explicit kwargs is, IMHO,
+better than using positional args. However, there obviously are ways to
+write decorators that take optional positional args, similar to
+this:</p>
+<pre><code>@makebold
+def say_hello(user):
+    return &#39;hello, {}&#39;.format(user)
+
+@makebold(&#39;red&#39;)
+def say_bye(user):
+    return &#39;See you, {}&#39;.format(user)</code></pre>
+<p>Achieving this behaviour requires a few changes in the
+<code>makebold</code> decorator, but frankly, I wouldn’t bother.</p>
+</body>
+</html>

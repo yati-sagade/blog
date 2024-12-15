@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="dcterms.date" content="2015-04-22" />
+  <title>SICP Exercise 1.15</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">SICP Exercise 1.15</h1>
+<p class="date">2015-04-22</p>
+</header>
+<p>Exercise 1.15 in <a href="https://mitpress.mit.edu/sicp/">SICP</a>
+requires us to find the order of growth in time and space of a procedure
+that approximates the value of <span>$ x
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mi>/</mi><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo><mi>b</mi><mi>y</mi><mi>n</mi><mi>o</mi><mi>t</mi><mi>i</mi><mi>n</mi><mi>g</mi><mi>t</mi><mi>h</mi><mi>a</mi><mi>t</mi><mo>&lt;</mo><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">&lt;/span&gt;
+by noting that &lt;span&gt;</annotation></semantics></math>(x)
+x<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mi>/</mi><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo><mi>w</mi><mi>h</mi><mi>e</mi><mi>n</mi><mo>&lt;</mo><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">&lt;/span&gt; when &lt;span&gt;</annotation></semantics></math>x<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mi>/</mi><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo><mi>i</mi><mi>s</mi><mi>s</mi><mi>u</mi><mi>f</mi><mi>f</mi><mi>i</mi><mi>c</mi><mi>i</mi><mi>e</mi><mi>n</mi><mi>t</mi><mi>l</mi><mi>y</mi><mi>s</mi><mi>m</mi><mi>a</mi><mi>l</mi><mi>l</mi><mi>.</mi><mi>F</mi><mi>o</mi><mi>r</mi><mi>l</mi><mi>a</mi><mi>r</mi><mi>g</mi><mi>e</mi><mi>r</mi><mi>v</mi><mi>a</mi><mi>l</mi><mi>u</mi><mi>e</mi><mi>s</mi><mi>o</mi><mi>f</mi><mo>&lt;</mo><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">&lt;/span&gt; is
+sufficiently small. For larger values of &lt;span&gt;</annotation></semantics></math>x<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mi>/</mi><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo><mo>,</mo><mo>&lt;</mo><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">&lt;/span&gt;, &lt;span&gt;</annotation></semantics></math>
+x $</span> can be recursively calculated using the trigonometric
+identity</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>sin</mo><mi>x</mi><mo>=</mo><mn>3</mn><mo>sin</mo><mfrac><mi>x</mi><mn>3</mn></mfrac><mo>−</mo><mn>4</mn><msup><mo>sin</mo><mn>3</mn></msup><mfrac><mi>x</mi><mn>3</mn></mfrac></mrow><annotation encoding="application/x-tex">
+\sin x = 3 \sin \frac {x}{3} - 4 \sin^3 \frac {x}{3}
+</annotation></semantics></math></p>
+<p>Here is the implementation from the book:</p>
+<pre><code>(define (cube x) (* x x x))
+(define (p x) (- (* 3 x) (* 4 (cube x))))
+(define (sine angle)
+   (if (not (&gt; (abs angle) 0.1))
+       angle
+       (p (sine (/ angle 3.0)))))</code></pre>
+<p>The first task is to calculate the number of times the procedure
+<code>p</code> is called for the invocation <code>(sine 12.15)</code>.
+This is straightforward using the substitution rule:</p>
+<pre><code>(sine 12.15)
+-&gt; (p (sine (/ 12.15 3))
+-&gt; (p (sine 4.05))
+-&gt; (p (p (sine (/ 4.05 3))))
+-&gt; (p (p (sine 1.349999999999999)))
+-&gt; (p (p (p (sine (/ 1.349999999999999 3)))))
+-&gt; (p (p (p (sine .44999999999999996))))
+-&gt; (p (p (p (p (sine (/ .44999999999999996 3))))))
+-&gt; (p (p (p (p (sine .15)))))
+-&gt; (p (p (p (p (p (sine (/ .15 3)))))))
+-&gt; (p (p (p (p (p (sine .05))))))
+-&gt; (p (p (p (p (p 0.05)))))</code></pre>
+<p>In the last line of the partial derivation above, we hit the base
+case and are left with a stack of five <code>p</code> calls, with no
+more recursion. Generally, for any angle value
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math></span>,
+the number of <code>p</code> calls here will be
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">[</mo><msub><mo>log</mo><mn>3</mn></msub><mi>x</mi><mo>+</mo><mn>3</mn><mo stretchy="true" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[\log_3 x + 3]</annotation></semantics></math></span>.
+To understand why, note that, given an angle
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math></span>,
+to reach
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math></span>
+by successively dividing by
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>3</mn><annotation encoding="application/x-tex">3</annotation></semantics></math></span>
+(which our <code>sine</code> implementation does), we will need <span>$
+_3 x $</span> divisions. After that, to take
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math></span>
+to a value less than
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.1</mn><annotation encoding="application/x-tex">0.1</annotation></semantics></math></span>,
+it takes
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>3</mn><annotation encoding="application/x-tex">3</annotation></semantics></math></span>
+more divisions (<span>$ {3} = 0.037037037037037035
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo><mo stretchy="false" form="postfix">)</mo><mi>.</mi><mi>T</mi><mi>h</mi><mi>i</mi><mi>s</mi><mi>g</mi><mi>i</mi><mi>v</mi><mi>e</mi><mi>s</mi><mi>u</mi><mi>s</mi><mi>a</mi><mi>t</mi><mi>o</mi><mi>t</mi><mi>a</mi><mi>l</mi><mi>o</mi><mi>f</mi><mo>&lt;</mo><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">&lt;span&gt;). This
+gives us a total of &lt;span&gt;</annotation></semantics></math>( _3 x +
+3 )<span class="math inline">$&lt;/span&gt; divisions, which
+corresponds to the number of times `p` is called. To account for angles
+which
+are not powers of three, we round that count to the nearest integer,
+resulting
+in &lt;span&gt;$</span>[_3 x + 3]$</span>.</p>
+<h2 id="order-of-growth">Order of growth</h2>
+<p>It follows directly from the last paragraph that the space used by
+our <code>sine</code> procedure varies directly with the number of
+<code>p</code> calls, which we just established to be logarithmic in the
+angle
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math></span>.
+To see it from another perspective, note that tripling the angle
+argument to <code>sine</code> only adds one to the number stacked calls
+to <code>p</code>. This is a tell-tale sign of a logarithmic order of
+growth. Therefore, the space consumed by <code>sine</code> is
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Θ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mo>log</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\Theta \left( \log a \right)</annotation></semantics></math></span>.</p>
+<p>Now to examine the order of growth of the number of steps involved in
+the calculation of <code>(sine a)</code>, notice that there are as many
+divisions by
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>3</mn><annotation encoding="application/x-tex">3</annotation></semantics></math></span>
+as there are calls to <code>p</code>, followed by the same number of
+calculations within <code>p</code> (because <code>p</code> itself runs
+in constant time). Since the number of calls to <code>p</code> is
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Θ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mo>log</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\Theta \left( \log a \right)</annotation></semantics></math></span>,
+the number of total steps in calculating <code>(sine a)</code> is an
+integer multiple of
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Θ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mo>log</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\Theta \left( \log a \right)</annotation></semantics></math></span>,
+which is again
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Θ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mo>log</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\Theta
+\left( \log a \right)</annotation></semantics></math></span>.</p>
+</body>
+</html>

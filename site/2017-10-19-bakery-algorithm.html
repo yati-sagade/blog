@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="dcterms.date" content="2017-10-19" />
+  <title>The bakery algorithm for mutual exclusion</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">The bakery algorithm for mutual exclusion</h1>
+<p class="date">2017-10-19</p>
+</header>
+<p>The <a href="http://lamport.azurewebsites.net/pubs/bakery.pdf">bakery
+algorithm</a> was proposed by Leslie Lamport as a solution to Dijkstra’s
+concurrent programming problem. In the problem, Dijkstra had first
+identified the need for mutual exclusion among a group of concurrently
+executing processes.</p>
+<p>We want to run <code>N</code> processes concurrently, with exclusive
+access to a shared resource. Modern day languages solve this with help
+from hardware. But the bakery algorithm allows for pure software mutual
+exclusion by making sure that at most one process is executing its
+critical section, while other non-faulty processes are either in their
+non-critical section, or spinning in place, waiting to get to the
+critical section. In other words, mutual exclusion in the critical
+section is achieved in software. Now this is inefficient, since it
+involves processes “spinning” in a loop while waiting for a chance to
+execute the critical section.</p>
+<p>What is remarkable about this algorithm (as Lamport points out
+multiple times in the paper) is that even though reads from memory may
+not be atomic (which is important with overlapping reads and writes to
+the same location), the algorithm works fine, since it does not care
+<em>what</em> exact value is read, and makes do with a distinction
+between <em>zero</em> and <em>nonzero</em> values. Here’s an
+implementation followed by a description (the code is on github:
+<code>go get github.com/yati-sagade/bakery</code>):</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode go"><code class="sourceCode go"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">package</span> main</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="op">(</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;flag&quot;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;fmt&quot;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;time&quot;</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="op">)</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> max<span class="op">(</span>xs <span class="op">[]</span><span class="dt">int</span><span class="op">)</span> <span class="dt">int</span> <span class="op">{</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">len</span><span class="op">(</span>xs<span class="op">)</span> <span class="op">&lt;</span> <span class="dv">1</span> <span class="op">{</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>        <span class="bu">panic</span><span class="op">(</span><span class="st">&quot;max() on empty slice&quot;</span><span class="op">)</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    ret <span class="op">:=</span> xs<span class="op">[</span><span class="dv">0</span><span class="op">]</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="op">:=</span> <span class="dv">1</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="bu">len</span><span class="op">(</span>xs<span class="op">);</span> i<span class="op">++</span> <span class="op">{</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> xs<span class="op">[</span>i<span class="op">]</span> <span class="op">&gt;</span> ret <span class="op">{</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>            ret <span class="op">=</span> xs<span class="op">[</span>i<span class="op">]</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> ret</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="kw">func</span> main<span class="op">()</span> <span class="op">{</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    n <span class="op">:=</span> flag<span class="op">.</span>Int<span class="op">(</span><span class="st">&quot;nodes&quot;</span><span class="op">,</span> <span class="dv">5</span><span class="op">,</span> <span class="st">&quot;number of participating nodes&quot;</span><span class="op">)</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    iters <span class="op">:=</span> flag<span class="op">.</span>Int<span class="op">(</span><span class="st">&quot;iters&quot;</span><span class="op">,</span> <span class="dv">100000</span><span class="op">,</span> <span class="st">&quot;number of iterations&quot;</span><span class="op">)</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    debug <span class="op">:=</span> flag<span class="op">.</span>Bool<span class="op">(</span><span class="st">&quot;debug&quot;</span><span class="op">,</span> <span class="ot">false</span><span class="op">,</span> <span class="st">&quot;print debug trace&quot;</span><span class="op">)</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    flag<span class="op">.</span>Parse<span class="op">()</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    <span class="co">// 1. process i is in the doorway while choosing[i] == true</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    <span class="co">// 2. process i is in the bakery from when it resets choosing[i] to false till</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    <span class="co">// either it fails, or finishes its critical section.</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>    choosing <span class="op">:=</span> <span class="bu">make</span><span class="op">([]</span><span class="dt">bool</span><span class="op">,</span> <span class="op">*</span>n<span class="op">+</span><span class="dv">1</span><span class="op">,</span> <span class="op">*</span>n<span class="op">+</span><span class="dv">1</span><span class="op">)</span> <span class="co">// one extra for the monitoring process</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>    numbers <span class="op">:=</span> <span class="bu">make</span><span class="op">([]</span><span class="dt">int</span><span class="op">,</span> <span class="op">*</span>n<span class="op">+</span><span class="dv">1</span><span class="op">,</span> <span class="op">*</span>n<span class="op">+</span><span class="dv">1</span><span class="op">)</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>    sharedMap <span class="op">:=</span> <span class="kw">map</span><span class="op">[</span><span class="dt">string</span><span class="op">]</span><span class="dt">int</span><span class="op">{</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;last_updated_by&quot;</span><span class="op">:</span> <span class="op">-</span><span class="dv">1</span><span class="op">,</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>    sharedSlice <span class="op">:=</span> <span class="bu">make</span><span class="op">([]</span><span class="dt">int</span><span class="op">,</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>    lock <span class="op">:=</span> <span class="kw">func</span><span class="op">(</span>id <span class="dt">int</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>        choosing<span class="op">[</span>id<span class="op">]</span> <span class="op">=</span> <span class="ot">true</span></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>        <span class="co">/* At the doorway */</span></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">*</span>debug <span class="op">{</span></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>            fmt<span class="op">.</span>Printf<span class="op">(</span><span class="st">&quot;%d: choosing</span><span class="ch">\n</span><span class="st">&quot;</span><span class="op">,</span> id<span class="op">)</span></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>        numbers<span class="op">[</span>id<span class="op">]</span> <span class="op">=</span> <span class="dv">1</span> <span class="op">+</span> max<span class="op">(</span>numbers<span class="op">)</span></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">*</span>debug <span class="op">{</span></span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>            fmt<span class="op">.</span>Printf<span class="op">(</span><span class="st">&quot;%d: chose number %d</span><span class="ch">\n</span><span class="st">&quot;</span><span class="op">,</span> id<span class="op">,</span> numbers<span class="op">[</span>id<span class="op">])</span></span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>        choosing<span class="op">[</span>id<span class="op">]</span> <span class="op">=</span> <span class="ot">false</span></span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>        <span class="co">/* Entered bakery */</span></span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> k <span class="op">:=</span> <span class="dv">0</span><span class="op">;</span> k <span class="op">&lt;=</span> <span class="op">*</span>n<span class="op">;</span> k<span class="op">++</span> <span class="op">{</span>                              <span class="co">/* L1 */</span></span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a>            printed <span class="op">:=</span> <span class="ot">false</span></span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> choosing<span class="op">[</span>k<span class="op">]</span> <span class="op">{</span>                                   <span class="co">/* L2 */</span></span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a>                <span class="co">// spin</span></span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> <span class="op">*</span>debug <span class="op">&amp;&amp;</span> <span class="op">!</span>printed <span class="op">{</span></span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a>                    fmt<span class="op">.</span>Printf<span class="op">(</span><span class="st">&quot;%d: spinning for %d (waiting for it to choose: %v)</span><span class="ch">\n</span><span class="st">&quot;</span><span class="op">,</span></span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a>                        id<span class="op">,</span> k<span class="op">,</span> choosing<span class="op">)</span></span>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a>                    printed <span class="op">=</span> <span class="ot">true</span></span>
+<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a>                <span class="op">}</span></span>
+<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a>                <span class="co">// this is important, as tight spinning here would cause only</span></span>
+<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a>                <span class="co">// the first $n_core goroutines to be scheduled, starving</span></span>
+<span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a>                <span class="co">// all others. this would in turn cause the whole algorithm</span></span>
+<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a>                <span class="co">// to stop making any progress.</span></span>
+<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a>                time<span class="op">.</span>Sleep<span class="op">(</span><span class="dv">10</span> <span class="op">*</span> time<span class="op">.</span>Millisecond<span class="op">)</span></span>
+<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a>            printed <span class="op">=</span> <span class="ot">false</span></span>
+<span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> numbers<span class="op">[</span>k<span class="op">]</span> <span class="op">!=</span> <span class="dv">0</span> <span class="op">&amp;&amp;</span></span>
+<span id="cb1-78"><a href="#cb1-78" aria-hidden="true" tabindex="-1"></a>                <span class="op">((</span>numbers<span class="op">[</span>k<span class="op">]</span> <span class="op">&lt;</span> numbers<span class="op">[</span>id<span class="op">])</span> <span class="op">||</span></span>
+<span id="cb1-79"><a href="#cb1-79" aria-hidden="true" tabindex="-1"></a>                    <span class="op">(</span>numbers<span class="op">[</span>k<span class="op">]</span> <span class="op">==</span> numbers<span class="op">[</span>id<span class="op">]</span> <span class="op">&amp;&amp;</span> k <span class="op">&lt;</span> id<span class="op">))</span> <span class="op">{</span>    <span class="co">/* L3 */</span></span>
+<span id="cb1-80"><a href="#cb1-80" aria-hidden="true" tabindex="-1"></a>                <span class="co">// spin</span></span>
+<span id="cb1-81"><a href="#cb1-81" aria-hidden="true" tabindex="-1"></a>                <span class="cf">if</span> <span class="op">*</span>debug <span class="op">&amp;&amp;</span> <span class="op">!</span>printed <span class="op">{</span></span>
+<span id="cb1-82"><a href="#cb1-82" aria-hidden="true" tabindex="-1"></a>                    fmt<span class="op">.</span>Printf<span class="op">(</span><span class="st">&quot;%d: spinning for %d (waiting for it to finish CS: %v)</span><span class="ch">\n</span><span class="st">&quot;</span><span class="op">,</span></span>
+<span id="cb1-83"><a href="#cb1-83" aria-hidden="true" tabindex="-1"></a>                        id<span class="op">,</span> k<span class="op">,</span> numbers<span class="op">)</span></span>
+<span id="cb1-84"><a href="#cb1-84" aria-hidden="true" tabindex="-1"></a>                    printed <span class="op">=</span> <span class="ot">true</span></span>
+<span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a>                <span class="op">}</span></span>
+<span id="cb1-86"><a href="#cb1-86" aria-hidden="true" tabindex="-1"></a>                time<span class="op">.</span>Sleep<span class="op">(</span><span class="dv">10</span> <span class="op">*</span> time<span class="op">.</span>Millisecond<span class="op">)</span></span>
+<span id="cb1-87"><a href="#cb1-87" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb1-88"><a href="#cb1-88" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb1-89"><a href="#cb1-89" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb1-90"><a href="#cb1-90" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-91"><a href="#cb1-91" aria-hidden="true" tabindex="-1"></a>    unlock <span class="op">:=</span> <span class="kw">func</span><span class="op">(</span>id <span class="dt">int</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb1-92"><a href="#cb1-92" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">*</span>debug <span class="op">{</span></span>
+<span id="cb1-93"><a href="#cb1-93" aria-hidden="true" tabindex="-1"></a>            fmt<span class="op">.</span>Printf<span class="op">(</span><span class="st">&quot;%d: unlock: %v</span><span class="ch">\n</span><span class="st">&quot;</span><span class="op">,</span> id<span class="op">,</span> numbers<span class="op">)</span></span>
+<span id="cb1-94"><a href="#cb1-94" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb1-95"><a href="#cb1-95" aria-hidden="true" tabindex="-1"></a>        numbers<span class="op">[</span>id<span class="op">]</span> <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb1-96"><a href="#cb1-96" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb1-97"><a href="#cb1-97" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-98"><a href="#cb1-98" aria-hidden="true" tabindex="-1"></a>    proc <span class="op">:=</span> <span class="kw">func</span><span class="op">(</span>id <span class="dt">int</span><span class="op">,</span> stop <span class="kw">chan</span> <span class="kw">struct</span><span class="op">{},</span> ack <span class="kw">chan</span> <span class="kw">struct</span><span class="op">{})</span> <span class="op">{</span></span>
+<span id="cb1-99"><a href="#cb1-99" aria-hidden="true" tabindex="-1"></a>    out<span class="op">:</span></span>
+<span id="cb1-100"><a href="#cb1-100" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> <span class="op">{</span></span>
+<span id="cb1-101"><a href="#cb1-101" aria-hidden="true" tabindex="-1"></a>            <span class="cf">select</span> <span class="op">{</span></span>
+<span id="cb1-102"><a href="#cb1-102" aria-hidden="true" tabindex="-1"></a>            <span class="cf">case</span> <span class="op">&lt;-</span>stop<span class="op">:</span></span>
+<span id="cb1-103"><a href="#cb1-103" aria-hidden="true" tabindex="-1"></a>                <span class="cf">break</span> out</span>
+<span id="cb1-104"><a href="#cb1-104" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-105"><a href="#cb1-105" aria-hidden="true" tabindex="-1"></a>            <span class="cf">default</span><span class="op">:</span></span>
+<span id="cb1-106"><a href="#cb1-106" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-107"><a href="#cb1-107" aria-hidden="true" tabindex="-1"></a>                lock<span class="op">(</span>id<span class="op">)</span></span>
+<span id="cb1-108"><a href="#cb1-108" aria-hidden="true" tabindex="-1"></a>                fmt<span class="op">.</span>Printf<span class="op">(</span><span class="st">&quot;%d: entering critical section</span><span class="ch">\n</span><span class="st">&quot;</span><span class="op">,</span> id<span class="op">)</span></span>
+<span id="cb1-109"><a href="#cb1-109" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-110"><a href="#cb1-110" aria-hidden="true" tabindex="-1"></a>                <span class="co">// critical section</span></span>
+<span id="cb1-111"><a href="#cb1-111" aria-hidden="true" tabindex="-1"></a>                sharedMap<span class="op">[</span><span class="st">&quot;last_updated_by&quot;</span><span class="op">]</span> <span class="op">=</span> id</span>
+<span id="cb1-112"><a href="#cb1-112" aria-hidden="true" tabindex="-1"></a>                sharedSlice <span class="op">=</span> <span class="bu">append</span><span class="op">(</span>sharedSlice<span class="op">,</span> id<span class="op">)</span></span>
+<span id="cb1-113"><a href="#cb1-113" aria-hidden="true" tabindex="-1"></a>                sharedSlice <span class="op">=</span> sharedSlice<span class="op">[</span><span class="dv">1</span><span class="op">:]</span></span>
+<span id="cb1-114"><a href="#cb1-114" aria-hidden="true" tabindex="-1"></a>                <span class="co">// end critical section</span></span>
+<span id="cb1-115"><a href="#cb1-115" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-116"><a href="#cb1-116" aria-hidden="true" tabindex="-1"></a>                fmt<span class="op">.</span>Printf<span class="op">(</span><span class="st">&quot;%d: done critical section</span><span class="ch">\n</span><span class="st">&quot;</span><span class="op">,</span> id<span class="op">)</span></span>
+<span id="cb1-117"><a href="#cb1-117" aria-hidden="true" tabindex="-1"></a>                unlock<span class="op">(</span>id<span class="op">)</span></span>
+<span id="cb1-118"><a href="#cb1-118" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb1-119"><a href="#cb1-119" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb1-120"><a href="#cb1-120" aria-hidden="true" tabindex="-1"></a>        ack <span class="op">&lt;-</span> <span class="kw">struct</span><span class="op">{}{}</span></span>
+<span id="cb1-121"><a href="#cb1-121" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb1-122"><a href="#cb1-122" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-123"><a href="#cb1-123" aria-hidden="true" tabindex="-1"></a>    stops <span class="op">:=</span> <span class="bu">make</span><span class="op">([]</span><span class="kw">chan</span> <span class="kw">struct</span><span class="op">{},</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb1-124"><a href="#cb1-124" aria-hidden="true" tabindex="-1"></a>    acks <span class="op">:=</span> <span class="bu">make</span><span class="op">([]</span><span class="kw">chan</span> <span class="kw">struct</span><span class="op">{},</span> <span class="dv">0</span><span class="op">)</span></span>
+<span id="cb1-125"><a href="#cb1-125" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="op">:=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="op">*</span>n<span class="op">;</span> i<span class="op">++</span> <span class="op">{</span></span>
+<span id="cb1-126"><a href="#cb1-126" aria-hidden="true" tabindex="-1"></a>        c <span class="op">:=</span> <span class="bu">make</span><span class="op">(</span><span class="kw">chan</span> <span class="kw">struct</span><span class="op">{})</span></span>
+<span id="cb1-127"><a href="#cb1-127" aria-hidden="true" tabindex="-1"></a>        d <span class="op">:=</span> <span class="bu">make</span><span class="op">(</span><span class="kw">chan</span> <span class="kw">struct</span><span class="op">{})</span></span>
+<span id="cb1-128"><a href="#cb1-128" aria-hidden="true" tabindex="-1"></a>        stops <span class="op">=</span> <span class="bu">append</span><span class="op">(</span>stops<span class="op">,</span> c<span class="op">)</span></span>
+<span id="cb1-129"><a href="#cb1-129" aria-hidden="true" tabindex="-1"></a>        acks <span class="op">=</span> <span class="bu">append</span><span class="op">(</span>acks<span class="op">,</span> d<span class="op">)</span></span>
+<span id="cb1-130"><a href="#cb1-130" aria-hidden="true" tabindex="-1"></a>        <span class="cf">go</span> proc<span class="op">(</span>i<span class="op">,</span> c<span class="op">,</span> d<span class="op">)</span></span>
+<span id="cb1-131"><a href="#cb1-131" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb1-132"><a href="#cb1-132" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-133"><a href="#cb1-133" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Monitor and quit after some time</span></span>
+<span id="cb1-134"><a href="#cb1-134" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-135"><a href="#cb1-135" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="op">:=</span> <span class="dv">1</span><span class="op">;</span> i <span class="op">&lt;</span> <span class="op">*</span>iters<span class="op">;</span> i<span class="op">++</span> <span class="op">{</span></span>
+<span id="cb1-136"><a href="#cb1-136" aria-hidden="true" tabindex="-1"></a>        lock<span class="op">(*</span>n<span class="op">)</span></span>
+<span id="cb1-137"><a href="#cb1-137" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">*</span>debug <span class="op">{</span></span>
+<span id="cb1-138"><a href="#cb1-138" aria-hidden="true" tabindex="-1"></a>            fmt<span class="op">.</span>Sprintf<span class="op">(</span><span class="st">&quot;monitor lock acquired&quot;</span><span class="op">,</span> sharedSlice<span class="op">)</span></span>
+<span id="cb1-139"><a href="#cb1-139" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb1-140"><a href="#cb1-140" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="bu">len</span><span class="op">(</span>sharedSlice<span class="op">)</span> <span class="op">&gt;</span> <span class="dv">1</span> <span class="op">{</span></span>
+<span id="cb1-141"><a href="#cb1-141" aria-hidden="true" tabindex="-1"></a>            <span class="bu">panic</span><span class="op">(</span>fmt<span class="op">.</span>Sprintf<span class="op">(</span><span class="st">&quot;found concurrent access with %v&quot;</span><span class="op">,</span> sharedSlice<span class="op">))</span></span>
+<span id="cb1-142"><a href="#cb1-142" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb1-143"><a href="#cb1-143" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Go will panic when sharedMap is written to by two goroutines</span></span>
+<span id="cb1-144"><a href="#cb1-144" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-145"><a href="#cb1-145" aria-hidden="true" tabindex="-1"></a>        unlock<span class="op">(*</span>n<span class="op">)</span></span>
+<span id="cb1-146"><a href="#cb1-146" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">*</span>debug <span class="op">{</span></span>
+<span id="cb1-147"><a href="#cb1-147" aria-hidden="true" tabindex="-1"></a>            fmt<span class="op">.</span>Sprintf<span class="op">(</span><span class="st">&quot;monitor lock released&quot;</span><span class="op">,</span> sharedSlice<span class="op">)</span></span>
+<span id="cb1-148"><a href="#cb1-148" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb1-149"><a href="#cb1-149" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb1-150"><a href="#cb1-150" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-151"><a href="#cb1-151" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _<span class="op">,</span> stop <span class="op">:=</span> <span class="kw">range</span> stops <span class="op">{</span></span>
+<span id="cb1-152"><a href="#cb1-152" aria-hidden="true" tabindex="-1"></a>        fmt<span class="op">.</span>Println<span class="op">(</span><span class="st">&quot;stopping&quot;</span><span class="op">)</span></span>
+<span id="cb1-153"><a href="#cb1-153" aria-hidden="true" tabindex="-1"></a>        stop <span class="op">&lt;-</span> <span class="kw">struct</span><span class="op">{}{}</span></span>
+<span id="cb1-154"><a href="#cb1-154" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb1-155"><a href="#cb1-155" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-156"><a href="#cb1-156" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _<span class="op">,</span> ack <span class="op">:=</span> <span class="kw">range</span> acks <span class="op">{</span></span>
+<span id="cb1-157"><a href="#cb1-157" aria-hidden="true" tabindex="-1"></a>        <span class="op">&lt;-</span>ack</span>
+<span id="cb1-158"><a href="#cb1-158" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb1-159"><a href="#cb1-159" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-160"><a href="#cb1-160" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<h3 id="description">Description</h3>
+<p>So we have <code>n</code> goroutines, and each wants to mutate a
+shared map (by updating the single value in it) and a shared slice (by
+appending the process id to it, and then reslicing it to maintain a
+length of 1). There is also the main monitoring goroutine that checks if
+the shared slice ever contains more than two items. Simultaneous
+mutation of a map by more than one goroutines is detected by the Go
+runtime, which panics in such a case.</p>
+<p>The key idea of the algorithm is that just like in an old fashioned
+bakery (or a bank), each participant gets a token, or a number, roughly
+in the order of arrival. Participants then get serviced in order of
+their token numbers. The thing is that in our situation, there is no
+single receptionist to hand these tokens over to participant processes.
+So, our solution is to have processes pick their own numbers, and such a
+tie is broken by letting the process with a lower id enter the critical
+section first.</p>
+<p>The <code>lock</code> routine is the meat of the bakery algorithm.
+There are two shared slices, <code>choosing</code> and
+<code>numbers</code>, and process <code>i</code> only writes to
+<code>choosing[i]</code> and <code>numbers[i]</code>, but can read from
+any other indices in <code>choosing</code> and <code>numbers</code>.</p>
+<h3 id="correctness">Correctness</h3>
+<p>Our system with <code>N</code> processes (goroutines, here) functions
+such that at any given time, at most one process is in the critical
+section. To prove this, let’s see the execution from process
+<code>i</code>’s perspective, and first define some terms:</p>
+<ul>
+<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>t</mi><mrow><mi>L</mi><mn>2</mn></mrow><mrow><mi>i</mi><mi>k</mi></mrow></msubsup><annotation encoding="application/x-tex">t^{ik}_{L2}</annotation></semantics></math>:
+Time when process <code>i</code> completes the <em>last</em> iteration
+of loop <code>L2</code> for process <code>k</code>. This is when it sees
+<code>choosing[k] == false</code>.</li>
+<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>t</mi><mrow><mi>L</mi><mn>3</mn></mrow><mrow><mi>i</mi><mi>k</mi></mrow></msubsup><annotation encoding="application/x-tex">t^{ik}_{L3}</annotation></semantics></math>:
+Time when process <code>i</code> completes the <em>last</em> iteration
+of loop <code>L3</code> for process <code>k</code>. This happens when
+process <code>i</code> sees a <code>0</code> in <code>numbers[k]</code>,
+or if it thinks it should be serviced before process <code>k</code>
+owing to a lower token number.</li>
+<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>t</mi><mi>d</mi><mi>k</mi></msubsup><annotation encoding="application/x-tex">t^k_{d}</annotation></semantics></math>:
+Time at which process <code>k</code> completes
+<code>choosing[k] = true</code>.</li>
+<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>t</mi><mi>e</mi><mi>k</mi></msubsup><annotation encoding="application/x-tex">t^k_{e}</annotation></semantics></math>:
+Time at which process <code>k</code> completes setting
+<code>choosing[k] = false</code>, after choosing a number.</li>
+</ul>
+<p>We can now make some observations:</p>
+<ul>
+<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>t</mi><mi>d</mi><mi>k</mi></msubsup><mo>&lt;</mo><msubsup><mi>t</mi><mi>e</mi><mi>k</mi></msubsup></mrow><annotation encoding="application/x-tex">t^k_d \lt t^k_e</annotation></semantics></math>.</p></li>
+<li><p>At time
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>t</mi><mi>e</mi><mi>k</mi></msubsup><annotation encoding="application/x-tex">t^k_e</annotation></semantics></math>,
+<code>numbers[k]</code> is completely written, and a read at or after
+this point of <code>numbers[k]</code> will not return a partial
+result.</p></li>
+<li><p>At
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>t</mi><mrow><mi>L</mi><mn>2</mn></mrow><mrow><mi>i</mi><mi>k</mi></mrow></msubsup><annotation encoding="application/x-tex">t^{ik}_{L2}</annotation></semantics></math>,
+either process <code>k</code> is just out of the doorway (set
+<code>choosing[k] = false</code>) and in the bakery (either waiting for
+other processes, or executing its critical section); or is neither in
+the doorway or in the bakery (maybe executing some non-critical section
+code). This corresponds to either
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>t</mi><mrow><mi>L</mi><mn>2</mn></mrow><mrow><mi>i</mi><mi>k</mi></mrow></msubsup><mo>&gt;</mo><msubsup><mi>t</mi><mi>e</mi><mi>k</mi></msubsup></mrow><annotation encoding="application/x-tex">t^{ik}_{L2} \gt t^k_e</annotation></semantics></math>,
+or
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>t</mi><mrow><mi>L</mi><mn>2</mn></mrow><mrow><mi>i</mi><mi>k</mi></mrow></msubsup><mo>&lt;</mo><msubsup><mi>t</mi><mi>d</mi><mi>k</mi></msubsup></mrow><annotation encoding="application/x-tex">t^{ik}_{L2} \lt t^k_d</annotation></semantics></math>,
+respectively.</p>
+<ul>
+<li><p>When
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>t</mi><mrow><mi>L</mi><mn>2</mn></mrow><mrow><mi>i</mi><mi>k</mi></mrow></msubsup><mo>&gt;</mo><msubsup><mi>t</mi><mi>e</mi><mi>k</mi></msubsup></mrow><annotation encoding="application/x-tex">t^{ik}_{L2} \gt t^k_e</annotation></semantics></math>,
+we also have
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>t</mi><mrow><mi>L</mi><mn>3</mn></mrow><mrow><mi>i</mi><mi>k</mi></mrow></msubsup><mo>&gt;</mo><msubsup><mi>t</mi><mi>e</mi><mi>k</mi></msubsup></mrow><annotation encoding="application/x-tex">t^{ik}_{L3} \gt t^k_e</annotation></semantics></math>.
+This means that process <code>i</code> found (at time
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>t</mi><mrow><mi>L</mi><mn>3</mn></mrow><mrow><mi>i</mi><mi>k</mi></mrow></msubsup><annotation encoding="application/x-tex">t^{ik}_{L3}</annotation></semantics></math>)
+either <code>numbers[i] &lt; numbers[k]</code>, or if both numbers are
+equal, that <code>i &lt; k</code>. Note that <code>k</code> <em>must
+have</em> picked a number at least as large as <code>numbers[i]</code>
+in this case.</p></li>
+<li><p>When
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>t</mi><mrow><mi>L</mi><mn>2</mn></mrow><mrow><mi>i</mi><mi>k</mi></mrow></msubsup><mo>&lt;</mo><msubsup><mi>t</mi><mi>d</mi><mi>k</mi></msubsup></mrow><annotation encoding="application/x-tex">t^{ik}_{L2} \lt t^k_d</annotation></semantics></math>,
+it must be that <code>numbers[i] &lt; numbers[k]</code>, since when
+<code>k</code> does enter the doorway (after the moment
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>t</mi><mi>d</mi><mi>k</mi></msubsup><annotation encoding="application/x-tex">t^k_d</annotation></semantics></math>),
+it will pick a number that is at least one larger than
+<code>numbers[i]</code>, which has already been written
+completely.</p></li>
+</ul></li>
+</ul>
+<p>Hence, in both these cases, process <code>i</code> does not wait for
+process <code>k</code>. Generalizing this to all other processes
+<code>k</code> that a given process <code>i</code> needs to share
+resources with, it can be seen that at most one process will be able to
+execute its critical section.</p>
+<h3 id="failure">Failure</h3>
+<p>If a process fails after setting <code>choosing[k] = true</code>, and
+then keeps failing and recovering, never resetting
+<code>choosing[k]</code>, a deadlock can be reached as other processes
+will keep spinning, waiting on the failed process.</p>
+<h3 id="starvation-because-of-spinning">Starvation because of
+spinning</h3>
+<p>If we do not yield to the runtime by calling
+<code>time.Sleep()</code> in every loop iteration, only as many
+goroutines as the number of cores on our computer will be able to run
+causing the algorithm to stop making any progress.</p>
+</body>
+</html>

@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="dcterms.date" content="2014-11-02" />
+  <title>Setting up OpenCV for Android without an IDE</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Setting up OpenCV for Android without an IDE</h1>
+<p class="date">2014-11-02</p>
+</header>
+<p>Getting OpenCV running on Android without an IDE like Android Studion
+or Eclipse is actually very simple. It is just underdocumented. So here
+it is.</p>
+<h2 id="installing-the-sdks">Installing the SDKs</h2>
+<p>If you haven’t already done so, install the <a
+href="https://developer.android.com/sdk/index.html?hl=i">Android SDK</a>
+and make sure the ‘/tools’ directory in the SDK directory is on the
+system path. Now download the <a
+href="http://sourceforge.net/projects/opencvlibrary/files/opencv-android/">OpenCV
+Android SDK</a> and unpack it in your workspace.</p>
+<pre><code>$ unzip OpenCV-2.4.x-android-sdk.zip</code></pre>
+<p>Another tool you need to install in order to be able to build from
+the command line is <code>ant</code>.</p>
+<h2 id="the-android-tool">The <code>android</code> tool</h2>
+<p>The <code>android</code> script, which can be found in
+<code>&lt;android-sdk-dir&gt;/tools</code> directory, is the primary
+tool we’ll use to manage our Android project from the command line. You
+can read more about it <a
+href="http://developer.android.com/tools/projects/projects-cmdline.html">here</a>.</p>
+<p>To use this and other SDK tools, it is convenient to add the
+<code>&lt;android-sdk-dir&gt;/tools</code> directory on the system
+path.</p>
+<h2 id="creating-a-new-android-app-project">Creating a new Android app
+project</h2>
+<p>To create a new project using the <code>android</code> tool, do</p>
+<pre><code>$ android create project --target 1 --name myproject\
+  --activity MainActivity --path myproject --package com.myproject</code></pre>
+<p>Note here the value taken by the <code>--target</code> option. It
+specifies the API level to build your project against. To see a list of
+available targets on your system, do</p>
+<pre><code>$ android list</code></pre>
+<p>And pick a target number. You can always install new target runtime
+APIs and other supporting libraries using the SDK manager, which you can
+invoke like so:</p>
+<pre><code>$ android</code></pre>
+<p>Just to verify that everything is working fine, connect an Android
+device to your dev machine, and compile and install the project, like
+so:</p>
+<pre><code>$ ant debug &amp;&amp; adb install -r bin/myproject-debug.apk</code></pre>
+<p>The app (called “MainActivity”) should now have been installed on
+your device.</p>
+<h2 id="setting-up-the-opencv-for-android-library-project">Setting up
+the OpenCV for Android library project</h2>
+<p>To properly initialize the OpenCV for Android SDK to use your target
+runtimes, go to the SDK library, which in my case at this point is
+<code>../OpenCV-2.4.x-android-sdk/sdk/java</code> and do</p>
+<pre><code>$ android update lib-project --target 1 --path .</code></pre>
+<h2 id="referencing-the-opencv-for-android-library">Referencing the
+OpenCV for Android library</h2>
+<p>Returning to our workspace, we should now have an Android app stub in
+<code>./myproject</code>. Now we need to make this project reference the
+OpenCV Android SDK. Do this like so</p>
+<pre><code>$ cd myproject
+$ android update project --path . --library ../OpenCV-2.4.x-android-sdk/sdk/java</code></pre>
+<h2 id="requesting-the-permission-to-use-the-hardware-camera">Requesting
+the permission to use the hardware camera</h2>
+<p>Change your <code>AndroidManifest.xml</code> to look like this:</p>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode xml"><code class="sourceCode xml"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;utf-8&quot;</span><span class="fu">?&gt;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">manifest</span><span class="ot"> xmlns:android=</span><span class="st">&quot;http://schemas.android.com/apk/res/android&quot;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="ot">        package=</span><span class="st">&quot;com.myproject&quot;</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="ot">        android:versionCode=</span><span class="st">&quot;1&quot;</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="ot">        android:versionName=</span><span class="st">&quot;1.0&quot;</span>&gt;</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">application</span><span class="ot"> android:label=</span><span class="st">&quot;@string/app_name&quot;</span><span class="ot"> android:icon=</span><span class="st">&quot;@drawable/ic_launcher&quot;</span>&gt;</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>        &lt;<span class="kw">activity</span><span class="ot"> android:name=</span><span class="st">&quot;MainActivity&quot;</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="ot">                    android:label=</span><span class="st">&quot;@string/app_name&quot;</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="ot">                    android:theme=</span><span class="st">&quot;@android:style/Theme.NoTitleBar.Fullscreen&quot;</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="ot">                    android:screenOrientation=</span><span class="st">&quot;landscape&quot;</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="ot">                    android:configChanges=</span><span class="st">&quot;keyboardHidden|orientation&quot;</span>&gt;</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>            &lt;<span class="kw">intent-filter</span>&gt;</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>                &lt;<span class="kw">action</span><span class="ot"> android:name=</span><span class="st">&quot;android.intent.action.MAIN&quot;</span> /&gt;</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>                &lt;<span class="kw">category</span><span class="ot"> android:name=</span><span class="st">&quot;android.intent.category.LAUNCHER&quot;</span> /&gt;</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>            &lt;/<span class="kw">intent-filter</span>&gt;</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>        &lt;/<span class="kw">activity</span>&gt;</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    &lt;/<span class="kw">application</span>&gt;</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">uses-permission</span><span class="ot"> android:name=</span><span class="st">&quot;android.permission.CAMERA&quot;</span> /&gt;</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">uses-feature</span><span class="ot"> android:name=</span><span class="st">&quot;android.hardware.camera&quot;</span></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="ot">                    android:required=</span><span class="st">&quot;false&quot;</span>/&gt;</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">uses-feature</span><span class="ot"> android:name=</span><span class="st">&quot;android.hardware.camera.autofocus&quot;</span></span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a><span class="ot">                    android:required=</span><span class="st">&quot;false&quot;</span>/&gt;</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">uses-feature</span><span class="ot"> android:name=</span><span class="st">&quot;android.hardware.camera.front&quot;</span></span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a><span class="ot">                    android:required=</span><span class="st">&quot;false&quot;</span>/&gt;</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">uses-feature</span><span class="ot"> android:name=</span><span class="st">&quot;android.hardware.camera.front.autofocus&quot;</span></span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a><span class="ot">                    android:required=</span><span class="st">&quot;false&quot;</span>/&gt;</span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">manifest</span>&gt;</span></code></pre></div>
+<p>The only change here is the addition of the permission declarations
+near the end and two attributes in the <code>&lt;activity&gt;</code> tag
+that are generally used in most camera applications.</p>
+<h2 id="adding-the-camera-view-to-the-layout">Adding the camera view to
+the layout</h2>
+<p>Change your <code>res/layout/main.xml</code> to look like this:</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode xml"><code class="sourceCode xml"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">&lt;?xml</span><span class="ot"> version=</span><span class="st">&quot;1.0&quot;</span><span class="ot"> encoding=</span><span class="st">&quot;utf-8&quot;</span><span class="fu">?&gt;</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>&lt;<span class="kw">LinearLayout</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="ot">    xmlns:android=</span><span class="st">&quot;http://schemas.android.com/apk/res/android&quot;</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="ot">    xmlns:tools=</span><span class="st">&quot;http://schemas.android.com/tools&quot;</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="ot">    xmlns:opencv=</span><span class="st">&quot;http://schemas.android.com/apk/res-auto&quot;</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="ot">    android:layout_width=</span><span class="st">&quot;match_parent&quot;</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="ot">    android:layout_height=</span><span class="st">&quot;match_parent&quot;</span> &gt;</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    &lt;<span class="kw">org.opencv.android.JavaCameraView</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="ot">        android:layout_width=</span><span class="st">&quot;fill_parent&quot;</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="ot">        android:layout_height=</span><span class="st">&quot;fill_parent&quot;</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="ot">        android:visibility=</span><span class="st">&quot;gone&quot;</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="ot">        android:id=</span><span class="st">&quot;@+id/cameraview&quot;</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="ot">        opencv:show_fps=</span><span class="st">&quot;true&quot;</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="ot">        opencv:camera_id=</span><span class="st">&quot;any&quot;</span> /&gt;</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>&lt;/<span class="kw">LinearLayout</span>&gt;</span></code></pre></div>
+<p>This uses a <code>SurfaceView</code> provided by the OpenCV SDK,
+called the <code>JavaCameraView</code>. This class handles the drawing
+of the preview frames and delivering them to our application for
+realtime processing.</p>
+<h2 id="camera-initialization">Camera initialization</h2>
+<p>OpenCV is a native library and has Java wrappers for Android. Because
+of this, we need to explicitly load the library before we attempt to use
+it. Note that failing to do so will cause your app to crash with an
+<code>UnsatisfiedLinkError</code>.</p>
+<p>Here’s the code for <code>src/com/myproject/MainActivity.java</code>.
+We’ll walk through it in a while.</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode java"><code class="sourceCode java"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">package</span><span class="im"> com</span><span class="op">.</span><span class="im">myproject</span><span class="op">;</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">opencv</span><span class="op">.</span><span class="im">android</span><span class="op">.*;</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">opencv</span><span class="op">.</span><span class="im">core</span><span class="op">.*;</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">opencv</span><span class="op">.</span><span class="im">imgproc</span><span class="op">.*;</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">opencv</span><span class="op">.</span><span class="im">android</span><span class="op">.</span><span class="im">CameraBridgeViewBase</span><span class="op">.</span><span class="im">CvCameraViewListener2</span><span class="op">;</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="im">org</span><span class="op">.</span><span class="im">opencv</span><span class="op">.</span><span class="im">android</span><span class="op">.</span><span class="im">CameraBridgeViewBase</span><span class="op">.</span><span class="im">CvCameraViewFrame</span><span class="op">;</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="im">android</span><span class="op">.</span><span class="im">app</span><span class="op">.</span><span class="im">Activity</span><span class="op">;</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="im">android</span><span class="op">.</span><span class="im">os</span><span class="op">.</span><span class="im">Bundle</span><span class="op">;</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="im">android</span><span class="op">.</span><span class="im">view</span><span class="op">.</span><span class="im">SurfaceView</span><span class="op">;</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="kw">import</span> <span class="im">android</span><span class="op">.</span><span class="im">util</span><span class="op">.</span><span class="im">Log</span><span class="op">;</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> <span class="kw">class</span> MainActivity <span class="kw">extends</span> Activity <span class="kw">implements</span> CvCameraViewListener2</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a><span class="op">{</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>    <span class="kw">private</span> CameraBridgeViewBase cameraView <span class="op">=</span> <span class="kw">null</span><span class="op">;</span></span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>    <span class="kw">private</span> <span class="dt">static</span> <span class="dt">final</span> <span class="bu">String</span> tag <span class="op">=</span> <span class="st">&quot;myproject&quot;</span><span class="op">;</span></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>    <span class="co">// This is called when OpenCV is loaded or when there is an error</span></span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>    <span class="co">// while loading OpenCV.</span></span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>    <span class="kw">private</span> BaseLoaderCallback opencvLoaderCallback <span class="op">=</span> <span class="kw">new</span> <span class="fu">BaseLoaderCallback</span><span class="op">(</span><span class="kw">this</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>        <span class="at">@Override</span></span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>        <span class="kw">public</span> <span class="dt">void</span> <span class="fu">onManagerConnected</span><span class="op">(</span><span class="dt">int</span> status<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>            <span class="cf">switch</span> <span class="op">(</span>status<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>            <span class="cf">case</span> LoaderCallbackInterface<span class="op">.</span><span class="fu">SUCCESS</span><span class="op">:</span></span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>            <span class="op">{</span></span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>                Log<span class="op">.</span><span class="fu">d</span><span class="op">(</span>tag<span class="op">,</span> <span class="st">&quot;Loaded OpenCV successfully&quot;</span><span class="op">);</span></span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>                <span class="co">// Init camera and start preview.</span></span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>                cameraView<span class="op">.</span><span class="fu">enableView</span><span class="op">();</span></span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span> <span class="cf">break</span><span class="op">;</span></span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>            <span class="kw">default</span><span class="op">:</span></span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>                <span class="kw">super</span><span class="op">.</span><span class="fu">onManagerConnected</span><span class="op">(</span>status<span class="op">);</span></span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>            <span class="op">}</span></span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>    <span class="op">};</span></span>
+<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a>    <span class="at">@Override</span></span>
+<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">onCreate</span><span class="op">(</span>Bundle savedInstanceState<span class="op">)</span></span>
+<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a>    <span class="op">{</span></span>
+<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a>        <span class="kw">super</span><span class="op">.</span><span class="fu">onCreate</span><span class="op">(</span>savedInstanceState<span class="op">);</span></span>
+<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a>        <span class="fu">setContentView</span><span class="op">(</span>R<span class="op">.</span><span class="fu">layout</span><span class="op">.</span><span class="fu">main</span><span class="op">);</span></span>
+<span id="cb10-44"><a href="#cb10-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-45"><a href="#cb10-45" aria-hidden="true" tabindex="-1"></a>        cameraView <span class="op">=</span> <span class="op">(</span>CameraBridgeViewBase<span class="op">)</span> <span class="fu">findViewById</span><span class="op">(</span>R<span class="op">.</span><span class="fu">id</span><span class="op">.</span><span class="fu">cameraview</span><span class="op">);</span></span>
+<span id="cb10-46"><a href="#cb10-46" aria-hidden="true" tabindex="-1"></a>        cameraView<span class="op">.</span><span class="fu">setVisibility</span><span class="op">(</span>SurfaceView<span class="op">.</span><span class="fu">VISIBLE</span><span class="op">);</span></span>
+<span id="cb10-47"><a href="#cb10-47" aria-hidden="true" tabindex="-1"></a>        cameraView<span class="op">.</span><span class="fu">setCvCameraViewListener</span><span class="op">(</span><span class="kw">this</span><span class="op">);</span></span>
+<span id="cb10-48"><a href="#cb10-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-49"><a href="#cb10-49" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb10-50"><a href="#cb10-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-51"><a href="#cb10-51" aria-hidden="true" tabindex="-1"></a>    <span class="at">@Override</span></span>
+<span id="cb10-52"><a href="#cb10-52" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">onResume</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb10-53"><a href="#cb10-53" aria-hidden="true" tabindex="-1"></a>        <span class="kw">super</span><span class="op">.</span><span class="fu">onResume</span><span class="op">();</span></span>
+<span id="cb10-54"><a href="#cb10-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-55"><a href="#cb10-55" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Load the OpenCV library asynchronously. The callback object</span></span>
+<span id="cb10-56"><a href="#cb10-56" aria-hidden="true" tabindex="-1"></a>        <span class="co">// opencvLoaderCallback will be notified when this is complete.</span></span>
+<span id="cb10-57"><a href="#cb10-57" aria-hidden="true" tabindex="-1"></a>        OpenCVLoader<span class="op">.</span><span class="fu">initAsync</span><span class="op">(</span>OpenCVLoader<span class="op">.</span><span class="fu">OPENCV_VERSION_2_4_3</span><span class="op">,</span> <span class="kw">this</span><span class="op">,</span> opencvLoaderCallback<span class="op">);</span> </span>
+<span id="cb10-58"><a href="#cb10-58" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb10-59"><a href="#cb10-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-60"><a href="#cb10-60" aria-hidden="true" tabindex="-1"></a>    <span class="at">@Override</span></span>
+<span id="cb10-61"><a href="#cb10-61" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">onPause</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb10-62"><a href="#cb10-62" aria-hidden="true" tabindex="-1"></a>        <span class="kw">super</span><span class="op">.</span><span class="fu">onPause</span><span class="op">();</span></span>
+<span id="cb10-63"><a href="#cb10-63" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb10-64"><a href="#cb10-64" aria-hidden="true" tabindex="-1"></a>        <span class="co">// Release the camera.</span></span>
+<span id="cb10-65"><a href="#cb10-65" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="op">(</span>cameraView <span class="op">!=</span> <span class="kw">null</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb10-66"><a href="#cb10-66" aria-hidden="true" tabindex="-1"></a>            cameraView<span class="op">.</span><span class="fu">disableView</span><span class="op">();</span></span>
+<span id="cb10-67"><a href="#cb10-67" aria-hidden="true" tabindex="-1"></a>            cameraView <span class="op">=</span> <span class="kw">null</span><span class="op">;</span></span>
+<span id="cb10-68"><a href="#cb10-68" aria-hidden="true" tabindex="-1"></a>        <span class="op">}</span></span>
+<span id="cb10-69"><a href="#cb10-69" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb10-70"><a href="#cb10-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-71"><a href="#cb10-71" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Begin implementation of CvCameraViewListener2</span></span>
+<span id="cb10-72"><a href="#cb10-72" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb10-73"><a href="#cb10-73" aria-hidden="true" tabindex="-1"></a>    <span class="co">// This method is called for every preview frame. It should return a</span></span>
+<span id="cb10-74"><a href="#cb10-74" aria-hidden="true" tabindex="-1"></a>    <span class="co">// Mat object representing the frame to be showed to the user.</span></span>
+<span id="cb10-75"><a href="#cb10-75" aria-hidden="true" tabindex="-1"></a>    <span class="at">@Override</span></span>
+<span id="cb10-76"><a href="#cb10-76" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> Mat <span class="fu">onCameraFrame</span><span class="op">(</span>CvCameraViewFrame frame<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb10-77"><a href="#cb10-77" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> frame<span class="op">.</span><span class="fu">gray</span><span class="op">();</span> </span>
+<span id="cb10-78"><a href="#cb10-78" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb10-79"><a href="#cb10-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-80"><a href="#cb10-80" aria-hidden="true" tabindex="-1"></a>    <span class="at">@Override</span></span>
+<span id="cb10-81"><a href="#cb10-81" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">onCameraViewStarted</span><span class="op">(</span><span class="dt">int</span> width<span class="op">,</span> <span class="dt">int</span> height<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb10-82"><a href="#cb10-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-83"><a href="#cb10-83" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb10-84"><a href="#cb10-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-85"><a href="#cb10-85" aria-hidden="true" tabindex="-1"></a>    <span class="at">@Override</span></span>
+<span id="cb10-86"><a href="#cb10-86" aria-hidden="true" tabindex="-1"></a>    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">onCameraViewStopped</span><span class="op">()</span> <span class="op">{</span></span>
+<span id="cb10-87"><a href="#cb10-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-88"><a href="#cb10-88" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb10-89"><a href="#cb10-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-90"><a href="#cb10-90" aria-hidden="true" tabindex="-1"></a>    <span class="co">// End implementation of CvCameraViewListener2</span></span>
+<span id="cb10-91"><a href="#cb10-91" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Compile and install this app like so</p>
+<pre><code>$ ant debug &amp;&amp; adb install -r bin/myproject-debug.apk</code></pre>
+<p>When you open the app first time, you may see a dialog that asks your
+permission to install the OpenCV manager app on the phone. Install that
+app and run MainActivity. You should now see a grayscale preview with an
+FPS count.</p>
+<h2 id="code-walkthrough">Code walkthrough</h2>
+<p>Most of the code is really easy to understand. Here’s the typical
+flow of events when the app is started.</p>
+<ul>
+<li><code>onCreate()</code> is called, which sets up the layout and
+initializes local variables.</li>
+<li><code>onResume()</code> is called, which requests for an async
+loading of OpenCV for Android. This is accomplished via the
+<code>OpenCVLoader.initAsync()</code> call, which, among other
+arguments, takes a <code>BaseLoaderCallback</code> object which is
+notified when loading is complete. In our implementation of the
+callback, we just enable the preview.</li>
+<li><code>onPause()</code> is called whenever the app is backgrounded by
+the user. We use this to release the camera. This is important because
+if we do not release the camera properly, no other app, including our
+own app can subsequently open the camera.</li>
+<li><code>onCameraFrame()</code>, a part of the
+<code>CvCameraViewListener2</code> interface, is called on <em>every
+preview frame</em>. It is the job of this method to process each frame
+and return a frame as a <code>Mat</code> object which will then be
+displayed to the user as preview. We are just returning a grayscale
+version of each frame now, which is available via
+<code>CvCameraViewFrame.gray()</code>. There is also
+<code>CvCameraView.rgba()</code>, which returns a <code>Mat</code>
+object in the RGBA format. For more information, refer to the <a
+href="http://docs.opencv.org/java/overview-summary.html">Javadocs for
+OpenCV for Android</a>.</li>
+</ul>
+<h2 id="canny-edge-detection">Canny edge detection</h2>
+<p>As a last demonstration of how processed frames are drawn on the
+preview, we’ll modify <code>onCameraFrame()</code> to detect edges in
+every frame.</p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode java"><code class="sourceCode java"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="at">@Override</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="kw">public</span> Mat <span class="fu">onCameraFrame</span><span class="op">(</span>CvCameraViewFrame frame<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    Mat gray <span class="op">=</span> frame<span class="op">.</span><span class="fu">gray</span><span class="op">();</span> </span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    Imgproc<span class="op">.</span><span class="fu">Canny</span><span class="op">(</span>gray<span class="op">,</span> gray<span class="op">,</span> <span class="dv">80</span><span class="op">,</span> <span class="dv">100</span><span class="op">,</span> <span class="dv">3</span><span class="op">,</span> <span class="kw">true</span><span class="op">);</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> gray<span class="op">;</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<p>Here, the <code>org.opencv.imgproc.Imgproc.Canny()</code> routine is
+used to detect edges and the resultant image with just edge information
+is returned, which is then drawn as preview.</p>
+<h2 id="final-words">Final words</h2>
+<p>Some people can’t imagine writing Android apps without an IDE. I
+can’t imagine struggling with bloat just to try something out quickly.
+There are some excellent plugins for both vim and emacs that make
+writing Java bearable without the bloated, slow and bug ridden IDEs.</p>
+</body>
+</html>

@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="dcterms.date" content="2013-01-20" />
+  <title>Common Lisp Collections</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Common Lisp Collections</h1>
+<p class="date">2013-01-20</p>
+</header>
+<p>Even though Lisp lists are remarkably powerful and flexible, they are
+not the only data-structure available in Common Lisp. Among the most
+useful other data structures are arrays and hash tables.</p>
+<h2 id="vectors">Vectors</h2>
+<p>Vectors in Common Lisp come in two flavours - fixed size and
+resizeable. The former are roughly the Lisp analogues of C/Java arrays
+and the latter are more like Python lists or C++
+<code>std::vector</code>.</p>
+<p>Vectors can be created using the <code>VECTOR</code> function by
+passing it an arbitrary number of elements in the vector:</p>
+<pre><code>CL-USER&gt; (vector 1 2 3)
+#(1 2 3)
+
+CL-USER&gt; (vector)
+#()</code></pre>
+<p>These calls return a <em>fixed-size</em> vector. Note that the
+literal syntax for vectors is <code>#(...)</code>.</p>
+<p>There is a more general function called <code>MAKE-ARRAY</code> that
+can make multi- dimensional arrays(including vectors, which are just 1-D
+arrays).</p>
+<pre><code>CL-USER&gt; (make-array 5)
+#(0 0 0 0 0)
+CL-USER&gt; (make-array &#39;(2 2))
+#2A((0 0) (0 0))
+CL-USER&gt; (make-array &#39;(5))
+#(0 0 0 0 0)</code></pre>
+<p>The only required argument to <code>MAKE-ARRAY</code> is the
+dimension of the array being requested, as a list. As a convenience,
+when we want a vector(i.e., only one dimension), we can skip wrapping
+the size of that dimension in a list - a bare number is accepted. This
+returns a <em>resizeable</em> vector. The arrays returned from
+<code>MAKE-ARRAY</code> may not have their elements initialized, so they
+may not be accessed before a <code>SETF</code> (this is not the case on
+SBCL at least, but it is a good idea to initialize anyway). To
+initialize all the elements of an array with a value, pass that value as
+the <code>:initial-element</code> keyword argument to
+<code>MAKE-ARRAY</code>.</p>
+<pre><code>CL-USER&gt; (make-array &#39;(2 2) :initial-element &quot;hola&quot;)
+#2A((&quot;hola&quot; &quot;hola&quot;) (&quot;hola&quot; &quot;hola&quot;))</code></pre>
+<p>Resizeable vectors have a <em>fill pointer</em> associated with them,
+which is basically the index of the next vacant position in the vector.
+To create a vector of capacity 5 which is initially empty, we must
+specify the <code>:fill-pointer</code> keyword argument to
+<code>MAKE-ARRAY</code> as 0.</p>
+<pre><code>CL-USER&gt; (make-array 5 :fill-pointer 0)
+#()
+CL-USER&gt; (make-array 5 :fill-pointer 1)
+#(0)
+CL-USER&gt; (make-array 5 :fill-pointer 1 :initial-element 10)
+#(10)</code></pre>
+<p>Once we have a resizeable vector, we can insert elements in it using
+the <code>VECTOR-PUSH</code> function, which adds an item at the fill
+pointer and increments the fill pointer value and returns the index at
+which the new element was inserted. The inverse to this is
+<code>VECTOR-POP</code>, which returns the last pushed element and
+decrements the fill pointer by one.</p>
+<p>Note that when you try to push past the allocated capacity of a
+vector, no push happens and <code>VECTOR-PUSH</code> returns
+<code>NIL</code> to signify this. To make truly resizeable vectors set
+the <code>:adjustable</code> keyword argument to non-nil when creating
+the vector using <code>MAKE-ARRAY</code>. To insert stuff into a
+resizeable vector, we use <code>VECTOR-PUSH-EXTEND</code>, which
+increases the capacity of the underlying storage if a push is attempted
+beyond the current capacity of the vector.</p>
+<pre><code>CL-USER&gt; (defparameter *x* (make-array 2 :fill-pointer 0))
+*X*
+CL-USER&gt; (vector-push &#39;a *x*)
+0
+CL-USER&gt; (vector-push &#39;b *x*)
+1
+CL-USER&gt; *x*
+#(A B)
+CL-USER&gt; (vector-push &#39;c *x*)
+NIL
+CL-USER&gt; *x*
+#(A B)
+;; Now a create a resizeable vector:
+CL-USER&gt; (defparameter *y* (make-array 2 :fill-pointer 0 :adjustable t))
+*Y*
+CL-USER&gt; (vector-push-extend &#39;a *y*)
+0
+CL-USER&gt; (vector-push-extend &#39;b *y*)
+1
+CL-USER&gt; *y*
+#(A B)
+CL-USER&gt; (vector-push-extend &#39;c *y*)
+2
+CL-USER&gt; *y*
+#(A B C)</code></pre>
+<p>One can create specialized vectors to hold strictly a particular type
+of elements by passing a type descriptor to <code>MAKE-ARRAY</code> via
+the <code>:element-type</code> keyword argument. So, one can create
+resizeable and mutable strings like so:</p>
+<pre><code>CL-USER&gt; (make-array 5 :fill-pointer 0 :adjustable t :element-type &#39;character)
+&quot;&quot;</code></pre>
+<p>Which implies that strings are actually implemented as vectors!</p>
+<p>Both lists and vectors(both the general and specialized variants) are
+a form of <em>sequences</em>, which is a higher level abstraction. This
+calls for operations that are valid on any sequence - i.e., operations
+common to vectors and lists.</p>
+<p>Two of them are <code>LENGTH</code> and <code>ELT</code>, for taking
+the length of a sequence and getting the element at a particular index
+in a sequence, respectively.</p>
+<p>There are some other functions that operate on sequences:</p>
+<p><code>COUNT</code> takes an item and a sequence and returns the
+number of occurrences of the item in that sequence.</p>
+<p><code>FIND</code> takes an item and a sequence and returns the item
+if it is found in the sequence and <code>NIL</code> otherwise.</p>
+<p><code>POSITION</code> takes an item and a sequence and returns the
+index of the first occurrence of the item in the sequence if found and
+<code>NIL</code> otherwise.</p>
+<p><code>REMOVE</code> takes an item and a sequence and <em>returns</em>
+a new sequence with all occurrences of the item removed.</p>
+<p><code>SUBSTITUTE</code> takes a new-item, item and a sequence and
+returns a new sequence with all occurrences of the item replaced by
+new-item.</p>
+<p>All these functions use the generic object equality test
+<code>EQL</code> when comparing two elements. But we can pass a custom
+function that tests the equality of two elements in the
+<code>:test</code> keyword argument. Further customization can be done
+by passing in a one argument function as the <code>:key</code> keyword
+argument which is applied on every element and the return value is used
+for the comparison.</p>
+<p>The <code>:start</code> and <code>:end</code> keyword arguments can
+be given the starting and (one past) the ending indices of the
+subsequence of the passed sequence to operate on. If the keyword
+argument <code>:from-end</code> is true, the (sub)sequence is operated
+on in reverse order.</p>
+<p>In addition to these, <code>SUBSTITUTE</code> and <code>REMOVE</code>
+take another keyword argument <code>:count</code> that specifies the
+number of elements to substitute of remove in the result.</p>
+<p>There is a class of sequence functions similar to the above, but
+which, instead of taking an element and a sequence, take a one argument
+predicate and a sequence. For example, <code>REMOVE-IF-NOT</code> takes
+a predicate and a sequence and returns a sequence with all the elements
+that satisfy that predicate. <code>REMOVE-IF</code>, on the other hand,
+does the opposite - returns a sequence with all elements that do NOT
+satisfy the predicate.</p>
+<pre><code>CL-USER&gt; (defparameter *n* #(1 2 3 4 5))
+*N*
+CL-USER&gt; (remove-if-not #&#39;evenp *n*)
+#(2 4)
+CL-USER&gt; (remove 1 *n*)
+#(2 3 4 5)
+CL-USER&gt; (find &#39;a #((a 1) (b 2) (c 3)))
+NIL
+CL-USER&gt; (find &#39;a #((a 1) (b 2) (c 3)) :key #&#39;first)
+(A 1)
+CL-USER&gt; (find &#39;a #((a 1) (b 2) (c 3) (a 4)) :key #&#39;first)
+(A 1)
+CL-USER&gt; (find &#39;a #((a 1) (b 2) (c 3) (a 4)) :key #&#39;first :from-end t)
+(A 4)
+CL-USER&gt; (substitute &#39;(g 1) &#39;a #((a 1) (b 2) (c 3) (a 4)) :key #&#39;first)
+#((G 1) (B 2) (C 3) (G 1))
+CL-USER&gt; (substitute &#39;(g 1) &#39;a #((a 1) (b 2) (c 3) (a 4)) :key #&#39;first :count 1)
+#((G 1) (B 2) (C 3) (A 4))
+CL-USER&gt; (substitute &#39;(g 1) &#39;a #((a 1) (b 2) (c 3) (a 4)) :key #&#39;first :count 1 :from-end t)
+#((A 1) (B 2) (C 3) (G 1))
+CL-USER&gt; (substitute-if &#39;(g 1) #&#39;(lambda (x) (eql (first x) &#39;a)) #((a 1) (b 2) (c 3) (a )))
+#((G 1) (B 2) (C 3) (G 1))</code></pre>
+<p><code>REMOVE-DUPLICATES</code> takes a sequence and removes all the
+duplicate elements, keeping the lasts of each kind in the default
+invocation. It takes the same keyword arguments as <code>REMOVE</code>
+except <code>:count</code>.</p>
+<pre><code>CL-USER&gt; (remove-duplicates #(1 1 1 2 1 3 4 5 1))
+#(2 3 4 5 1)
+CL-USER&gt; (remove-duplicates #(1 1 1 2 1 3 4 5 1) :from-end t)
+#(1 2 3 4 5)</code></pre>
+<p>Some functions that operate on sequences as a whole are also
+provided. For example, there is <code>COPY-SEQ</code> that returns a
+copy of its sole argument and there is <code>REVERSE</code> that returns
+a copy of its only argument with the items arranged in the reverse
+order.</p>
+<p>The <code>CONCATENATE</code> function creates and returns a new
+sequence by concatenating any number of sequences. It must also be given
+the type of the sequence we expect from it.</p>
+<pre><code>CL-USER&gt; (reverse #(1 2 3))
+#(3 2 1)
+CL-USER&gt; (reverse &#39;(1 2 3))
+(3 2 1)
+CL-USER&gt; (concatenate &#39;vector #(1 2 3) &#39;(a b c))
+#(1 2 3 A B C)
+CL-USER&gt; (concatenate &#39;list #(1 2 3) &#39;(a b c))
+(1 2 3 A B C)
+CL-USER&gt; (copy-seq #(1 2 3))
+#(1 2 3)</code></pre>
+<p><code>REVERSE</code> and <code>COPY-SEQ</code> return a sequence of
+the same type as their sole argument.</p>
+<p>Sorting and merging support is provided in the CL standard library
+via the <code>SORT</code>, <code>STABLE-SORT</code> and
+<code>MERGE</code> functions. Both <code>SORT</code> and
+<code>STABLE-SORT</code> are destructive functions and will modify their
+argument. Like <code>CONCATENATE</code>, <code>MERGE</code> also
+requires a type specifier as the first argument which becomes the type
+of the sequence returned.</p>
+<p><code>SUBSEQ</code> can be used to extract/assign-to
+subsequences.</p>
+<pre><code>CL-USER&gt; (subseq &quot;lama&quot; 1)
+&quot;ama&quot;
+CL-USER&gt; (concatenate &#39;string &quot;os&quot; (subseq &quot;lama&quot; 1))
+&quot;osama&quot;
+CL-USER&gt; (subseq &quot;obama&quot; 1 3)
+&quot;ba&quot;</code></pre>
+<p><code>SUBSEQ</code> returns a <code>SETF</code> able place, but it
+does not extend/shrink a sequence. If the new value and the subsequence
+to be replaces are of different lengths, the shorter one determines the
+number of characters actually replaced.</p>
+<pre><code>CL-USER&gt; (defparameter *x* (copy-seq &quot;foobarbaz&quot;))
+*X*
+CL-USER&gt; (subseq *x* 3 6)
+&quot;bar&quot;
+CL-USER&gt; (setf (subseq *x* 3 6) &quot;xxx&quot;)
+&quot;xxx&quot;
+CL-USER&gt; *x*
+&quot;fooxxxbaz&quot;
+CL-USER&gt; (setf (subseq *x* 3 6) &quot;abcs&quot;)
+&quot;abcs&quot;
+CL-USER&gt; *x*
+&quot;fooabcbaz&quot;
+CL-USER&gt; (setf (subseq *x* 3 6) &quot;xx&quot;)
+&quot;xx&quot;
+CL-USER&gt; *x*
+&quot;fooxxcbaz&quot;</code></pre>
+<h2 id="hashtables">Hashtables</h2>
+<p>Common Lisp has hash-tables, that are the CL analogs of Python dicts
+or the C++ <code>std::map</code>. A hashtable can be created using
+<code>MAKE-HASH-TABLE</code> which also accepts a <code>:test</code>
+keyword parameter, which can only be one of <code>EQL</code> (which is
+the default), <code>EQUAL</code>, <code>EQ</code> or
+<code>EQUALP</code>.</p>
+<p>The <code>GETHASH</code> function can be used to get the value stored
+in a hash under a key. The first argument to <code>GETHASH</code> is the
+key and the second is the hashtable. One can use <code>SETF</code> with
+<code>GETHASH</code> to set values in a hashtable. <code>GETHASH</code>
+returns two values - the first one is the value under the given key in
+the given hash table, or <code>NIL</code> if there is no such key. The
+second return value is a boolean which indicates whether the requested
+key was present in the hashtable or not. This is needed because the
+first return value being <code>NIL</code> can mean either the key is not
+present or that while the key is present, the value under the requested
+key is itself <code>NIL</code>.</p>
+<pre><code>CL-USER&gt; (defparameter *h* (make-hash-table))
+*H*
+CL-USER&gt; (gethash &#39;foo *h*)
+NIL
+NIL
+CL-USER&gt; (setf (gethash &#39;foo *h*) &quot;hello&quot;)
+&quot;hello&quot;
+CL-USER&gt; (gethash &#39;foo *h*)
+&quot;hello&quot;
+T
+CL-USER&gt; (setf (gethash &#39;foo *h*) &quot;hello&quot;)
+&quot;hello&quot;
+CL-USER&gt; (gethash :foo *h*)
+NIL
+NIL</code></pre>
+<p><code>REMHASH</code> takes the same arguments as <code>GETHASH</code>
+and removes the key given. <code>CLRHASH</code> clears an entire
+hashtable.</p>
+<h2 id="iterating-over-a-hashtable">Iterating over a hashtable</h2>
+<p>The <code>MAPHASH</code> function takes a two argument function and a
+hashtable and calls the passed function for each key-value pair in the
+hashtable. One can <code>SETF</code> and <code>REMHASH</code> the
+current entry, but other than that, adding/removing arbitrary elements
+to a hashtable leads to undefined behaviour.</p>
+<pre><code>CL-USER&gt; (defparameter *hashtab* (make-hash-table))
+*HASHTAB*
+CL-USER&gt; (setf (getf &#39;one *hashtab*) 1)
+
+1
+CL-USER&gt; (setf (getf &#39;two *hashtab*) 2)
+
+2
+CL-USER&gt; (maphash #&#39;(lambda (k v)
+                        (format t &quot;~a is counted out loud as ~a~%&quot; v k))
+                  *hashtab*)
+
+1 is counted out loud as ONE
+2 is counted out loud as TWO
+NIL</code></pre>
+<p>To conclude, Common Lisp is a very rich language, which sometimes
+makes it look ugly, just like C++, but I’ll take the ugliness of a
+practical, powerful language anyday over being circumscribed by an
+aesthetically pleasing toy language.</p>
+</body>
+</html>

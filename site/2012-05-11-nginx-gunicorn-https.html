@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="dcterms.date" content="2012-05-11" />
+  <title>Configuring an HTTPS site with Django on Nginx + Gunicorn</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Configuring an HTTPS site with Django on Nginx +
+Gunicorn</h1>
+<p class="date">2012-05-11</p>
+</header>
+<p>I have deployed quite a few Django powered sites on PaaS like <a
+href="https://openshift.redhat.com/app/">OpenShift</a>, <a
+href="https://developers.google.com/appengine/">Google AppEngine</a>.
+But I was required to deploy my final semester project on our college
+server, which turned out to be really difficult After a lot of work, I
+finally was able to deploy Django on <a
+href="http://wiki.nginx.org/Main">Nginx</a> and <a
+href="http://gunicorn.org/">Gunicorn</a> over HTTPS (my site uses HTTPS
+throughout).</p>
+<h2 id="the-dummy-project">The dummy project</h2>
+<p>Create the virtualenv for our project:</p>
+<pre><code>$ mkdir dummy
+
+$ virtualenv --no-site-packages dummy
+New python executable in dummy/bin/python
+Installing setuptools............done.
+Installing pip...............done.
+
+$ source ./dummy/bin/activate
+(dummy)$ pip install django</code></pre>
+<p>So now we’re working in the virtualenv and have the latest stable
+Django installed. Switch to your projects directory and start a new
+Django project.</p>
+<pre><code>(dummy)$ django-admin.py startproject dummy_project
+
+(dummy)$ cd dummy_project
+
+(dummy)$ ls
+manage.py dummy_project</code></pre>
+<p>Now test if this is working fine in Django’s development server:</p>
+<pre><code>(dummy)$ python manage.py runserver</code></pre>
+<p>and go to <code>http://localhost:8000/</code> in your browser. You
+should see the Django welcome page. Stop the development server for now
+and let’s move on to the next step.</p>
+<h2 id="installing-gunicorn">Installing Gunicorn</h2>
+<p>Gunicorn ‘Green Unicorn’ is a Python WSGI HTTP Server for UNIX. It is
+lightweight and supports Django out-of-the-box. To install, simply
+do</p>
+<pre><code>(dummy)$ pip install gunicorn</code></pre>
+<p>This will install Gunicorn in the current virtualenv (dummy here). To
+test if Gunicorn runs fine,</p>
+<pre><code>(dummy)$ cd /path/to/project/dir
+(dummy)$ gunicorn_django</code></pre>
+<p>You should see some output on the terminal. Point your browser to
+<code>http://localhost:8000/</code> again to see if it works.</p>
+<p>Now for deployment on a real production system, we’ll need to pass a
+couple more options to gunicorn. Let’s create a file called deploy.sh
+that contains the appropriate invocation for gunicorn</p>
+<pre><code>  #!/bin/bash
+  set -e
+  LOGFILE=/path/to/logdir/dummy.log
+  LOGDIR=$(dirname $LOGFILE)
+  # Number of worker processes. 
+  # Should be no less than the number of cores available and a popular formula
+  # is 1 + 2 * number of cores. 
+  NUM_WORKERS=3
+  
+  USER=youruser
+  
+  GROUP=youruser
+  
+  cd /path/to/project/dir
+  
+  # Activate the virtualenv - replace the path with the path to wherever your venv lives.
+  source /path/to/virtualenv/dummy/bin/activate
+  
+  test -d $LOGDIR || mkdir -p $LOGDIR
+  
+  # Finally, the invocation
+  gunicorn_django -w $NUM_WORKERS \
+      --user=$USER --group=$GROUP --log-level=debug \
+      --log-file=$LOGFILE 2&amp;gt;&amp;gt;$LOGFILE</code></pre>
+<p>Now make this file executable by doing</p>
+<pre><code>(dummy)$ chmod a+x deploy.sh</code></pre>
+<p>At this point, simply executing deploy.sh should bring up gunicorn
+and allow us to view the welcome page on
+<code>http://localhost:8000/</code></p>
+<h2 id="installing-and-configuring-supervisor">Installing and
+configuring Supervisor</h2>
+<p><a href="http://supervisord.org/">Supervisor</a> is a client/server
+system that allows its users to monitor and control a number of
+processes on UNIX-like operating systems. Why are we using it? Because
+it gives us control over our processes and we’re able to configure
+things like log file paths in a central place - the supervisor
+configuration file. Also, adding a new project is as easy as a new block
+in the configuration file. Installing is super-easy</p>
+<pre><code>(dummy)$ pip install supervisor</code></pre>
+<p>Supervisor has two components - the server(called
+<code>supervisord</code>), which daemonizes when run and the client
+tool(called <code>supervisorctl</code>), which is used to start/stop our
+programs. Let’s write the configuration file for supervisord.</p>
+<p>Place the following in the <code>etc</code> directory in your
+virtualenv - e.g., <code>/path/to/venv/dummy/etc/</code> as
+<code>supervisord.conf</code></p>
+<pre><code>  [program:dummy]
+  directory = /path/to/project/dir
+  user = youruser
+  command = /path/to/deploy.sh
+  stdout_logfile = /path/to/dummy.log
+  stderr_logfile = /path/to/dummy.log
+
+  [unix_http_server]
+  file=/tmp/supervisor.sock   ; (the path to the socket file)
+
+  [supervisord]
+  logfile=/tmp/supervisord.log ; (main log file;default $CWD/supervisord.log)
+  logfile_maxbytes=50MB        ; (max main logfile bytes b4 rotation;default 50MB)
+  logfile_backups=10           ; (num of main logfile rotation backups;default 10)
+  loglevel=info                ; (log level;default info; others: debug,warn,trace)
+  pidfile=/tmp/supervisord.pid ; (supervisord pidfile;default supervisord.pid)
+  nodaemon=false               ; (start in foreground if true;default false)
+  minfds=1024                  ; (min. avail startup file descriptors;default 1024)
+  minprocs=200                 ; (min. avail process descriptors;default 200)
+
+  [rpcinterface:supervisor]
+  supervisor.rpcinterface_factory = supervisor.rpcinterface:make_main_rpcinterface
+
+  [supervisorctl]
+  serverurl=unix:///tmp/supervisor.sock ; use a unix:// URL  for a unix socket</code></pre>
+<p>Be very sure to change the parameters according to your settings.
+Once the conf file is written, we can start <code>supervisord</code> as
+root (because it needs to daemonize). You will need to <code>su</code>
+to root and then activate the <code>dummy</code> virtualenv. Then do</p>
+<pre><code>(dummy)# supervisord</code></pre>
+<p>At this point, you may want to read up on the official
+<code>Supervisor</code>_ docs.</p>
+<p>Okay so let us test Supervisor. As root (and in the
+<code>dummy</code> virtualenv), do</p>
+<pre><code>(dummy)# supervisorctl start dummy</code></pre>
+<p>Then check with your browser. To stop,</p>
+<pre><code>(dummy)# supervisorctl stop dummy</code></pre>
+<p>Note that running this as root does not expose any security threats,
+as supervisorctl runs the actual process as the user indicated in the
+config file. So unless <em>that</em> is set to root, you’re okay. After
+ensuring supervisor is running fine, move on to the next step:</p>
+<h2 id="installing-and-configuring-nginx">Installing and configuring
+Nginx</h2>
+<p>nginx [engine x] is an HTTP and reverse proxy server, as well as a
+mail proxy server, written by Igor Sysoev. It is used widely to serve
+static files, but we’ll also use it as a reverse proxy for our upstream
+gunicorn server. Basically, nginx will handle all real requests from the
+outside world, and delegate these to the gunicorn server running on port
+8000 (or whichever port you decide to run it on). Requests for static
+files will be directly served by nginx.</p>
+<p>To install nginx on Fedora or RedHat,</p>
+<pre><code># yum install nginx</code></pre>
+<p>On Debian/Ubuntu, just use <code>apt-get</code> instead of
+<code>yum</code></p>
+<p>Once installed, let’s configure Nginx. You should read up on the
+official Nginx docs to know how to configure vhosts, but to keep it
+simple here, let’s modify the default config file which, on my Fedora
+box, sits at <code>/etc/nginx/conf.d/default.conf</code>. I wanted all
+areas of my site SSL protected. If you have an area in your site that
+does not <em>need</em> to have SSL/TLS, please do not use it - it is
+unnecessary hard work for the server. But if you need it, do not shy
+away.</p>
+<p>To configure SSL, we first need to have our SSL certificate - which
+can be later signed by a renowned certificate authority(CA) like
+Verisign. First install OpenSSL on your system</p>
+<pre><code># yum install openssl</code></pre>
+<p>Then, change to a directory where you want to store your certificate
+- note that while this directory must be readable by Nginx, it must not
+be readable by all users, as it will contain the server’s private key.
+Once you’re in the directory, say <code>/path/to/cert/</code></p>
+<p>Create the private key:</p>
+<pre><code>$ openssl genrsa -out dummy-key.pem 1024</code></pre>
+<p>Create the CSR - Certificate Signing Request file(sent to CAs to sign
+our certificate)</p>
+<pre><code>$ openssl req -new -key dummy-key.pem -out dummy-csr.pem</code></pre>
+<p>We’re not sending this CSR over to a CA now. Instead, we’ll
+“self-sign” it:</p>
+<pre><code>$ openssl x509 -req -in dummy-csr.pem -signkey dummy-key.pem -out dummy-cert.pem</code></pre>
+<p>This generates the certificate in <code>dummy-cert.pem</code></p>
+<p>Now to configure Nginx. Open up
+<code>/etc/nginx/conf.d/default.conf</code> (on Fedora) and edit it as
+follows:</p>
+<pre><code>#
+# The default server
+#
+server {
+    listen 80;
+    # If you want certain Non-SSL areas on your site, add a location block here
+    # read up on the nginx docs.
+    # Be sure to replace localhost in the following rule to the server name/IP address.
+    return 301 https://localhost/;
+}
+server {
+    listen  443 ssl;
+    # server_name  _;
+    # start mine
+    ssl on;
+    ssl_certificate /path/to/cert/dummy-cert.pem;
+    ssl_certificate_key /path/to/cert/dummy-key.pem;
+    ssl_protocols        SSLv3 TLSv1 TLSv1.1 TLSv1.2;
+    ssl_ciphers          HIGH:!aNULL:!MD5;
+    server_name localhost;
+    # full path to the project dir - the dir that contains the urls.py file
+    root /path/to/project/dir/dummy;
+    access_log /path/to/logdir/nginx_access.log;
+    error_log /path/to/logdir/nginx_error.log;
+
+    location /static/{
+        autoindex on;
+        # The path to the actual project directory here - the one which contains the static/ 
+        # dir holding the static files for this project
+        root /path/to/project/dir/dummy;
+    }
+
+    location / {
+        proxy_pass_header Server;
+        proxy_set_header Host $http_host;
+        proxy_redirect off;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Scheme $scheme;
+        proxy_connect_timeout 10;
+        proxy_read_timeout 10;
+        proxy_pass http://localhost:8000/;
+    }
+
+    error_page  404              /404.html;
+    location = /404.html {
+        root   /usr/share/nginx/html;
+    }
+
+    # redirect server error pages to the static page /50x.html
+    #
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+}</code></pre>
+<p>The first <code>server</code> block is for HTTP(port 80). Since I
+want all HTTP requests to be redirected to use HTTPS, we return a HTTP
+301(permanent redirect) to our HTTPS server (BTW, HTTPS standard port is
+443).</p>
+<p>The next <code>server</code> block configures SSL by pointing Nginx
+to the private key and certificate we created. Now in the settings
+module of your Django project, do these settings:</p>
+<pre><code>import os
+SESSION_COOKIE_SECURE = True
+STATIC_ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), &#39;static&#39;)
+
+# URL prefix for static files.
+# Example: &quot;http://media.lawrence.com/static/&quot;
+STATIC_URL = &#39;/static/&#39;</code></pre>
+<p>Once that is done, start up Nginx as root(on Fedora):</p>
+<pre><code># service nginx start</code></pre>
+<p>If that does not work, simply start nginx:</p>
+<pre><code># nginx</code></pre>
+<p>Now, from the virtualenv, start our “program” using
+<code>supervisorctl</code>:</p>
+<pre><code>(dummy)# supervisorctl start dummy</code></pre>
+<p>Point your browser to <code>https://localhost/</code> to see your app
+working. Note that since the digital certificate we created is
+self-signed, browsers will typically show a warning when using HTTPS.
+This is normal. On <em>real</em> production systems using HTTPS, you
+should get your certificate signed by a CA. It costs some money to get
+the CA issue a signed certifcate to you, but it is worth it.</p>
+<p>That is all there is to deploying a Django app on Nginx + Gunicorn
+over HTTPS.</p>
+</body>
+</html>

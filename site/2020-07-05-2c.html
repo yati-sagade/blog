@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="dcterms.date" content="2020-07-05" />
+  <title>Two’s complement arithmetic is magic</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Two’s complement arithmetic is magic</h1>
+<p class="date">2020-07-05</p>
+</header>
+<p>Recently I revisited two’s complement arithmetic. It’s one of the
+coolest tricks I’ve seen.</p>
+<p>Computers internally represent integers (whole numbers like -1, 0,
+42) with a a fixed number of bits. Consider a tiny computer that allows
+only 3-bit integers. So if we are talking only non-negative integers, 0
+could be coded as the bit vector 000, 1 as 001, 2 as 010, … 7 as 111.
+This is just one possible coding, probably the most obvious one.</p>
+<p>But say we also want to represent negative integers. A simple coding
+there could be to treat the most significant (leftmost) bit as the sign
+bit, and the remaining two bits for absolute value of the integer being
+represented. Here’s a possible mapping:</p>
+<pre><code>000 --&gt; +0
+001 --&gt; +1
+010 --&gt; +2
+011 --&gt; +3
+100 --&gt; -0
+101 --&gt; -1
+110 --&gt; -2
+111 --&gt; -3</code></pre>
+<p>Note two points:</p>
+<ol type="1">
+<li>There are two zeros, which means we waste one combination of bits
+(000 and 100 both are technically the number 0; we could have used one
+of them for an extra integer, either in the negative or the positive
+half)</li>
+<li>We need to build circuitry to be aware of negative numbers for
+operations like addition (adding a positive and a negative should
+produce a sign bit equal to the larger of the two numbers, and should
+have the value equal to the bitwise <em>subtractions</em> of the
+respective values).</li>
+</ol>
+<p>Another coding of negative numbers, called the two’s complement
+encoding, sidesteps both of these issues. Here’s how the coding
+looks:</p>
+<pre><code>000 --&gt; +0
+001 --&gt; +1
+010 --&gt; +2
+011 --&gt; +3
+100 --&gt; -4
+101 --&gt; -3
+110 --&gt; -2
+111 --&gt; -1</code></pre>
+<p>In this approach, the core idea is this: When we <em>add</em> (using
+the usual bitwise addition rules) together the bitvector representing an
+integer N and its negative -N, the result should be a bit vector 1
+followed by as many zeros as our representation’s bit width. So adding
++1 (001) and -1 (111) gives 1000. So does adding +2 (010) and -2 (110).
+Technically, these pairs are called two’s complements of each other –
+Any two numbers representable with &lt;=
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>W</mi><annotation encoding="application/x-tex">W</annotation></semantics></math>
+bits that add up together to give exactly
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mn>2</mn><mi>W</mi></msup><annotation encoding="application/x-tex">2^W</annotation></semantics></math>
+are two’s complements of each other. In our example,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>W</mi><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">W=3</annotation></semantics></math>,
+so
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mi>W</mi></msup><mo>=</mo><mn>8</mn></mrow><annotation encoding="application/x-tex">2^W = 8</annotation></semantics></math>,
+which is written 1000 in binary.</p>
+<p>One exception here is -4, which does not have its corresponding
+positive under this coding. That’s because its two’s complement for a
+3-bit representation is itself! (100 + 100 = 1000). In general, in the
+2c representation, the negative half is always exactly one element
+larger than the positive half, owing to one element in the positive half
+being allotted to 0.</p>
+<p>Here’s the cool bit: Say we want to subtract a number from itself.
+One way to do this is to add the number to its negative. As shown above,
+in the two’s complement representation, this operation always produces
+1000. That’s 4 bits, but we only have 3 bits. What happens in this case?
+The left most bit is simply discarded (it “overflows”), and we are left
+with 000, which is 0, which should be the result of subtracting a number
+from itself! Now this works no matter what representible numbers we
+pick: Consider subtracting 1 from 3. That’s the same as adding -1 and
+3:</p>
+<pre><code>   111      (-1)
+   011      (+3)
+   ---------
+ 1 010
+ ^ ^^^------(+2)
+ |
+ discard</code></pre>
+<p>Note that one “feature” of this representation is that incrementing
+the highest positive value “wraps” the result to the most negative value
+(incrementing 011, which is +3 gives 100, which is -4).</p>
+<p>One way to easily compute the two’s complement (for bit width W):</p>
+<ol type="1">
+<li>First write down the number in binary, with necessary padding on the
+left with 0’s to fill all of W bits.</li>
+<li>Flip the bits (0s become 1s, 1s become 0s).</li>
+<li>Add 1 to the result</li>
+</ol>
+<p>BTW the result of step (2) above is called the one’s complement of
+the original number: When you add a number with its one’s complement,
+you get a bitvector of all 1’s, W-bits wide (e.g., one’s complement, for
+a 3-bit representation, of 001 is 110, because adding them together
+gives 111).</p>
+<p>Today’s computers do not have 3 bit integers: an <code>int64</code>
+is quite standard, and it stands for 64 bit wide bit-vector, internally
+represented exactly as above: The positive half goes from
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0</mn><annotation encoding="application/x-tex">0</annotation></semantics></math>
+to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mn>63</mn></msup><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">2^{63} - 1</annotation></semantics></math>,
+and the negative half from
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>−</mo><msup><mn>2</mn><mn>63</mn></msup></mrow><annotation encoding="application/x-tex">-2^{63}</annotation></semantics></math>
+to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">-1</annotation></semantics></math>.</p>
+<p>See <a
+href="https://www.cs.cornell.edu/~tomf/notes/cps104/twoscomp.html">this
+page</a> and the <a
+href="https://en.wikipedia.org/wiki/Two%27s_complement">Wikipedia
+entry</a> for more discussion.</p>
+</body>
+</html>

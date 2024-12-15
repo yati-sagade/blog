@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="dcterms.date" content="2015-04-25" />
+  <title>SICP excercises 1.17 and 1.18 - Multiplication using addition, doubling and halving</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">SICP excercises 1.17 and 1.18 - Multiplication using
+addition, doubling and halving</h1>
+<p class="date">2015-04-25</p>
+</header>
+<p>These two exercises ask us to implement a multiplication routine
+assuming we can only add, double, and halve even numbers. The first
+implementation is a straightforward translation of the facts that the
+product of two numbers
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math></span>
+and
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math></span>
+is given by <span>$ab = 2 ( a { 2} )
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mi>/</mi><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo><mi>f</mi><mi>o</mi><mi>r</mi><mi>e</mi><mi>v</mi><mi>e</mi><mi>n</mi><mi>v</mi><mi>a</mi><mi>l</mi><mi>u</mi><mi>e</mi><mi>s</mi><mi>o</mi><mi>f</mi><mo>&lt;</mo><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">&lt;/span&gt; for even values of &lt;span&gt;</annotation></semantics></math>b<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mi>/</mi><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo><mi>a</mi><mi>n</mi><mi>d</mi><mo>&lt;</mo><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">&lt;/span&gt; and
+&lt;span&gt;</annotation></semantics></math>ab = a(b-1) +
+a<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mi>/</mi><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo><mi>f</mi><mi>o</mi><mi>r</mi><mi>o</mi><mi>d</mi><mi>d</mi><mi>v</mi><mi>a</mi><mi>l</mi><mi>u</mi><mi>e</mi><mi>s</mi><mi>o</mi><mi>f</mi><mo>&lt;</mo><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">&lt;/span&gt; for odd values of &lt;span&gt;</annotation></semantics></math>b$</span>.
+Here is the code:</p>
+<pre><code>(define (fast* a b)
+  (cond ((= b 1) a)
+        ((even? b) (double (fast* a (halve b))))
+        (else (+ a (fast* a (- b 1))))))</code></pre>
+<p>This assumes that the routines <code>double</code> and
+<code>halve</code> are available.</p>
+<p>Note that in this algorithm, doubling
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math></span>
+will only increase the total number of steps (and the height of the call
+stack) by one. This means we have a process that consumes
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Θ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mo>lg</mo><mi>b</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\Theta \left( \lg b \right)</annotation></semantics></math></span>
+space and time.</p>
+<p>Now to implement an iterative version of logarithmic time
+multiplication which takes constant space. When designing an iterative
+process, it helps to think about an expression involving the state
+variables of the process which will evaluate to the same value, across
+iterative transformations, for a particular invocation of the process.
+In this case, we shall use the expression
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mi>b</mi><mo>+</mo><mi>c</mi></mrow><annotation encoding="application/x-tex">ab + c</annotation></semantics></math>,
+with the assertion that this expression always evaluates to the intended
+product. For example, if we invoke our procedure with values
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>=</mo><msub><mi>a</mi><mn>0</mn></msub></mrow><annotation encoding="application/x-tex">a=a_0</annotation></semantics></math></span>
+and
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>b</mi><mo>=</mo><msub><mi>b</mi><mn>0</mn></msub></mrow><annotation encoding="application/x-tex">b=b_0</annotation></semantics></math></span>
+and another state variable
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>c</mi><annotation encoding="application/x-tex">c</annotation></semantics></math></span>,
+at any point in the iteration, say, the
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>t</mi><mrow><mi>t</mi><mi>h</mi></mrow></msup><annotation encoding="application/x-tex">t^{th}</annotation></semantics></math><span>
+step,
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>a</mi><mi>t</mi></msub><msub><mi>b</mi><mi>t</mi></msub><mo>+</mo><msub><mi>c</mi><mi>t</mi></msub></mrow><annotation encoding="application/x-tex">a_t b_t + c_t</annotation></semantics></math></span>
+must equal
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>a</mi><mn>0</mn></msub><msub><mi>b</mi><mn>0</mn></msub></mrow><annotation encoding="application/x-tex">a_0 b_0</annotation></semantics></math></span>.
+This means the only choice for
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>c</mi><mn>0</mn></msub><annotation encoding="application/x-tex">c_0</annotation></semantics></math></span>,
+the initial value of the state variable
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>c</mi><annotation encoding="application/x-tex">c</annotation></semantics></math></span>
+is
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>c</mi><mn>0</mn></msub><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">c_0 = 0</annotation></semantics></math></span>.</p>
+<p>Next, the transformations will be as follows.</p>
+<p>For even
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math>,</p>
+<p><span class="math display">$$
+a \gets 2a \\\\
+b \gets \frac {b} {2}
+$$</span></p>
+<p>For odd
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math>,
+<span class="math display">$$
+b \gets b-1 \\\\
+c \gets a + c
+$$</span></p>
+<p>Finally, when
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>b</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">b = 0</annotation></semantics></math></span>,
+we return
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>c</mi><annotation encoding="application/x-tex">c</annotation></semantics></math></span>
+as the result. Here’s the code:</p>
+<pre><code>(define (iter* a b)
+  (define (aux a b c)
+    ;; The invariant is that a*b + c always equals the intended product.
+    (cond ((= b 0) c)
+          ((even? b) (aux (double a) (halve b) c))
+          (else (aux a (- b 1) (+ a c)))))
+  (aux a b 0))</code></pre>
+<p>We can see that just like the previous recursive <code>fast*</code>,
+<code>iter*</code> also takes
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Θ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mo>lg</mo><mi>b</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\Theta \left( \lg b \right)</annotation></semantics></math></span>
+steps. But unlike <code>fast*</code>, <code>iter*</code> takes
+<em>constant</em> or
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Θ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\Theta \left( 1 \right)</annotation></semantics></math></span>
+space, to store the state variables <code>a</code>, <code>b</code> and
+<code>c</code>.</p>
+</body>
+</html>

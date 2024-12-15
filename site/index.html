@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Explog</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Explog</h1>
+</header>
+<h2>
+<a href="2023-06-18-typechecking-calculator.html">Writing a
+type-checking calculator</a>
+</h2>
+<p>
+To learn about typecheckers, I decided to make a small typed calculator.
+I figured this could be
+use…(<a href="2023-06-18-typechecking-calculator.html">read</a>)
+</p>
+<h2>
+<a href="2023-04-30-cnn-notes.html">Notes on CNNs</a>
+</h2>
+<p>
+These are my notes about CNNs, some toy code in [this
+colab](https://colab.research.google.com/drive…(<a href="2023-04-30-cnn-notes.html">read</a>)
+</p>
+<h2>
+<a href="2023-05-22-attention-db.html">Attention - this value does not
+exist</a>
+</h2>
+<p>
+Here, we play with the attention mechanism and word embeddings to get
+make a KV store that fuzzily
+s…(<a href="2023-05-22-attention-db.html">read</a>)
+</p>
+<h2>
+<a href="2022-12-31-python-for.html">Python’s for loop syntax is more
+flexible than I thought!</a>
+</h2>
+<p>
+<p>I came across an expression like:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> <span class="va">self</span>.batch <span class="kw">in</span> batches:</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    ...</span></code></pre></div>
+I had no idea o…(<a href="2022-12-31-python-for.html">read</a>)
+</p>
+<h2>
+<a href="2022-08-14-tihai.html">Tihai in Indian music</a>
+</h2>
+<p>
+The rhythmic aspect of Indian classical music uses cycles of a fixed
+number of beats. Familiar
+West…(<a href="2022-08-14-tihai.html">read</a>)
+</p>
+<h2>
+<a href="2022-07-17-seeueberquerung.html">Seeüberquerung 2022</a>
+</h2>
+<p>
+I participated in the <a
+href="https://www.seeueberquerung.ch/en/">Seeüberquerung</a> this year.
+About 6500 peo…(<a href="2022-07-17-seeueberquerung.html">read</a>)
+</p>
+<h2>
+<a href="2022-03-12-thoughts-on-quantum-programming.html">Quantum
+programming baby steps</a>
+</h2>
+<p>
+After getting the basics of QC down with <a
+href="https://quantum.country/">quantum.country</a>, I find
+thinkin…(<a href="2022-03-12-thoughts-on-quantum-programming.html">read</a>)
+</p>
+<h2>
+<a href="2022-03-12-del-escape.html">Remapping delete to escape on Arch
+Linux</a>
+</h2>
+<p>
+This will work for X based installations, and not just for the Del key.
+KDE/Gnome usually have
+tools…(<a href="2022-03-12-del-escape.html">read</a>)
+</p>
+<h2>
+<a href="2022-03-05-bloch-sphere.html">The Bloch sphere</a>
+</h2>
+<p>
+This video is the best derivation I found:
+[https://www.youtube.com/watch?v=a-dIl1Y1aTs](https://www…(<a href="2022-03-05-bloch-sphere.html">read</a>)
+</p>
+<h2>
+<a href="2020-11-03-whichwnd.html">What program does that dialog pop-up
+come from?</a>
+</h2>
+<p>
+<p><img src="/whichwnd0.png" height="400px" width="800px" /></p>
+I got this pop-up recently and while it
+m…(<a href="2020-11-03-whichwnd.html">read</a>)
+</p>
+<h2>
+<a href="2020-07-05-2c.html">Two’s complement arithmetic is magic</a>
+</h2>
+<p>
+<p>Recently I revisited two’s complement arithmetic. It’s one of the
+coolest tricks I’ve seen.</p>
+Compute…(<a href="2020-07-05-2c.html">read</a>)
+</p>
+<h2>
+<a href="2020-03-21-fortunate.html">I am very fortunate</a>
+</h2>
+<p>
+The COVID-19 situation is the first such in my life. It has affected me
+and my family in various
+way…(<a href="2020-03-21-fortunate.html">read</a>)
+</p>
+<h2>
+<a href="2020-02-08-tabla-00.html">Starting Tabla</a>
+</h2>
+<p>
+When I moved to Zürich last year, I was drawn to percussion in general.
+I played around with a
+drum-…(<a href="2020-02-08-tabla-00.html">read</a>)
+</p>
+<h2>
+<a href="2020-01-04-36c3-report.html">My first Chaos Communication
+Congress, 36c3</a>
+</h2>
+<p>
+The 36th Chaos Communication Congress took place in Leipzig from 26-30
+December, 2019. I’d always
+w…(<a href="2020-01-04-36c3-report.html">read</a>)
+</p>
+<h2>
+<a href="2019-01-12-perl-attributes.html">Tagging functions with
+attributes in Perl</a>
+</h2>
+<p>
+Suppose we have a Perl module that allows us to query a set of business
+objects (for example,
+purcha…(<a href="2019-01-12-perl-attributes.html">read</a>)
+</p>
+<h2>
+<a href="2019-01-12-rust-borrowck.html">Embrace the borrow checker</a>
+</h2>
+<p>
+The borrow checker is arguably one of the biggest sources of frustration
+when learning Rust. Once
+th…(<a href="2019-01-12-rust-borrowck.html">read</a>)
+</p>
+<h2>
+<a href="2018-12-16-xattr.html">Extended File Attributes on Linux</a>
+</h2>
+<p>
+Files already have a lot of user accessible metadata associated with
+them – the last time of
+modifi…(<a href="2018-12-16-xattr.html">read</a>)
+</p>
+<h2>
+<a href="2018-09-02-co-hamiltonian.html">Why I believe P ≠ NP</a>
+</h2>
+<p>
+<h2 id="the-hamcycle-problem">The HAMCYCLE problem</h2>
+If a graph
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>V</mi><mo>,</mo><mi>E</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">G\left(V, E\right)</annotation></semantics></math>
+contains a [Hamiltonian cycle][1], we can
+p…(<a href="2018-09-02-co-hamiltonian.html">read</a>)
+</p>
+<h2>
+<a href="2018-06-24-creating-lockfiles.html">Creating lock-files in
+Unix</a>
+</h2>
+<p>
+Lockfiles are commonly used for process level mutal exclusion. For
+example, a cronjob processing
+hou…(<a href="2018-06-24-creating-lockfiles.html">read</a>)
+</p>
+<h2>
+<a href="2018-01-28-imagenet-deep-cnn-summary.html">Summary of “ImageNet
+Classification with Deep Convolutional Neural Networks”</a>
+</h2>
+<p>
+I decided to read interesting deep learning papers often and try to
+summarize them to aid my own
+und…(<a href="2018-01-28-imagenet-deep-cnn-summary.html">read</a>)
+</p>
+<h2>
+<a href="2018-01-16-ipc-run.html">Spawn, log, reap children with
+IPC::Run</a>
+</h2>
+<p>
+<p>In testing my implementation of a [distributed failure detector][1],
+I needed to be able to:</p>
+<ol type="1">
+<li>Spa…(<a href="2018-01-16-ipc-run.html">read</a>)
+</p></li>
+</ol>
+<h2>
+<a href="2017-10-19-bakery-algorithm.html">The bakery algorithm for
+mutual exclusion</a>
+</h2>
+<p>
+The [bakery algorithm][1] was proposed by Leslie Lamport as a solution
+to Dijkstra’s concurrent
+prog…(<a href="2017-10-19-bakery-algorithm.html">read</a>)
+</p>
+<h2>
+<a href="2017-09-16-optimal-fd-load.html">Optimal failure detector
+performance</a>
+</h2>
+<p>
+This is a note to self on computing the lower bound on number of
+messages each process in a
+distribu…(<a href="2017-09-16-optimal-fd-load.html">read</a>)
+</p>
+<h2>
+<a href="2017-09-10-analyzing-gossip.html">Analysis of gossip based
+dissemination</a>
+</h2>
+<p>
+Gossip based protocols are widely used in distributed systems for robust
+dissemination of
+informatio…(<a href="2017-09-10-analyzing-gossip.html">read</a>)
+</p>
+<h2>
+<a href="2017-09-08-simple-rsync-backup.html">A simple backup setup
+using rsync</a>
+</h2>
+<p>
+Suppose we have a bunch of files we’d like to have backed up on a remote
+host periodically. In this
+…(<a href="2017-09-08-simple-rsync-backup.html">read</a>)
+</p>
+<h2>
+<a href="2017-08-12-cryptographic-hash-function.html">Cryptographic hash
+functions</a>
+</h2>
+<p>
+Hashing is commonly used when we want to reduce a message of an
+arbitrary size to a fixed length
+“di…(<a href="2017-08-12-cryptographic-hash-function.html">read</a>)
+</p>
+<h2>
+<a href="2017-07-30-church-numerals.html">Doing numbers without the
+numbers</a>
+</h2>
+<p>
+Numbers are abstractions invented by humans to aid with various
+activities, mainly counting, and
+som…(<a href="2017-07-30-church-numerals.html">read</a>)
+</p>
+<h2>
+<a href="2017-07-08-sicp-contfrac.html">SICP exercises 1.37-39</a>
+</h2>
+<p>
+In [these exercises][1], we deal with [continued fractions][2]. These
+are remarkable ways of
+writing…(<a href="2017-07-08-sicp-contfrac.html">read</a>)
+</p>
+<h2>
+<a href="2017-07-01-bash-kill-process.html">Killing a process group with
+a timeout in bash</a>
+</h2>
+<p>
+On Linux, most programs that daemonize write their process number to a
+file, which can be used to
+se…(<a href="2017-07-01-bash-kill-process.html">read</a>)
+</p>
+<h2>
+<a href="2016-11-06-opencv-video-file.html">Writing video captured using
+OpenCV to a file</a>
+</h2>
+<p>
+This approach requires [ffmpeg][1] (forked to [avconv][2] on Debian),
+and is not really limited to
+O…(<a href="2016-11-06-opencv-video-file.html">read</a>)
+</p>
+<h2>
+<a href="2016-09-05-elixir-streams.html">Baby steps with Elixir –
+Wordcount</a>
+</h2>
+<p>
+Implementing (useful subsets of) basic Unix utilities is a great way to
+learn a programming
+language…(<a href="2016-09-05-elixir-streams.html">read</a>)
+</p>
+<h2>
+<a href="2015-05-22-sicm-fermat-optics.html">Deriving the laws of
+reflection and refraction of light from Fermat’s principle</a>
+</h2>
+<p>
+[Fermat’s principle][1] of least time can be roughly stated as, <em>“The
+path taken between two
+poin…(<a href="2015-05-22-sicm-fermat-optics.html">read</a>)
+</p>
+<h2>
+<a href="2015-05-19-sicp-gcd.html">SICP Exercise 1.20 - GCD</a>
+</h2>
+<p>
+[Euclid’s algorithm][1] for computing the [GCD (Greatest Common
+Divisor)][2] of two numbers is
+based…(<a href="2015-05-19-sicp-gcd.html">read</a>)
+</p>
+<h2>
+<a href="2015-04-25-mul-with-add.html">SICP excercises 1.17 and 1.18 -
+Multiplication using addition, doubling and halving</a>
+</h2>
+<p>
+These two exercises ask us to implement a multiplication routine
+assuming we can only add, double,
+a…(<a href="2015-04-25-mul-with-add.html">read</a>)
+</p>
+<h2>
+<a href="2015-04-25-logarithmic-fib.html">SICP excercises 1.19 -
+Logarithmic time Fibonacci number generation</a>
+</h2>
+<p>
+This exercise describes a transformation
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>T</mi><mrow><mi>p</mi><mi>q</mi></mrow></msub><annotation encoding="application/x-tex">T_{pq}</annotation></semantics></math></span>,
+that, when applied to a pair
+<span>$…(<a href="2015-04-25-logarithmic-fib.html">read</a>)
+</p>
+<h2>
+<a href="2015-04-22-sicp-sine.html">SICP Exercise 1.15</a>
+</h2>
+<p>
+Exercise 1.15 in [SICP][1] requires us to find the order of growth in
+time and space of a procedure
+…(<a href="2015-04-22-sicp-sine.html">read</a>)
+</p>
+<h2>
+<a href="2015-04-22-sicp-exponentiation.html">SICP Exercise 1.16</a>
+</h2>
+<p>
+This exercise requires the design of a procedure that evolves an
+iterative exponentiation process
+us…(<a href="2015-04-22-sicp-exponentiation.html">read</a>)
+</p>
+<h2>
+<a href="2015-04-12-sicp-change-growth.html">SICP Exercise 1.14</a>
+</h2>
+<p>
+Given a set of coin denominations
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ℂ</mi><annotation encoding="application/x-tex">\mathbb{C}</annotation></semantics></math></span>
+of size
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math></span>,
+in how many wa…(<a href="2015-04-12-sicp-change-growth.html">read</a>)
+</p>
+<h2>
+<a href="2015-04-05-sicp-fib-proof.html">SICP Exercise 1.13</a>
+</h2>
+<p>
+<p>The Fibonacci sequence is given by,</p>
+$$ Fib(n) = { \begin{cases} 0 &amp; n = 0 \ 1 &amp; n = 1
+...(<a href="2015-04-05-sicp-fib-proof.html">read</a>)
+</p>
+<h2>
+<a href="2014-11-02-opencv-android-setup.html">Setting up OpenCV for
+Android without an IDE</a>
+</h2>
+<p>
+Getting OpenCV running on Android without an IDE like Android Studion or
+Eclipse is actually very
+si…(<a href="2014-11-02-opencv-android-setup.html">read</a>)
+</p>
+<h2>
+<a href="2013-12-01-if-special-form.html">Why IF has to be a special
+form in Lisp</a>
+</h2>
+<p>
+In both Scheme and Common Lisp, the <code>IF</code> conditional is a
+special form with a simple evaluation
+rule…(<a href="2013-12-01-if-special-form.html">read</a>)
+</p>
+<h2>
+<a href="2013-05-11-numpy-boost-python.html">Exposing C++ OpenCV code to
+Python using Boost</a>
+</h2>
+<p>
+Both C++ and Python are excellent languages that complement each other
+in many ways. I have been
+wor…(<a href="2013-05-11-numpy-boost-python.html">read</a>)
+</p>
+<h2>
+<a href="2013-04-21-functional-reverse.html">Reversing a list in
+functional style</a>
+</h2>
+<p>
+Suppose we have a list implementation in which every element (or node)
+in the list contains a
+``head…(<a href="2013-04-21-functional-reverse.html">read</a>)
+</p>
+<h2>
+<a href="2013-03-27-lisp-vars.html">Variables in Common Lisp</a>
+</h2>
+<p>
+Common Lisp is a dynamically, but strongly typed language. The variables
+carry the type information
+…(<a href="2013-03-27-lisp-vars.html">read</a>)
+</p>
+<h2>
+<a href="2013-01-20-lisp-collections.html">Common Lisp Collections</a>
+</h2>
+<p>
+Even though Lisp lists are remarkably powerful and flexible, they are
+not the only data-structure
+av…(<a href="2013-01-20-lisp-collections.html">read</a>)
+</p>
+<h2>
+<a href="2012-12-08-scipy.html">A Python stack for scientific
+computing</a>
+</h2>
+<p>
+This post shows how to install the important packages for scientific
+computing in Python in a
+virtua…(<a href="2012-12-08-scipy.html">read</a>)
+</p>
+<h2>
+<a href="2012-11-25-tanimoto.html">The Tanimoto coefficient</a>
+</h2>
+<p>
+There exist a number of metrics to measure similarity between two items,
+like the [Euclidean
+distanc…(<a href="2012-11-25-tanimoto.html">read</a>)
+</p>
+<h2>
+<a href="2012-10-27-ncr.html">Calculating C(n,r) efficiently</a>
+</h2>
+<p>
+The number of ways of choosing
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>r</mi><annotation encoding="application/x-tex">r</annotation></semantics></math></span>
+items from a collection of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
+identical items is re…(<a href="2012-10-27-ncr.html">read</a>)
+</p>
+<h2>
+<a href="2012-10-02-decorators-optional-args.html">Decorators with
+optional arguments in Python</a>
+</h2>
+<p>
+Python decorators are one of the best features of the language, and I
+think that [this SO
+answer][1…(<a href="2012-10-02-decorators-optional-args.html">read</a>)
+</p>
+<h2>
+<a href="2012-05-11-nginx-gunicorn-https.html">Configuring an HTTPS site
+with Django on Nginx + Gunicorn</a>
+</h2>
+<p>
+I have deployed quite a few Django powered sites on PaaS like
+[OpenShift][2], [Google
+AppEngine][1]….(<a href="2012-05-11-nginx-gunicorn-https.html">read</a>)
+</p>
+</body>
+</html>

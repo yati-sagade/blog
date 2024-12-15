@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="dcterms.date" content="2015-04-12" />
+  <title>SICP Exercise 1.14</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">SICP Exercise 1.14</h1>
+<p class="date">2015-04-12</p>
+</header>
+<p>Given a set of coin denominations
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ℂ</mi><annotation encoding="application/x-tex">\mathbb{C}</annotation></semantics></math></span>
+of size
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math></span>,
+in how many ways can an amount
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>A</mi><annotation encoding="application/x-tex">A</annotation></semantics></math></span>
+be changed using the coin denominations in
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ℂ</mi><annotation encoding="application/x-tex">\mathbb{C}</annotation></semantics></math></span>?</p>
+<p>A fairly straightforward solution to this is as follows, using the
+set of 5 coin denominations, <span>$ ( 1,5,10,25,50 ) $</span>.</p>
+<pre><code>(define (count-change amount)
+  (cc amount 5))
+
+(define (nth xs n)
+  (first (drop xs n)))
+
+(define (denom n)
+  (nth &#39;(1 5 10 25 50) (- n 1)))
+
+(define (cc amount kinds-of-coins)
+  (cond ((= amount 0) 1)
+        ((or (= kinds-of-coins 0)
+             (&lt; amount 0)) 0)
+        (else (+ (cc amount (- kinds-of-coins 1))
+                 (cc (- amount
+                        (denom kinds-of-coins))
+                     kinds-of-coins)))))</code></pre>
+<p>Drawing the call-tree of <code>(count-change 11)</code> is
+straightforward using the substitution method. The later part of
+Exercise 1.14 of <a href="https://mitpress.mit.edu/sicp/">SICP</a> asks
+you to find the orders of growth for the space and time consumed by the
+procedure <code>cc</code>.</p>
+<h2 id="space-complexity">Space complexity</h2>
+<p>The space consumed by the recursive process generated by
+<code>cc</code> is going to be proportional to the maximum height of the
+recursion tree corresponding to an instance of <code>cc</code>, since at
+any given point in the recursive process, we must only keep track of the
+trail of nodes that leads to the root of the tree.</p>
+<p>The maximum height of the call tree, for relatively larger amounts
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math></span>,
+is going to be dominated by the subtree that contains successive
+recursive calls with the amount decreased by 1. Clearly, this means the
+maximum height is going to be linear in the amount
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math></span>,
+or
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Θ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>n</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\Theta \left(n\right)</annotation></semantics></math></span>.</p>
+<h2 id="time-complexity">Time complexity</h2>
+<p>Let us start with the call tree for changing some amount
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math></span>,
+with just 1 kind of coin, i.e., the call tree for
+<code>(cc n 1)</code>:</p>
+<p><img src="/assets/cc_1.jpg" height="30%" width="30%" alt="Call tree for (n, 1)" /></p>
+<p>We are only allowed here to use one kind of coin, with value
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ℂ</mi><mn>1</mn></msub><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\mathbb{C}_{1} = 1</annotation></semantics></math></span>.</p>
+<p>The red nodes are terminal nodes that yield
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0</mn><annotation encoding="application/x-tex">0</annotation></semantics></math></span>,
+the green node is a terminal node that yields
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math></span>
+(corresponding to the first condition in the code for <code>cc</code>).
+Each nonterminal node spawns two calls to <code>cc</code>, one (on the
+left) with the same amount, but fewer kinds of coins, and the other (on
+the right) with the amount reduced by 1 and equal kinds of coins.</p>
+<p>Excluding the root, each level has exactly
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>2</mn><annotation encoding="application/x-tex">2</annotation></semantics></math></span>
+nodes, and there are
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math></span>
+such levels. This means, the number of <code>cc</code> calls generated
+by a single <code>(cc n 1)</code> call (including the original call)
+is:</p>
+<div>
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>n</mi><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>2</mn><mi>n</mi><mo>+</mo><mn>1</mn><mo>=</mo><mi>Θ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>n</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">
+T\left(n,1\right) = 2n + 1 = \Theta \left(n\right)
+</annotation></semantics></math>
+</div>
+<p>Next, we will look at the call tree of <code>(cc n 2)</code> to
+calculate
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>n</mi><mo>,</mo><mn>2</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">T\left(n,2\right)</annotation></semantics></math></span>:</p>
+<p><img src="/assets/cc_2.jpg" height="30%" width="30%" alt="Call tree for (n, 1)" /></p>
+<p>Here, we are allowed to use two denominations of coins, viz.
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ℂ</mi><mn>2</mn></msub><mo>=</mo><mn>5</mn></mrow><annotation encoding="application/x-tex">\mathbb{C}_{2} = 5</annotation></semantics></math></span>
+and
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ℂ</mi><mn>1</mn></msub><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\mathbb{C}_{1} = 1</annotation></semantics></math></span>.</p>
+<p>Each black node spawns a <code>(cc m 1)</code> subtree (blue), which
+we’ve already analyzed, and a <code>(cc (- m 5) 2)</code> subtree. The
+node colored in red and green is a terminal node, but yields
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0</mn><annotation encoding="application/x-tex">0</annotation></semantics></math></span>
+if the amount is less than zero and
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math></span>
+if the amount is exactly zero. I’ve denoted this final amount as
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ϵ</mi><annotation encoding="application/x-tex">\epsilon</annotation></semantics></math></span>,
+which can be
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>≤</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\le0</annotation></semantics></math></span>.</p>
+<p>Excluding the root and and the last level in this tree which contains
+the red-green terminal node, there will be exactly
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">⌊</mo><mfrac><mi>n</mi><mn>5</mn></mfrac><mo stretchy="false" form="postfix">⌋</mo></mrow><annotation encoding="application/x-tex">\lfloor {\frac {n} {5}
+} \rfloor</annotation></semantics></math></span> levels. Now each of
+these levels contains a call to <code>(cc m 1)</code> (the blue nodes),
+each of which, in turn, is
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Θ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>n</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\Theta\left(n\right)</annotation></semantics></math></span>
+in time. So each of these levels contains
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>n</mi><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">T\left(n,1\right) + 1</annotation></semantics></math></span>
+calls to <code>cc</code>. Therefore, the total number of nodes
+(including the terminal node and the root) in the call tree for
+<code>(cc n 2)</code> is:</p>
+<div>
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>n</mi><mo>,</mo><mn>2</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mo stretchy="false" form="prefix">⌊</mo><mfrac><mi>n</mi><mn>5</mn></mfrac><mo stretchy="false" form="postfix">⌋</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>T</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>n</mi><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mn>2</mn><mo>=</mo><mo stretchy="false" form="prefix">⌊</mo><mfrac><mi>n</mi><mn>5</mn></mfrac><mo stretchy="false" form="postfix">⌋</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>2</mn><mi>n</mi><mo>+</mo><mn>2</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mn>2</mn><mo>=</mo><mi>Θ</mi><mrow><mo stretchy="true" form="prefix">(</mo><msup><mi>n</mi><mn>2</mn></msup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">
+T\left(n,2\right) = \lfloor {\frac {n} {5} } \rfloor \left( T\left(n,1\right) + 1\right) + 2 = \lfloor {\frac {n} {5} } \rfloor \left( 2n + 2 \right) + 2 = \Theta\left(n^2\right)
+</annotation></semantics></math>
+</div>
+<p>Moving ahead, let’s take a look at the call tree of
+<code>(cc n 3)</code>, i.e., we are now allowed to use three
+denominations of coins, the new addition being
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>ℂ</mi><mn>3</mn></msub><mo>=</mo><mn>10</mn></mrow><annotation encoding="application/x-tex">\mathbb{C}_{3} = 10</annotation></semantics></math></span>:</p>
+<p><img src="/assets/cc_3.jpg" height="30%" width="30%" alt="Call tree for (n, 1)" /></p>
+<p>Here also, we see, similar to the previous case, that the total
+number of calls to <code>cc</code> will be</p>
+<div>
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>n</mi><mo>,</mo><mn>3</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mo stretchy="false" form="prefix">⌊</mo><mfrac><mi>n</mi><mn>10</mn></mfrac><mo stretchy="false" form="postfix">⌋</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>T</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>n</mi><mo>,</mo><mn>2</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mn>2</mn><mo>=</mo><mo stretchy="false" form="prefix">⌊</mo><mfrac><mi>n</mi><mn>10</mn></mfrac><mo stretchy="false" form="postfix">⌋</mo><mo>×</mo><mi>Θ</mi><mrow><mo stretchy="true" form="prefix">(</mo><msup><mi>n</mi><mn>2</mn></msup><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mn>2</mn><mo>=</mo><mi>Θ</mi><mrow><mo stretchy="true" form="prefix">(</mo><msup><mi>n</mi><mn>3</mn></msup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">
+T\left(n,3\right) = \lfloor {\frac {n} {10} } \rfloor \left( T\left(n,2\right) + 1 \right) + 2 = \lfloor {\frac {n} {10} } \rfloor \times \Theta\left(n^2\right) + 2 = \Theta\left(n^3\right)
+</annotation></semantics></math>
+</div>
+<p>We can see a pattern here. For some
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math></span>,
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>k</mi><mo>&gt;</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">k \gt 1</annotation></semantics></math></span>,
+we have,</p>
+<div>
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>n</mi><mo>,</mo><mi>k</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mo stretchy="false" form="prefix">⌊</mo><mfrac><mi>n</mi><msub><mi>ℂ</mi><mi>k</mi></msub></mfrac><mo stretchy="false" form="postfix">⌋</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>T</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>n</mi><mo>,</mo><mi>k</mi><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">
+T\left(n,k\right) = \lfloor {\frac {n} { \mathbb{C}_{k} } } \rfloor \left( T\left(n, k-1\right) + 1 \right) + 2
+</annotation></semantics></math>
+</div>
+<p>Here,
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>ℂ</mi><mi>k</mi></msub><annotation encoding="application/x-tex">\mathbb{C}_{k}</annotation></semantics></math></span>
+is the
+<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>k</mi><mrow><mi>t</mi><mi>h</mi></mrow></msup><annotation encoding="application/x-tex">k^{th}</annotation></semantics></math><span>
+coin denomination. We can expand this further:</p>
+<div>
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>n</mi><mo>,</mo><mi>k</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mo stretchy="false" form="prefix">⌊</mo><mfrac><mi>n</mi><msub><mi>ℂ</mi><mi>k</mi></msub></mfrac><mo stretchy="false" form="postfix">⌋</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>T</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>n</mi><mo>,</mo><mi>k</mi><mo>−</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mn>2</mn><mo>=</mo><mo stretchy="false" form="prefix">⌊</mo><mfrac><mi>n</mi><msub><mi>ℂ</mi><mi>k</mi></msub></mfrac><mo stretchy="false" form="postfix">⌋</mo><mrow><mo stretchy="true" form="prefix">(</mo><mo stretchy="false" form="prefix">⌊</mo><mfrac><mi>n</mi><msub><mi>ℂ</mi><mrow><mi>k</mi><mo>−</mo><mn>1</mn></mrow></msub></mfrac><mo stretchy="false" form="postfix">⌋</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>.</mi><mi>.</mi><mi>.</mi><mo stretchy="false" form="prefix">⌊</mo><mfrac><mi>n</mi><msub><mi>ℂ</mi><mn>2</mn></msub></mfrac><mo stretchy="false" form="postfix">⌋</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>2</mn><mi>n</mi><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mi>.</mi><mi>.</mi><mi>.</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><mn>2</mn><mo>=</mo><mi>Θ</mi><mrow><mo stretchy="true" form="prefix">(</mo><msup><mi>n</mi><mi>k</mi></msup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">
+T\left(n,k\right)
+= \lfloor {\frac {n} { \mathbb{C}_{k} } } \rfloor \left( T\left(n, k-1\right) + 1 \right) + 2
+= \lfloor {\frac {n} { \mathbb{C}_{k} } } \rfloor
+\left( \lfloor {\frac {n} { \mathbb{C}_{k-1} }  } \rfloor
+\left(... \lfloor \frac {n} { \mathbb{C}_{2} } \rfloor \left(2n+1\right) ...\right)
+\right) + 2
+= \Theta\left(n^k\right)
+</annotation></semantics></math>
+</div>
+<h2 id="conclusion">Conclusion</h2>
+<p>In the preceding analysis of the recursive process generated by
+<code>cc</code>, we see that although it is an elegant and
+straighforward way of solving the problem, it is not particularly
+efficient in time and grows exponentially with the number of allowed
+denominations of coins, and polynomially with the amount to be changed
+when the number of denominations is fixed. Note that the actual values
+of the coin denominations have no effect on the order of growth of this
+process.</p>
+</body>
+</html>
