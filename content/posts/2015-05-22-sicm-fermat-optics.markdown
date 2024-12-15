@@ -2,7 +2,6 @@
 title: Deriving the laws of reflection and refraction of light from Fermat's principle
 layout: post
 date: 2015-05-22
-math: true
 
 ---
 

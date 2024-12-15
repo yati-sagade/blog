@@ -4,7 +4,6 @@ layout: post
 category: notes
 tags: ["cryptography", "math"]
 date: 2017-08-12
-math: true
 ---
 
 Hashing is commonly used when we want to reduce a message of an arbitrary size

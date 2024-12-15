@@ -1,7 +1,6 @@
 ---
 title: Attention - this value does not exist
 date: 2023-04-30
-math: true
 summary: "Building a fuzzy, hallucinating key-value store using attention"
 ---
 Here, we play with the attention mechanism and word embeddings to get make a KV

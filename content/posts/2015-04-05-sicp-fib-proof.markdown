@@ -2,7 +2,6 @@
 title: SICP Exercise 1.13
 date: 2015-04-05
 layout: post
-math: true
 ---
 
 The Fibonacci sequence is given by,

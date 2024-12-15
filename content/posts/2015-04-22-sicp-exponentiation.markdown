@@ -2,7 +2,6 @@
 layout: post
 title: SICP Exercise 1.16
 date: 2015-04-22
-math: true
 ---
 
 This exercise requires the design of a procedure that evolves an iterative

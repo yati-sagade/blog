@@ -3,7 +3,6 @@ title: Analysis of gossip based dissemination
 layout: post
 categories: programming distributed-systems
 date: 2017-09-10
-math: true
 ---
 
 Gossip based protocols are widely used in distributed systems for robust

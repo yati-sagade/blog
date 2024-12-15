@@ -2,7 +2,6 @@
 title: Doing numbers without the numbers
 layout: post
 date: 2017-07-30
-math: true
 
 ---
 

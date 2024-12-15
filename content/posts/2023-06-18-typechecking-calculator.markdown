@@ -1,7 +1,6 @@
 ---
 title: "Writing a type-checking calculator"
 date: 2023-06-18
-math: true
 showToc: true
 ---
 To learn about typecheckers, I decided to make a small typed calculator. I

@@ -2,7 +2,6 @@
 title: SICP excercises 1.19 - Logarithmic time Fibonacci number generation
 layout: post
 date: 2015-04-25
-math: true
 
 ---
 

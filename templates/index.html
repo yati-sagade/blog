@@ -1,0 +1,8 @@
+---
+title: {{blog_title}}
+---
+
+{% for post in posts %}
+  <h2><a href="{{post.link}}">{{post.title}}</a></h2>
+  <p>{{post.snippet}}(<a href="{{post.link}}">read</a>)</p>
+{% endfor %}

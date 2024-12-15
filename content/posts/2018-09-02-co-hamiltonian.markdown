@@ -2,7 +2,6 @@
 date: 2018-09-02
 layout: post
 title: Why I believe P ≠ NP
-math: true
 ---
 
 ## The HAMCYCLE problem

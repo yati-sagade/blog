@@ -2,7 +2,6 @@
 date: 2020-07-05
 title: Two's complement arithmetic is magic
 layout: post
-math: true
 summary: Clever encoding of numbers that makes arithmetic efficient, always magical
 ---
 

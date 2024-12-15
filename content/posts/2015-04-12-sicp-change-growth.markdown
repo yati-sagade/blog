@@ -2,7 +2,6 @@
 title: SICP Exercise 1.14
 date: 2015-04-12
 layout: post
-math: true
 ---
 
 Given a set of coin denominations <span>$\mathbb{C}$</span> of size <span>$n$</span>,

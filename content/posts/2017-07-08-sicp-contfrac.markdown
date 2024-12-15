@@ -3,7 +3,6 @@ title: SICP exercises 1.37-39
 layout: post
 date: 2017-07-08
 tags: ["sicp", "lisp"]
-math: true
 
 ---
 

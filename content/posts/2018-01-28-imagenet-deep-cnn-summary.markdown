@@ -3,7 +3,6 @@ date: 2018-01-28
 layout: post
 title: Summary of "ImageNet Classification with Deep Convolutional Neural Networks"
 tags: [deep-learning]
-math: true
 ---
 
 I decided to read interesting deep learning papers often and try to summarize

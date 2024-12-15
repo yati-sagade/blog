@@ -3,7 +3,6 @@ layout: post
 title: Optimal failure detector performance
 tags: ["distributed-systems"]
 date: 2017-09-16
-math: true
 ---
 
 This is a note to self on computing the lower bound on number of messages each

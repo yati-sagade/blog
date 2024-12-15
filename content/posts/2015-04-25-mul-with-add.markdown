@@ -2,7 +2,6 @@
 title: SICP excercises 1.17 and 1.18 - Multiplication using addition, doubling and halving
 layout: post
 date: 2015-04-25
-math: true
 ---
 
 These two exercises ask us to implement a multiplication routine assuming

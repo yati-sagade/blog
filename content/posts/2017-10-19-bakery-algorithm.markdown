@@ -3,7 +3,6 @@ title: The bakery algorithm for mutual exclusion
 layout: post
 tags: ["programming", "concurrency"]
 date: 2017-10-19
-math: true
 ---
 
 
