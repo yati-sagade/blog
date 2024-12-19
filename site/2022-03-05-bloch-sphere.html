@@ -167,8 +167,15 @@
       vertical-align: middle;
     }
   </style>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"
+  type="text/javascript"></script>
 </head>
 <body>
+<nav id="mainnav">
+  <a href="index.html">Home</a>
+</nav>
 <header id="title-block-header">
 <h1 class="title">The Bloch sphere</h1>
 <p class="date">2022-03-05</p>
@@ -176,71 +183,60 @@
 <p>This video is the best derivation I found: <a
 href="https://www.youtube.com/watch?v=a-dIl1Y1aTs">https://www.youtube.com/watch?v=a-dIl1Y1aTs</a>.</p>
 <p><code>__BEGIN__</code> notes</p>
-<p>A single complex number
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>z</mi><mo>=</mo><mi>a</mi><mo>+</mo><mi>i</mi><mi>b</mi></mrow><annotation encoding="application/x-tex">z = a + ib</annotation></semantics></math>
-has two degrees of freedom, the two real numbers a and b.</p>
+<p>A single complex number <span class="math inline">\(z = a +
+ib\)</span> has two degrees of freedom, the two real numbers a and
+b.</p>
 <p>A qubit, or a two-level quantum state can be represented with two
 complex numbers, the amplitudes of the <span
-class="math inline">$\ket{\psi} = \alpha\ket{0} +
-\beta\ket{1}$</span>.</p>
-<p>But
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>β</mi><annotation encoding="application/x-tex">\beta</annotation></semantics></math>
-are not unconstrained parameters.</p>
-<p>First, we have the normalization constraint, which means that
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">|</mo><mi>α</mi><msup><mo stretchy="false" form="postfix">|</mo><mn>2</mn></msup><mo>+</mo><mo stretchy="false" form="prefix">|</mo><mi>β</mi><msup><mo stretchy="false" form="postfix">|</mo><mn>2</mn></msup><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\lvert \alpha
-\rvert^2 + \lvert \beta \rvert^2 = 1</annotation></semantics></math>.</p>
-<p>So we may write <span class="math inline">$\ket{\psi}$</span> as:</p>
-<p><span class="math display">$$\ket{\psi} = {\rm
+class="math inline">\(\ket{\psi} = \alpha\ket{0} +
+\beta\ket{1}\)</span>.</p>
+<p>But <span class="math inline">\(\alpha\)</span> and <span
+class="math inline">\(\beta\)</span> are not unconstrained
+parameters.</p>
+<p>First, we have the normalization constraint, which means that <span
+class="math inline">\(\lvert \alpha
+\rvert^2 + \lvert \beta \rvert^2 = 1\)</span>.</p>
+<p>So we may write <span class="math inline">\(\ket{\psi}\)</span>
+as:</p>
+<p><span class="math display">\[\ket{\psi} = {\rm
 e}^{i\phi_0}\cos{\frac{\theta}{2}}\ket{0} + {\rm
-e}^{i\phi_1}\sin{\frac{\theta}{2}}\ket{1}$$</span></p>
-<p>with
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0</mn><mo>≤</mo><mi>θ</mi><mo>≤</mo><mi>π</mi></mrow><annotation encoding="application/x-tex">0 \le \theta \le \pi</annotation></semantics></math>
-(since only positive real parts of the amplitude suffice), and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0</mn><mo>≤</mo><msub><mi>ϕ</mi><mn>0</mn></msub><mo>,</mo><msub><mi>ϕ</mi><mn>1</mn></msub><mo>&lt;</mo><mn>2</mn><mi>π</mi></mrow><annotation encoding="application/x-tex">0 \le \phi_0, \phi_1 \lt 2\pi</annotation></semantics></math>
-(since
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mi>π</mi></mrow><annotation encoding="application/x-tex">2\pi</annotation></semantics></math>
-is the same phase as
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0</mn><annotation encoding="application/x-tex">0</annotation></semantics></math>).
-Using
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mfrac><mi>θ</mi><mn>2</mn></mfrac><annotation encoding="application/x-tex">\frac{\theta}{2}</annotation></semantics></math>
-is more convenient than
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>θ</mi><annotation encoding="application/x-tex">\theta</annotation></semantics></math>
-for visualization.</p>
+e}^{i\phi_1}\sin{\frac{\theta}{2}}\ket{1}\]</span></p>
+<p>with <span class="math inline">\(0 \le \theta \le \pi\)</span> (since
+only positive real parts of the amplitude suffice), and <span
+class="math inline">\(0 \le \phi_0, \phi_1 \lt 2\pi\)</span> (since
+<span class="math inline">\(2\pi\)</span> is the same phase as <span
+class="math inline">\(0\)</span>). Using <span
+class="math inline">\(\frac{\theta}{2}\)</span> is more convenient than
+<span class="math inline">\(\theta\)</span> for visualization.</p>
 <p>Secondly, the global phase of a qubit does not matter – only the
 <em>relative</em> phase between the amplitudes is physically detectable.
 This means:</p>
-<p><span class="math display">$$\ket{\psi} = {\rm
+<p><span class="math display">\[\ket{\psi} = {\rm
 e}^{i\phi_0}\cos{\frac{\theta}{2}}\ket{0} + {\rm
 e}^{i\phi_1}\sin{\frac{\theta}{2}}\ket{1} = {\rm
 e}^{i\phi_0}\left(\cos{\frac{\theta}{2}}\ket{0} + {\rm
-e}^{i\left(\phi_1-\phi_0\right)}\sin{\frac{\theta}{2}}\ket{1}\right)$$</span></p>
-<p>Ridding the global phase factor of <span class="math inline">${\rm
-e}^{i\phi_0}$</span>, and writing
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϕ</mi><mo>=</mo><msub><mi>ϕ</mi><mn>1</mn></msub><mo>−</mo><msub><mi>ϕ</mi><mn>0</mn></msub></mrow><annotation encoding="application/x-tex">\phi =
-\phi_1 - \phi_0</annotation></semantics></math>, this state is
-equivalent to:</p>
-<p><span class="math display">$$\cos{\frac{\theta}{2}}\ket{0} + {\rm
-e}^{i\phi}\sin{\frac{\theta}{2}}\ket{1}$$</span></p>
+e}^{i\left(\phi_1-\phi_0\right)}\sin{\frac{\theta}{2}}\ket{1}\right)\]</span></p>
+<p>Ridding the global phase factor of <span class="math inline">\({\rm
+e}^{i\phi_0}\)</span>, and writing <span class="math inline">\(\phi =
+\phi_1 - \phi_0\)</span>, this state is equivalent to:</p>
+<p><span class="math display">\[\cos{\frac{\theta}{2}}\ket{0} + {\rm
+e}^{i\phi}\sin{\frac{\theta}{2}}\ket{1}\]</span></p>
 <p>So now we are able to describe a two-level quantum state with only
-two real numbers,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0</mn><mo>≤</mo><mi>θ</mi><mo>≤</mo><mi>π</mi></mrow><annotation encoding="application/x-tex">0 \le \theta \le \pi</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0</mn><mo>≤</mo><mi>ϕ</mi><mo>&lt;</mo><mn>2</mn><mi>π</mi></mrow><annotation encoding="application/x-tex">0 \le \phi \lt 2\pi</annotation></semantics></math>.</p>
-<p>For <span class="math inline">$\ket{\psi} = \ket{0}$</span>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>θ</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\theta = 0</annotation></semantics></math>,
-and for <span class="math inline">$\ket{\psi} = \ket{1}$</span>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>θ</mi><mo>=</mo><mi>π</mi></mrow><annotation encoding="application/x-tex">\theta = \pi</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϕ</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\phi = 0</annotation></semantics></math>.</p>
+two real numbers, <span class="math inline">\(0 \le \theta \le
+\pi\)</span> and <span class="math inline">\(0 \le \phi \lt
+2\pi\)</span>.</p>
+<p>For <span class="math inline">\(\ket{\psi} = \ket{0}\)</span>, <span
+class="math inline">\(\theta = 0\)</span>, and for <span
+class="math inline">\(\ket{\psi} = \ket{1}\)</span>, <span
+class="math inline">\(\theta = \pi\)</span> and <span
+class="math inline">\(\phi = 0\)</span>.</p>
 <p>While we could scatter plot qubit states in a 2-D <span
-class="math inline">$\theta {\rm vs.} \phi$</span> chart, visualizing
+class="math inline">\(\theta {\rm vs.} \phi\)</span> chart, visualizing
 using spherical co-ordinates gives a richer and more useful picture. In
 this spherical co-ordinate system since we have only unit vectors, we
 can render qubit states as points on the unit sphere with <span
-class="math inline">$\ket{0}$</span> on the north pole, and <span
-class="math inline">$\ket{1}$</span> on the south pole of the
+class="math inline">\(\ket{0}\)</span> on the north pole, and <span
+class="math inline">\(\ket{1}\)</span> on the south pole of the
 sphere.</p>
 </body>
 </html>

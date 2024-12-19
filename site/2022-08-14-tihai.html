@@ -231,8 +231,15 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"
+  type="text/javascript"></script>
 </head>
 <body>
+<nav id="mainnav">
+  <a href="index.html">Home</a>
+</nav>
 <header id="title-block-header">
 <h1 class="title">Tihai in Indian music</h1>
 <p class="date">2022-08-14</p>
@@ -290,33 +297,30 @@ it at the <em>Sam</em>.</p>
 <h2 id="rhythm-math">Rhythm math</h2>
 <p>Let:</p>
 <ul>
-<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>
-be the number of beats in the <em>Tihai</em> phrase. The one above had
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">N=3</annotation></semantics></math>.</li>
-<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>T</mi><annotation encoding="application/x-tex">T</annotation></semantics></math>
-be the number of beats in the <em>Taal</em> chosen. e.g.,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mo>=</mo><mn>16</mn></mrow><annotation encoding="application/x-tex">T=16</annotation></semantics></math>
+<li><span class="math inline">\(N\)</span> be the number of beats in the
+<em>Tihai</em> phrase. The one above had <span
+class="math inline">\(N=3\)</span>.</li>
+<li><span class="math inline">\(T\)</span> be the number of beats in the
+<em>Taal</em> chosen. e.g., <span class="math inline">\(T=16\)</span>
 for <em>Teen Taal</em>.</li>
-<li>Let
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>q</mi><annotation encoding="application/x-tex">q</annotation></semantics></math>
-be the beat number that should start the <em>Tihai</em>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>≤</mo><mi>q</mi><mo>≤</mo><mi>T</mi></mrow><annotation encoding="application/x-tex">1 \le q \le T</annotation></semantics></math>.
-In the above example,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>=</mo><mn>9</mn></mrow><annotation encoding="application/x-tex">q=9</annotation></semantics></math>,
-since we started on the 9th beat in the cycle.</li>
+<li>Let <span class="math inline">\(q\)</span> be the beat number that
+should start the <em>Tihai</em>, <span class="math inline">\(1 \le q \le
+T\)</span>. In the above example, <span
+class="math inline">\(q=9\)</span>, since we started on the 9th beat in
+the cycle.</li>
 </ul>
-<p>If we are to play the
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>-beat
+<p>If we are to play the <span class="math inline">\(N\)</span>-beat
 phrase 3 times and land on the beginning of a rhythmic cycle, we must
 have:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>3</mn><mi>N</mi><mo>=</mo><mn>1</mn><mrow><mspace width="0.444em"></mspace><mo>mod</mo><mspace width="0.222em"></mspace><mrow><mi>T</mi><mo>−</mo><mi>q</mi><mo>+</mo><mn>1</mn></mrow></mrow></mrow><annotation encoding="application/x-tex">
+<p><span class="math display">\[
 3N = 1\mod{T-q+1}
-</annotation></semantics></math></p>
-<p>In the preceding example, we have all the values match up
-(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">N=3</annotation></semantics></math>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>=</mo><mn>9</mn></mrow><annotation encoding="application/x-tex">q=9</annotation></semantics></math>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mo>=</mo><mn>16</mn></mrow><annotation encoding="application/x-tex">T=16</annotation></semantics></math>):</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>3</mn><mo>×</mo><mn>3</mn><mo>=</mo><mn>1</mn><mrow><mspace width="0.444em"></mspace><mo>mod</mo><mspace width="0.222em"></mspace><mrow><mo stretchy="true" form="prefix">(</mo><mn>16</mn><mo>−</mo><mn>9</mn><mo>+</mo><mn>1</mn><mo>=</mo><mn>8</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mrow><annotation encoding="application/x-tex">3 \times 3 = 1\mod{\left(16-9+1 = 8\right)}</annotation></semantics></math></p>
+\]</span></p>
+<p>In the preceding example, we have all the values match up (<span
+class="math inline">\(N=3\)</span>, <span
+class="math inline">\(q=9\)</span>, <span
+class="math inline">\(T=16\)</span>):</p>
+<p><span class="math display">\[3 \times 3 = 1\mod{\left(16-9+1 =
+8\right)}\]</span></p>
 <p>Here’s another example of a <em>Tihai</em> which starts on the first
 beat, and is 11 beats long (first 11 beats <u>underlined</u>, the entire
 <em>Tihai</em> is <strong>emboldened</strong>):</p>
@@ -347,35 +351,27 @@ of 33 beats, which is 2 full 16-beat cycles, and the extra beat that
 starts the next one. This shows that <em>Tihai</em>s need not complete
 within a cycle – they can span multiple cycles, the only requirement
 seems to be to land on the <em>Sam</em> after 3 repetitions.</p>
-<p>Here,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>=</mo><mn>11</mn></mrow><annotation encoding="application/x-tex">N=11</annotation></semantics></math>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">q=1</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mo>=</mo><mn>16</mn></mrow><annotation encoding="application/x-tex">T=16</annotation></semantics></math>,
-and we can see that:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>3</mn><mi>N</mi><mo>=</mo><mn>3</mn><mo>×</mo><mn>11</mn><mo>=</mo><mn>33</mn></mrow><annotation encoding="application/x-tex">3N = 3 \times 11 = 33</annotation></semantics></math></p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>=</mo><mn>1</mn><mrow><mspace width="0.444em"></mspace><mo>mod</mo><mspace width="0.222em"></mspace><mn>16</mn></mrow></mrow><annotation encoding="application/x-tex"> = 1 \mod{16} </annotation></semantics></math></p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>=</mo><mn>1</mn><mrow><mspace width="0.444em"></mspace><mo>mod</mo><mspace width="0.222em"></mspace><mrow><mn>16</mn><mo>−</mo><mn>1</mn><mo>+</mo><mn>1</mn></mrow></mrow></mrow><annotation encoding="application/x-tex"> = 1 \mod{16 - 1 + 1} </annotation></semantics></math></p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>=</mo><mn>1</mn><mrow><mspace width="0.444em"></mspace><mo>mod</mo><mspace width="0.222em"></mspace><mrow><mi>T</mi><mo>−</mo><mi>q</mi><mo>+</mo><mn>1</mn></mrow></mrow></mrow><annotation encoding="application/x-tex">= 1 \mod{T-q+1}</annotation></semantics></math></p>
+<p>Here, <span class="math inline">\(N=11\)</span>, <span
+class="math inline">\(q=1\)</span> and <span
+class="math inline">\(T=16\)</span>, and we can see that:</p>
+<p><span class="math display">\[3N = 3 \times 11 = 33\]</span></p>
+<p><span class="math display">\[ = 1 \mod{16} \]</span></p>
+<p><span class="math display">\[ = 1 \mod{16 - 1 + 1} \]</span></p>
+<p><span class="math display">\[= 1 \mod{T-q+1}\]</span></p>
 <h2 id="generalization">Generalization?</h2>
 <p>I have only ever heard this concept applied to 3x repetitions of
 fixed phrases (after all, the name <em>Tihai</em> does hint at 3’s). But
-out of curiosity, what if we want to generalize this to a
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>K</mi><annotation encoding="application/x-tex">K</annotation></semantics></math>-way
-repetition? e.g., we could invent a <em>Panchai</em> or something such
-that a fixed phrase, when repeated 5 times, has to end on the
-<em>Sam</em> of a rhythmic cycle.</p>
+out of curiosity, what if we want to generalize this to a <span
+class="math inline">\(K\)</span>-way repetition? e.g., we could invent a
+<em>Panchai</em> or something such that a fixed phrase, when repeated 5
+times, has to end on the <em>Sam</em> of a rhythmic cycle.</p>
 <p>The simple calculations above should generalize to give us:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>×</mo><mi>N</mi><mo>=</mo><mn>1</mn><mrow><mspace width="0.444em"></mspace><mo>mod</mo><mspace width="0.222em"></mspace><mrow><mi>T</mi><mo>−</mo><mi>q</mi><mo>+</mo><mn>1</mn></mrow></mrow></mrow><annotation encoding="application/x-tex">K \times N = 1\mod{T-q+1}</annotation></semantics></math></p>
-<p>To jam with this idea with
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi><mo>=</mo><mn>5</mn></mrow><annotation encoding="application/x-tex">K=5</annotation></semantics></math>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">q=1</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi><mo>=</mo><mn>16</mn></mrow><annotation encoding="application/x-tex">T=16</annotation></semantics></math>,
-we need an
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>
-such that:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>5</mn><mi>N</mi><mo>=</mo><mn>1</mn><mrow><mspace width="0.444em"></mspace><mo>mod</mo><mspace width="0.222em"></mspace><mn>16</mn></mrow></mrow><annotation encoding="application/x-tex">5N = 1\mod{16}</annotation></semantics></math></p>
+<p><span class="math display">\[K \times N = 1\mod{T-q+1}\]</span></p>
+<p>To jam with this idea with <span class="math inline">\(K=5\)</span>,
+<span class="math inline">\(q=1\)</span> and <span
+class="math inline">\(T=16\)</span>, we need an <span
+class="math inline">\(N\)</span> such that:</p>
+<p><span class="math display">\[5N = 1\mod{16}\]</span></p>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> [n <span class="cf">for</span> n <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">50</span>) <span class="cf">if</span> (<span class="dv">5</span><span class="op">*</span>n) <span class="op">%</span> <span class="dv">16</span> <span class="op">==</span> <span class="dv">1</span>]</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>[<span class="dv">13</span>, <span class="dv">29</span>, <span class="dv">45</span>]</span></code></pre></div>

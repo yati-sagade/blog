@@ -231,8 +231,15 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"
+  type="text/javascript"></script>
 </head>
 <body>
+<nav id="mainnav">
+  <a href="index.html">Home</a>
+</nav>
 <header id="title-block-header">
 <h1 class="title">The bakery algorithm for mutual exclusion</h1>
 <p class="date">2017-10-19</p>
@@ -447,61 +454,52 @@ such that at any given time, at most one process is in the critical
 section. To prove this, let’s see the execution from process
 <code>i</code>’s perspective, and first define some terms:</p>
 <ul>
-<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>t</mi><mrow><mi>L</mi><mn>2</mn></mrow><mrow><mi>i</mi><mi>k</mi></mrow></msubsup><annotation encoding="application/x-tex">t^{ik}_{L2}</annotation></semantics></math>:
-Time when process <code>i</code> completes the <em>last</em> iteration
-of loop <code>L2</code> for process <code>k</code>. This is when it sees
+<li><span class="math inline">\(t^{ik}_{L2}\)</span>: Time when process
+<code>i</code> completes the <em>last</em> iteration of loop
+<code>L2</code> for process <code>k</code>. This is when it sees
 <code>choosing[k] == false</code>.</li>
-<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>t</mi><mrow><mi>L</mi><mn>3</mn></mrow><mrow><mi>i</mi><mi>k</mi></mrow></msubsup><annotation encoding="application/x-tex">t^{ik}_{L3}</annotation></semantics></math>:
-Time when process <code>i</code> completes the <em>last</em> iteration
-of loop <code>L3</code> for process <code>k</code>. This happens when
-process <code>i</code> sees a <code>0</code> in <code>numbers[k]</code>,
-or if it thinks it should be serviced before process <code>k</code>
-owing to a lower token number.</li>
-<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>t</mi><mi>d</mi><mi>k</mi></msubsup><annotation encoding="application/x-tex">t^k_{d}</annotation></semantics></math>:
-Time at which process <code>k</code> completes
-<code>choosing[k] = true</code>.</li>
-<li><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>t</mi><mi>e</mi><mi>k</mi></msubsup><annotation encoding="application/x-tex">t^k_{e}</annotation></semantics></math>:
-Time at which process <code>k</code> completes setting
-<code>choosing[k] = false</code>, after choosing a number.</li>
+<li><span class="math inline">\(t^{ik}_{L3}\)</span>: Time when process
+<code>i</code> completes the <em>last</em> iteration of loop
+<code>L3</code> for process <code>k</code>. This happens when process
+<code>i</code> sees a <code>0</code> in <code>numbers[k]</code>, or if
+it thinks it should be serviced before process <code>k</code> owing to a
+lower token number.</li>
+<li><span class="math inline">\(t^k_{d}\)</span>: Time at which process
+<code>k</code> completes <code>choosing[k] = true</code>.</li>
+<li><span class="math inline">\(t^k_{e}\)</span>: Time at which process
+<code>k</code> completes setting <code>choosing[k] = false</code>, after
+choosing a number.</li>
 </ul>
 <p>We can now make some observations:</p>
 <ul>
-<li><p><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>t</mi><mi>d</mi><mi>k</mi></msubsup><mo>&lt;</mo><msubsup><mi>t</mi><mi>e</mi><mi>k</mi></msubsup></mrow><annotation encoding="application/x-tex">t^k_d \lt t^k_e</annotation></semantics></math>.</p></li>
-<li><p>At time
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>t</mi><mi>e</mi><mi>k</mi></msubsup><annotation encoding="application/x-tex">t^k_e</annotation></semantics></math>,
+<li><p><span class="math inline">\(t^k_d \lt t^k_e\)</span>.</p></li>
+<li><p>At time <span class="math inline">\(t^k_e\)</span>,
 <code>numbers[k]</code> is completely written, and a read at or after
 this point of <code>numbers[k]</code> will not return a partial
 result.</p></li>
-<li><p>At
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>t</mi><mrow><mi>L</mi><mn>2</mn></mrow><mrow><mi>i</mi><mi>k</mi></mrow></msubsup><annotation encoding="application/x-tex">t^{ik}_{L2}</annotation></semantics></math>,
-either process <code>k</code> is just out of the doorway (set
+<li><p>At <span class="math inline">\(t^{ik}_{L2}\)</span>, either
+process <code>k</code> is just out of the doorway (set
 <code>choosing[k] = false</code>) and in the bakery (either waiting for
 other processes, or executing its critical section); or is neither in
 the doorway or in the bakery (maybe executing some non-critical section
-code). This corresponds to either
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>t</mi><mrow><mi>L</mi><mn>2</mn></mrow><mrow><mi>i</mi><mi>k</mi></mrow></msubsup><mo>&gt;</mo><msubsup><mi>t</mi><mi>e</mi><mi>k</mi></msubsup></mrow><annotation encoding="application/x-tex">t^{ik}_{L2} \gt t^k_e</annotation></semantics></math>,
-or
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>t</mi><mrow><mi>L</mi><mn>2</mn></mrow><mrow><mi>i</mi><mi>k</mi></mrow></msubsup><mo>&lt;</mo><msubsup><mi>t</mi><mi>d</mi><mi>k</mi></msubsup></mrow><annotation encoding="application/x-tex">t^{ik}_{L2} \lt t^k_d</annotation></semantics></math>,
-respectively.</p>
+code). This corresponds to either <span
+class="math inline">\(t^{ik}_{L2} \gt t^k_e\)</span>, or <span
+class="math inline">\(t^{ik}_{L2} \lt t^k_d\)</span>, respectively.</p>
 <ul>
-<li><p>When
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>t</mi><mrow><mi>L</mi><mn>2</mn></mrow><mrow><mi>i</mi><mi>k</mi></mrow></msubsup><mo>&gt;</mo><msubsup><mi>t</mi><mi>e</mi><mi>k</mi></msubsup></mrow><annotation encoding="application/x-tex">t^{ik}_{L2} \gt t^k_e</annotation></semantics></math>,
-we also have
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>t</mi><mrow><mi>L</mi><mn>3</mn></mrow><mrow><mi>i</mi><mi>k</mi></mrow></msubsup><mo>&gt;</mo><msubsup><mi>t</mi><mi>e</mi><mi>k</mi></msubsup></mrow><annotation encoding="application/x-tex">t^{ik}_{L3} \gt t^k_e</annotation></semantics></math>.
-This means that process <code>i</code> found (at time
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>t</mi><mrow><mi>L</mi><mn>3</mn></mrow><mrow><mi>i</mi><mi>k</mi></mrow></msubsup><annotation encoding="application/x-tex">t^{ik}_{L3}</annotation></semantics></math>)
-either <code>numbers[i] &lt; numbers[k]</code>, or if both numbers are
-equal, that <code>i &lt; k</code>. Note that <code>k</code> <em>must
-have</em> picked a number at least as large as <code>numbers[i]</code>
-in this case.</p></li>
-<li><p>When
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>t</mi><mrow><mi>L</mi><mn>2</mn></mrow><mrow><mi>i</mi><mi>k</mi></mrow></msubsup><mo>&lt;</mo><msubsup><mi>t</mi><mi>d</mi><mi>k</mi></msubsup></mrow><annotation encoding="application/x-tex">t^{ik}_{L2} \lt t^k_d</annotation></semantics></math>,
+<li><p>When <span class="math inline">\(t^{ik}_{L2} \gt t^k_e\)</span>,
+we also have <span class="math inline">\(t^{ik}_{L3} \gt t^k_e\)</span>.
+This means that process <code>i</code> found (at time <span
+class="math inline">\(t^{ik}_{L3}\)</span>) either
+<code>numbers[i] &lt; numbers[k]</code>, or if both numbers are equal,
+that <code>i &lt; k</code>. Note that <code>k</code> <em>must have</em>
+picked a number at least as large as <code>numbers[i]</code> in this
+case.</p></li>
+<li><p>When <span class="math inline">\(t^{ik}_{L2} \lt t^k_d\)</span>,
 it must be that <code>numbers[i] &lt; numbers[k]</code>, since when
-<code>k</code> does enter the doorway (after the moment
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>t</mi><mi>d</mi><mi>k</mi></msubsup><annotation encoding="application/x-tex">t^k_d</annotation></semantics></math>),
-it will pick a number that is at least one larger than
-<code>numbers[i]</code>, which has already been written
-completely.</p></li>
+<code>k</code> does enter the doorway (after the moment <span
+class="math inline">\(t^k_d\)</span>), it will pick a number that is at
+least one larger than <code>numbers[i]</code>, which has already been
+written completely.</p></li>
 </ul></li>
 </ul>
 <p>Hence, in both these cases, process <code>i</code> does not wait for

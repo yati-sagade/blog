@@ -167,8 +167,15 @@
       vertical-align: middle;
     }
   </style>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"
+  type="text/javascript"></script>
 </head>
 <body>
+<nav id="mainnav">
+  <a href="index.html">Home</a>
+</nav>
 <header id="title-block-header">
 <h1 class="title">SICP excercises 1.17 and 1.18 - Multiplication using
 addition, doubling and halving</h1>
@@ -177,71 +184,59 @@ addition, doubling and halving</h1>
 <p>These two exercises ask us to implement a multiplication routine
 assuming we can only add, double, and halve even numbers. The first
 implementation is a straightforward translation of the facts that the
-product of two numbers
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math></span>
-and
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math></span>
-is given by <span>$ab = 2 ( a { 2} )
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mi>/</mi><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo><mi>f</mi><mi>o</mi><mi>r</mi><mi>e</mi><mi>v</mi><mi>e</mi><mi>n</mi><mi>v</mi><mi>a</mi><mi>l</mi><mi>u</mi><mi>e</mi><mi>s</mi><mi>o</mi><mi>f</mi><mo>&lt;</mo><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">&lt;/span&gt; for even values of &lt;span&gt;</annotation></semantics></math>b<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mi>/</mi><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo><mi>a</mi><mi>n</mi><mi>d</mi><mo>&lt;</mo><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">&lt;/span&gt; and
-&lt;span&gt;</annotation></semantics></math>ab = a(b-1) +
-a<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mi>/</mi><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo><mi>f</mi><mi>o</mi><mi>r</mi><mi>o</mi><mi>d</mi><mi>d</mi><mi>v</mi><mi>a</mi><mi>l</mi><mi>u</mi><mi>e</mi><mi>s</mi><mi>o</mi><mi>f</mi><mo>&lt;</mo><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">&lt;/span&gt; for odd values of &lt;span&gt;</annotation></semantics></math>b$</span>.
-Here is the code:</p>
+product of two numbers <span><span
+class="math inline">\(a\)</span></span> and <span><span
+class="math inline">\(b\)</span></span> is given by <span>$ab = 2 ( a {
+2} ) <span class="math inline">\(&lt;/span&gt; for even values of
+&lt;span&gt;\)</span>b<span class="math inline">\(&lt;/span&gt; and
+&lt;span&gt;\)</span>ab = a(b-1) + a<span
+class="math inline">\(&lt;/span&gt; for odd values of
+&lt;span&gt;\)</span>b$</span>. Here is the code:</p>
 <pre><code>(define (fast* a b)
   (cond ((= b 1) a)
         ((even? b) (double (fast* a (halve b))))
         (else (+ a (fast* a (- b 1))))))</code></pre>
 <p>This assumes that the routines <code>double</code> and
 <code>halve</code> are available.</p>
-<p>Note that in this algorithm, doubling
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math></span>
-will only increase the total number of steps (and the height of the call
-stack) by one. This means we have a process that consumes
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Θ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mo>lg</mo><mi>b</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\Theta \left( \lg b \right)</annotation></semantics></math></span>
-space and time.</p>
+<p>Note that in this algorithm, doubling <span><span
+class="math inline">\(b\)</span></span> will only increase the total
+number of steps (and the height of the call stack) by one. This means we
+have a process that consumes <span><span class="math inline">\(\Theta
+\left( \lg b \right)\)</span></span> space and time.</p>
 <p>Now to implement an iterative version of logarithmic time
 multiplication which takes constant space. When designing an iterative
 process, it helps to think about an expression involving the state
 variables of the process which will evaluate to the same value, across
 iterative transformations, for a particular invocation of the process.
-In this case, we shall use the expression
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mi>b</mi><mo>+</mo><mi>c</mi></mrow><annotation encoding="application/x-tex">ab + c</annotation></semantics></math>,
-with the assertion that this expression always evaluates to the intended
-product. For example, if we invoke our procedure with values
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>=</mo><msub><mi>a</mi><mn>0</mn></msub></mrow><annotation encoding="application/x-tex">a=a_0</annotation></semantics></math></span>
-and
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>b</mi><mo>=</mo><msub><mi>b</mi><mn>0</mn></msub></mrow><annotation encoding="application/x-tex">b=b_0</annotation></semantics></math></span>
-and another state variable
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>c</mi><annotation encoding="application/x-tex">c</annotation></semantics></math></span>,
-at any point in the iteration, say, the
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>t</mi><mrow><mi>t</mi><mi>h</mi></mrow></msup><annotation encoding="application/x-tex">t^{th}</annotation></semantics></math><span>
-step,
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>a</mi><mi>t</mi></msub><msub><mi>b</mi><mi>t</mi></msub><mo>+</mo><msub><mi>c</mi><mi>t</mi></msub></mrow><annotation encoding="application/x-tex">a_t b_t + c_t</annotation></semantics></math></span>
-must equal
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>a</mi><mn>0</mn></msub><msub><mi>b</mi><mn>0</mn></msub></mrow><annotation encoding="application/x-tex">a_0 b_0</annotation></semantics></math></span>.
-This means the only choice for
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>c</mi><mn>0</mn></msub><annotation encoding="application/x-tex">c_0</annotation></semantics></math></span>,
-the initial value of the state variable
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>c</mi><annotation encoding="application/x-tex">c</annotation></semantics></math></span>
-is
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>c</mi><mn>0</mn></msub><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">c_0 = 0</annotation></semantics></math></span>.</p>
+In this case, we shall use the expression <span class="math inline">\(ab
++ c\)</span>, with the assertion that this expression always evaluates
+to the intended product. For example, if we invoke our procedure with
+values <span><span class="math inline">\(a=a_0\)</span></span> and
+<span><span class="math inline">\(b=b_0\)</span></span> and another
+state variable <span><span class="math inline">\(c\)</span></span>, at
+any point in the iteration, say, the <span><span
+class="math inline">\(t^{th}\)</span><span> step, <span><span
+class="math inline">\(a_t b_t + c_t\)</span></span> must equal
+<span><span class="math inline">\(a_0 b_0\)</span></span>. This means
+the only choice for <span><span
+class="math inline">\(c_0\)</span></span>, the initial value of the
+state variable <span><span class="math inline">\(c\)</span></span> is
+<span><span class="math inline">\(c_0 = 0\)</span></span>.</p>
 <p>Next, the transformations will be as follows.</p>
-<p>For even
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math>,</p>
-<p><span class="math display">$$
+<p>For even <span class="math inline">\(b\)</span>,</p>
+<p><span class="math display">\[
 a \gets 2a \\\\
 b \gets \frac {b} {2}
-$$</span></p>
-<p>For odd
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math>,
-<span class="math display">$$
+\]</span></p>
+<p>For odd <span class="math inline">\(b\)</span>, <span
+class="math display">\[
 b \gets b-1 \\\\
 c \gets a + c
-$$</span></p>
-<p>Finally, when
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>b</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">b = 0</annotation></semantics></math></span>,
-we return
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>c</mi><annotation encoding="application/x-tex">c</annotation></semantics></math></span>
-as the result. Here’s the code:</p>
+\]</span></p>
+<p>Finally, when <span><span class="math inline">\(b =
+0\)</span></span>, we return <span><span
+class="math inline">\(c\)</span></span> as the result. Here’s the
+code:</p>
 <pre><code>(define (iter* a b)
   (define (aux a b c)
     ;; The invariant is that a*b + c always equals the intended product.
@@ -250,12 +245,11 @@ as the result. Here’s the code:</p>
           (else (aux a (- b 1) (+ a c)))))
   (aux a b 0))</code></pre>
 <p>We can see that just like the previous recursive <code>fast*</code>,
-<code>iter*</code> also takes
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Θ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mo>lg</mo><mi>b</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\Theta \left( \lg b \right)</annotation></semantics></math></span>
-steps. But unlike <code>fast*</code>, <code>iter*</code> takes
-<em>constant</em> or
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Θ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\Theta \left( 1 \right)</annotation></semantics></math></span>
-space, to store the state variables <code>a</code>, <code>b</code> and
-<code>c</code>.</p>
+<code>iter*</code> also takes <span><span class="math inline">\(\Theta
+\left( \lg b \right)\)</span></span> steps. But unlike
+<code>fast*</code>, <code>iter*</code> takes <em>constant</em> or
+<span><span class="math inline">\(\Theta \left( 1
+\right)\)</span></span> space, to store the state variables
+<code>a</code>, <code>b</code> and <code>c</code>.</p>
 </body>
 </html>

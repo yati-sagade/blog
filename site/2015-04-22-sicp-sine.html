@@ -167,24 +167,32 @@
       vertical-align: middle;
     }
   </style>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"
+  type="text/javascript"></script>
 </head>
 <body>
+<nav id="mainnav">
+  <a href="index.html">Home</a>
+</nav>
 <header id="title-block-header">
 <h1 class="title">SICP Exercise 1.15</h1>
 <p class="date">2015-04-22</p>
 </header>
 <p>Exercise 1.15 in <a href="https://mitpress.mit.edu/sicp/">SICP</a>
 requires us to find the order of growth in time and space of a procedure
-that approximates the value of <span>$ x
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mi>/</mi><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo><mi>b</mi><mi>y</mi><mi>n</mi><mi>o</mi><mi>t</mi><mi>i</mi><mi>n</mi><mi>g</mi><mi>t</mi><mi>h</mi><mi>a</mi><mi>t</mi><mo>&lt;</mo><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">&lt;/span&gt;
-by noting that &lt;span&gt;</annotation></semantics></math>(x)
-x<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mi>/</mi><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo><mi>w</mi><mi>h</mi><mi>e</mi><mi>n</mi><mo>&lt;</mo><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">&lt;/span&gt; when &lt;span&gt;</annotation></semantics></math>x<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mi>/</mi><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo><mi>i</mi><mi>s</mi><mi>s</mi><mi>u</mi><mi>f</mi><mi>f</mi><mi>i</mi><mi>c</mi><mi>i</mi><mi>e</mi><mi>n</mi><mi>t</mi><mi>l</mi><mi>y</mi><mi>s</mi><mi>m</mi><mi>a</mi><mi>l</mi><mi>l</mi><mi>.</mi><mi>F</mi><mi>o</mi><mi>r</mi><mi>l</mi><mi>a</mi><mi>r</mi><mi>g</mi><mi>e</mi><mi>r</mi><mi>v</mi><mi>a</mi><mi>l</mi><mi>u</mi><mi>e</mi><mi>s</mi><mi>o</mi><mi>f</mi><mo>&lt;</mo><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">&lt;/span&gt; is
-sufficiently small. For larger values of &lt;span&gt;</annotation></semantics></math>x<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mi>/</mi><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo><mo>,</mo><mo>&lt;</mo><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">&lt;/span&gt;, &lt;span&gt;</annotation></semantics></math>
-x $</span> can be recursively calculated using the trigonometric
-identity</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>sin</mo><mi>x</mi><mo>=</mo><mn>3</mn><mo>sin</mo><mfrac><mi>x</mi><mn>3</mn></mfrac><mo>−</mo><mn>4</mn><msup><mo>sin</mo><mn>3</mn></msup><mfrac><mi>x</mi><mn>3</mn></mfrac></mrow><annotation encoding="application/x-tex">
+that approximates the value of <span>$ x <span
+class="math inline">\(&lt;/span&gt;
+by noting that &lt;span&gt;\)</span>(x) x<span
+class="math inline">\(&lt;/span&gt; when &lt;span&gt;\)</span>x<span
+class="math inline">\(&lt;/span&gt; is
+sufficiently small. For larger values of &lt;span&gt;\)</span>x<span
+class="math inline">\(&lt;/span&gt;, &lt;span&gt;\)</span> x $</span>
+can be recursively calculated using the trigonometric identity</p>
+<p><span class="math display">\[
 \sin x = 3 \sin \frac {x}{3} - 4 \sin^3 \frac {x}{3}
-</annotation></semantics></math></p>
+\]</span></p>
 <p>Here is the implementation from the book:</p>
 <pre><code>(define (cube x) (* x x x))
 (define (p x) (- (* 3 x) (* 4 (cube x))))
@@ -209,56 +217,48 @@ This is straightforward using the substitution rule:</p>
 -&gt; (p (p (p (p (p 0.05)))))</code></pre>
 <p>In the last line of the partial derivation above, we hit the base
 case and are left with a stack of five <code>p</code> calls, with no
-more recursion. Generally, for any angle value
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math></span>,
-the number of <code>p</code> calls here will be
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">[</mo><msub><mo>log</mo><mn>3</mn></msub><mi>x</mi><mo>+</mo><mn>3</mn><mo stretchy="true" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[\log_3 x + 3]</annotation></semantics></math></span>.
-To understand why, note that, given an angle
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math></span>,
-to reach
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math></span>
-by successively dividing by
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>3</mn><annotation encoding="application/x-tex">3</annotation></semantics></math></span>
-(which our <code>sine</code> implementation does), we will need <span>$
-_3 x $</span> divisions. After that, to take
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math></span>
-to a value less than
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.1</mn><annotation encoding="application/x-tex">0.1</annotation></semantics></math></span>,
-it takes
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>3</mn><annotation encoding="application/x-tex">3</annotation></semantics></math></span>
-more divisions (<span>$ {3} = 0.037037037037037035
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo><mo stretchy="false" form="postfix">)</mo><mi>.</mi><mi>T</mi><mi>h</mi><mi>i</mi><mi>s</mi><mi>g</mi><mi>i</mi><mi>v</mi><mi>e</mi><mi>s</mi><mi>u</mi><mi>s</mi><mi>a</mi><mi>t</mi><mi>o</mi><mi>t</mi><mi>a</mi><mi>l</mi><mi>o</mi><mi>f</mi><mo>&lt;</mo><mi>s</mi><mi>p</mi><mi>a</mi><mi>n</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">&lt;span&gt;). This
-gives us a total of &lt;span&gt;</annotation></semantics></math>( _3 x +
-3 )<span class="math inline">$&lt;/span&gt; divisions, which
+more recursion. Generally, for any angle value <span><span
+class="math inline">\(x\)</span></span>, the number of <code>p</code>
+calls here will be <span><span class="math inline">\([\log_3 x +
+3]\)</span></span>. To understand why, note that, given an angle
+<span><span class="math inline">\(x\)</span></span>, to reach
+<span><span class="math inline">\(1\)</span></span> by successively
+dividing by <span><span class="math inline">\(3\)</span></span> (which
+our <code>sine</code> implementation does), we will need <span>$ _3 x
+$</span> divisions. After that, to take <span><span
+class="math inline">\(1\)</span></span> to a value less than <span><span
+class="math inline">\(0.1\)</span></span>, it takes <span><span
+class="math inline">\(3\)</span></span> more divisions (<span>$ {3} =
+0.037037037037037035 <span class="math inline">\(&lt;span&gt;). This
+gives us a total of &lt;span&gt;\)</span>( _3 x + 3 )<span
+class="math inline">\(&lt;/span&gt; divisions, which
 corresponds to the number of times `p` is called. To account for angles
 which
 are not powers of three, we round that count to the nearest integer,
 resulting
-in &lt;span&gt;$</span>[_3 x + 3]$</span>.</p>
+in &lt;span&gt;\)</span>[_3 x + 3]$</span>.</p>
 <h2 id="order-of-growth">Order of growth</h2>
 <p>It follows directly from the last paragraph that the space used by
 our <code>sine</code> procedure varies directly with the number of
 <code>p</code> calls, which we just established to be logarithmic in the
-angle
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math></span>.
-To see it from another perspective, note that tripling the angle
-argument to <code>sine</code> only adds one to the number stacked calls
-to <code>p</code>. This is a tell-tale sign of a logarithmic order of
+angle <span><span class="math inline">\(a\)</span></span>. To see it
+from another perspective, note that tripling the angle argument to
+<code>sine</code> only adds one to the number stacked calls to
+<code>p</code>. This is a tell-tale sign of a logarithmic order of
 growth. Therefore, the space consumed by <code>sine</code> is
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Θ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mo>log</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\Theta \left( \log a \right)</annotation></semantics></math></span>.</p>
+<span><span class="math inline">\(\Theta \left( \log a
+\right)\)</span></span>.</p>
 <p>Now to examine the order of growth of the number of steps involved in
 the calculation of <code>(sine a)</code>, notice that there are as many
-divisions by
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>3</mn><annotation encoding="application/x-tex">3</annotation></semantics></math></span>
-as there are calls to <code>p</code>, followed by the same number of
+divisions by <span><span class="math inline">\(3\)</span></span> as
+there are calls to <code>p</code>, followed by the same number of
 calculations within <code>p</code> (because <code>p</code> itself runs
 in constant time). Since the number of calls to <code>p</code> is
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Θ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mo>log</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\Theta \left( \log a \right)</annotation></semantics></math></span>,
-the number of total steps in calculating <code>(sine a)</code> is an
-integer multiple of
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Θ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mo>log</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\Theta \left( \log a \right)</annotation></semantics></math></span>,
-which is again
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Θ</mi><mrow><mo stretchy="true" form="prefix">(</mo><mo>log</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\Theta
-\left( \log a \right)</annotation></semantics></math></span>.</p>
+<span><span class="math inline">\(\Theta \left( \log a
+\right)\)</span></span>, the number of total steps in calculating
+<code>(sine a)</code> is an integer multiple of <span><span
+class="math inline">\(\Theta \left( \log a \right)\)</span></span>,
+which is again <span><span class="math inline">\(\Theta
+\left( \log a \right)\)</span></span>.</p>
 </body>
 </html>

@@ -167,8 +167,15 @@
       vertical-align: middle;
     }
   </style>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"
+  type="text/javascript"></script>
 </head>
 <body>
+<nav id="mainnav">
+  <a href="index.html">Home</a>
+</nav>
 <header id="title-block-header">
 <h1 class="title">Doing numbers without the numbers</h1>
 <p class="date">2017-07-30</p>
@@ -196,19 +203,15 @@ obey certain properties, the representation does not matter. One cool
 way of encoding numbers is the <a
 href="https://en.wikipedia.org/wiki/Church_encoding">Church
 encoding</a>, due to Alonzo Church. In the simplest form, <strong>we
-encode a number as the number of applications of a given function
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>f</mi><annotation encoding="application/x-tex">f</annotation></semantics></math></strong>.
-For example,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0</mn><annotation encoding="application/x-tex">0</annotation></semantics></math>
-is encoded as <em>no</em> application,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math>
-is encoded as just one application of
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>f</mi><annotation encoding="application/x-tex">f</annotation></semantics></math>,
-while an arbitrary natural number
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
-is encoded as the function composition
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>f</mi><mi>n</mi></msup><annotation encoding="application/x-tex">f^n</annotation></semantics></math>.
-Let’s try this out in some Perl 6 code:</p>
+encode a number as the number of applications of a given function <span
+class="math inline">\(f\)</span></strong>. For example, <span
+class="math inline">\(0\)</span> is encoded as <em>no</em> application,
+<span class="math inline">\(1\)</span> is encoded as just one
+application of <span class="math inline">\(f\)</span>, while an
+arbitrary natural number <span class="math inline">\(n\)</span> is
+encoded as the function composition <span
+class="math inline">\(f^n\)</span>. Let’s try this out in some Perl 6
+code:</p>
 <pre class="perl6"><code># zero($f) returns a function that just returns its argument, i.e., the identity
 # function.
 sub zero ($f) {
@@ -241,8 +244,8 @@ the “increment” happens by applying <code>$f</code> one more time:</p>
 <ul>
 <li>The expression <code>$n($f)</code> is a function that when called
 with <code>$x</code>, will apply <code>$f</code> for <code>$n</code>
-times, to compute
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>f</mi><mi>n</mi></msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">f^n\left(x\right)</annotation></semantics></math></li>
+times, to compute <span
+class="math inline">\(f^n\left(x\right)\)</span></li>
 <li>i.e., <code>$n($f)($x)</code> <em>is</em> the result of applying the
 composition obtained by repeating <code>$f</code> for <code>$n</code>
 times to <code>$x</code>.</li>
@@ -251,15 +254,15 @@ ending up with <code>$f($n($f)($x))</code>.</li>
 </ul>
 <p>Note that the returned value is still a function that takes a
 function <code>$f</code>, and returns another function of the variable
-<code>$x</code>, which in turn applies <code>$f</code> for
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>n</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">n+1</annotation></semantics></math>
-times to <code>$x</code>. This is consistent with the interface we have
-for <code>zero</code>, and more importantly, demonstrates the use of
-closures: the function of <code>$x</code> <em>captures</em> its
-environment, which contains <code>$f</code>. Also, the function of
-<code>$f</code> (the outer lambda returned by <code>successor</code>)
-captures the function <code>$n</code> as it was when provided as an
-argument to <code>successor</code>.</p>
+<code>$x</code>, which in turn applies <code>$f</code> for <span
+class="math inline">\(n+1\)</span> times to <code>$x</code>. This is
+consistent with the interface we have for <code>zero</code>, and more
+importantly, demonstrates the use of closures: the function of
+<code>$x</code> <em>captures</em> its environment, which contains
+<code>$f</code>. Also, the function of <code>$f</code> (the outer lambda
+returned by <code>successor</code>) captures the function
+<code>$n</code> as it was when provided as an argument to
+<code>successor</code>.</p>
 <p>To make it even clearer, let’s try to come up with a mechanism to
 convert from the Church representation to normal Perl 6 numbers. We want
 to invent a function <code>$g</code> and a value <code>$a</code>, that
@@ -309,64 +312,43 @@ sub multiply ($y, $z) {
     }
 }</code></pre>
 <p>The predecessor function, however, is a bit more involved: given a
-numeral
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>,
-that applies
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>f</mi><annotation encoding="application/x-tex">f</annotation></semantics></math>
-for
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
-times to an initial value
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>,
-we want to derive a function that applies
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>f</mi><annotation encoding="application/x-tex">f</annotation></semantics></math>
-<em>one less time</em>. While there are multiple ways of doing this, the
-easiest to understand for me was to apply
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
-to <em>transformed</em> versions of
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>f</mi><annotation encoding="application/x-tex">f</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>.
-Let’s first define a function
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>g</mi><annotation encoding="application/x-tex">g</annotation></semantics></math>
-that takes a <em>pair</em>
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><mi>a</mi><mo>,</mo><mi>b</mi><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\left(a, b\right)</annotation></semantics></math>
-and if
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">a=0</annotation></semantics></math>,
-returns
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\left(0, f(a)\right)</annotation></semantics></math>,
-and if
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">a=1</annotation></semantics></math>,
-returns
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\left(0, a\right)</annotation></semantics></math>.
-In essence, the first element of the pair tells
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>g</mi><annotation encoding="application/x-tex">g</annotation></semantics></math>
-if it should <em>skip</em> applying
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>f</mi><annotation encoding="application/x-tex">f</annotation></semantics></math>
-to the second element. Here’s
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>g</mi><annotation encoding="application/x-tex">g</annotation></semantics></math>:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>g</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>p</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mrow><mo stretchy="true" form="prefix">{</mo><mtable><mtr><mtd columnalign="left" style="text-align: left"><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mi>z</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd><mtd columnalign="left" style="text-align: left"><mrow><mtext mathvariant="normal">when </mtext><mspace width="0.333em"></mspace></mrow><mi>p</mi><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>,</mo><mi>z</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"></mtd></mtr><mtr><mtd columnalign="left" style="text-align: left"><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mi>f</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>z</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd><mtd columnalign="left" style="text-align: left"><mrow><mtext mathvariant="normal">when </mtext><mspace width="0.333em"></mspace></mrow><mi>p</mi><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mi>z</mi><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr></mtable></mrow></mrow><annotation encoding="application/x-tex">
+numeral <span class="math inline">\(n\)</span>, that applies <span
+class="math inline">\(f\)</span> for <span
+class="math inline">\(n\)</span> times to an initial value <span
+class="math inline">\(x\)</span>, we want to derive a function that
+applies <span class="math inline">\(f\)</span> <em>one less time</em>.
+While there are multiple ways of doing this, the easiest to understand
+for me was to apply <span class="math inline">\(n\)</span> to
+<em>transformed</em> versions of <span class="math inline">\(f\)</span>
+and <span class="math inline">\(x\)</span>. Let’s first define a
+function <span class="math inline">\(g\)</span> that takes a
+<em>pair</em> <span class="math inline">\(\left(a, b\right)\)</span> and
+if <span class="math inline">\(a=0\)</span>, returns <span
+class="math inline">\(\left(0, f(a)\right)\)</span>, and if <span
+class="math inline">\(a=1\)</span>, returns <span
+class="math inline">\(\left(0, a\right)\)</span>. In essence, the first
+element of the pair tells <span class="math inline">\(g\)</span> if it
+should <em>skip</em> applying <span class="math inline">\(f\)</span> to
+the second element. Here’s <span class="math inline">\(g\)</span>:</p>
+<p><span class="math display">\[
 g\left(p\right) =
 \begin{cases}
- \left(0, z\right), &amp; \text{when } p = \left(1, z\right) \\\\
- \left(0, f(z)\right), &amp; \text{when } p = \left(0, z\right)
+\left(0, z\right), &amp; \text{when } p = \left(1, z\right) \\\\
+\left(0, f(z)\right), &amp; \text{when } p = \left(0, z\right)
 \end{cases}
-</annotation></semantics></math></p>
-<p>Note that if
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>g</mi><annotation encoding="application/x-tex">g</annotation></semantics></math>
-is composed for
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
-times and applied to a pair
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>,</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\left(1,
-x\right)</annotation></semantics></math>, we will in the end have the
-pair
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><msup><mi>f</mi><mrow><mi>n</mi><mo>−</mo><mn>1</mn></mrow></msup><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\left(0,
-f^{n-1}\left(x\right)\right)</annotation></semantics></math>!</p>
+\]</span></p>
+<p>Note that if <span class="math inline">\(g\)</span> is composed for
+<span class="math inline">\(n\)</span> times and applied to a pair <span
+class="math inline">\(\left(1,
+x\right)\)</span>, we will in the end have the pair <span
+class="math inline">\(\left(0,
+f^{n-1}\left(x\right)\right)\)</span>!</p>
 <p>e.g.,</p>
-<p><span class="math display">$$
+<p><span class="math display">\[
 g\left(g\left(\left(1, x\right)\right)\right) \\\\
 = g\left(\left(0, x\right)\right) \\\\
 = \left(0, f\left(x\right)\right)
-$$</span></p>
+\]</span></p>
 <p>Now Perl 6 of course has lists which we could use to represent our
 pairs, but let’s use an alternate representation in the spirit of this
 post. A pair is a data object that stores two other objects, and

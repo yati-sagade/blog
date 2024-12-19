@@ -167,8 +167,15 @@
       vertical-align: middle;
     }
   </style>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"
+  type="text/javascript"></script>
 </head>
 <body>
+<nav id="mainnav">
+  <a href="index.html">Home</a>
+</nav>
 <header id="title-block-header">
 <h1 class="title">Summary of “ImageNet Classification with Deep
 Convolutional Neural Networks”</h1>
@@ -204,20 +211,16 @@ from each 256x256 image. This is one of the ways they did data
 augmentation.</p>
 <p>The other way they augmented the dataset involved perturbing the
 R,G,B values of each input image by a scaled version of the principal
-components (in RGB space) across the whole training set. If
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐩</mi><mn>𝟏</mn></msub><annotation encoding="application/x-tex">\mathbf{p_1}</annotation></semantics></math>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐩</mi><mn>𝟐</mn></msub><annotation encoding="application/x-tex">\mathbf{p_2}</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>𝐩</mi><mn>𝟑</mn></msub><annotation encoding="application/x-tex">\mathbf{p_3}</annotation></semantics></math>
-be the eigenvectors and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>λ</mi><mn>1</mn></msub><annotation encoding="application/x-tex">\lambda_1</annotation></semantics></math>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>λ</mi><mn>2</mn></msub><annotation encoding="application/x-tex">\lambda_2</annotation></semantics></math>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>λ</mi><mn>3</mn></msub><annotation encoding="application/x-tex">\lambda_3</annotation></semantics></math>
-the corresponding eigenvalues, each pixel in a given image is perturbed
-such that:</p>
+components (in RGB space) across the whole training set. If <span
+class="math inline">\(\mathbf{p_1}\)</span>, <span
+class="math inline">\(\mathbf{p_2}\)</span> and <span
+class="math inline">\(\mathbf{p_3}\)</span> be the eigenvectors and
+<span class="math inline">\(\lambda_1\)</span>, <span
+class="math inline">\(\lambda_2\)</span>, <span
+class="math inline">\(\lambda_3\)</span> the corresponding eigenvalues,
+each pixel in a given image is perturbed such that:</p>
 <!-- TODO: Does not render in KaTeX on Hugo, but works in MathJax/Jekyll -->
-<p>$$
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mi>I</mi><mi>′</mi></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mi>I</mi><mo>+</mo><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><mo>←</mo><msup><msub><mi>𝐩</mi><mn>𝟏</mn></msub><mi>T</mi></msup><mo>→</mo></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mo>←</mo><msup><msub><mi>𝐩</mi><mn>𝟐</mn></msub><mi>T</mi></msup><mo>→</mo></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><mo>←</mo><msup><msub><mi>𝐩</mi><mn>𝟑</mn></msub><mi>T</mi></msup><mo>→</mo></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow><mrow><mo stretchy="true" form="prefix">[</mo><mtable><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>α</mi><mn>1</mn></msub><msub><mi>λ</mi><mn>1</mn></msub></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>α</mi><mn>2</mn></msub><msub><mi>λ</mi><mn>2</mn></msub></mtd></mtr><mtr><mtd columnalign="center" style="text-align: center"><msub><mi>α</mi><mn>3</mn></msub><msub><mi>λ</mi><mn>3</mn></msub></mtd></mtr></mtable><mo stretchy="true" form="postfix">]</mo></mrow></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align}
+<p>$$ <span class="math display">\[\begin{align}
 
 I&#39; &amp;= I + \begin{bmatrix}
         \leftarrow \mathbf{p_1}^T \rightarrow \\
@@ -231,14 +234,13 @@ I&#39; &amp;= I + \begin{bmatrix}
         \alpha_3 \lambda_3
       \end{bmatrix}
 
-\end{align}</annotation></semantics></math> $$</p>
-<p>where each
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>α</mi><mn>1</mn></msub><annotation encoding="application/x-tex">\alpha_1</annotation></semantics></math>
-is picked from a Gaussian with 0 mean and 0.1 std every time an image is
-used for training (but the values are shared by all pixels in the image
-once picked). They claim this captured an invariance of object identity
-under changes in intensity and color of illumination, which seems to
-have accounted for a ~ 1% decrease in top-1 error rate.</p>
+\end{align}\]</span> $$</p>
+<p>where each <span class="math inline">\(\alpha_1\)</span> is picked
+from a Gaussian with 0 mean and 0.1 std every time an image is used for
+training (but the values are shared by all pixels in the image once
+picked). They claim this captured an invariance of object identity under
+changes in intensity and color of illumination, which seems to have
+accounted for a ~ 1% decrease in top-1 error rate.</p>
 <h2 id="model-architecture">Model architecture</h2>
 <p>The model has 5 convolutional layers and 3 fully-connected
 layers.</p>
@@ -259,19 +261,17 @@ and stride of 2). Max pooling is applied after response renormalization,
 described next.</p>
 <h3 id="local-response-renormalization">Local response
 renormalization</h3>
-<p>Activations from a given filter/kernel for a given location
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\left(x,y\right)</annotation></semantics></math>
-are scaled by a term involving the activations on
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
-adjacent kernels for the same location.
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
-and other terms in question are hyperparameters and described very well
-in the corresponding section in the paper. The inspiration seems to be
-biological in nature, and in effect causes filters in an
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>n</mi><annotation encoding="application/x-tex">n</annotation></semantics></math>
-group to “compete” for having larger activations. Of course they
-probably wouldn’t have kept it had it not given them a significant error
-rate reduction on their validation set (which it did).</p>
+<p>Activations from a given filter/kernel for a given location <span
+class="math inline">\(\left(x,y\right)\)</span> are scaled by a term
+involving the activations on <span class="math inline">\(n\)</span>
+adjacent kernels for the same location. <span
+class="math inline">\(n\)</span> and other terms in question are
+hyperparameters and described very well in the corresponding section in
+the paper. The inspiration seems to be biological in nature, and in
+effect causes filters in an <span class="math inline">\(n\)</span> group
+to “compete” for having larger activations. Of course they probably
+wouldn’t have kept it had it not given them a significant error rate
+reduction on their validation set (which it did).</p>
 <h3 id="dropout-momentum-and-weight-decay">Dropout, momentum and weight
 decay</h3>
 <p>Dropout is used in the first two fully-connected layers (layers 6 and
@@ -296,18 +296,18 @@ the left side, will oscillate up and down, moving slowly towards the
 optimum. Momentum uses exponentially weighted averages to take into
 account previous gradient descent updates. This averaging has an effect
 of cancelling out the up and down oscillations, thus speeding up the
-learning significantly. Authors use a momentum parameter of
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0.9</mn><annotation encoding="application/x-tex">0.9</annotation></semantics></math>,
-which roughly keeps the past 10 values in the moving average memory.</p>
+learning significantly. Authors use a momentum parameter of <span
+class="math inline">\(0.9\)</span>, which roughly keeps the past 10
+values in the moving average memory.</p>
 <p>Weight decay is simply to scale down weights by a factor slightly
 less than 1 to prevent them from becoming too big. This can be seen as a
 regularizing technique. In all the gradient descent updates for the
 model weights look like the following:</p>
-<p><span class="math display">$$
+<p><span class="math display">\[
 v \leftarrow 0.9 v - 0.0005.\epsilon.w  - \epsilon\frac{\partial
 L}{\partial w} \\
 w \leftarrow w + v
-$$</span></p>
+\]</span></p>
 <h2 id="training">Training</h2>
 <p>The training is done on two GPUs for parallelism, and the setup is
 quite interesting. The GPUs used each have 3GB memory. The network is

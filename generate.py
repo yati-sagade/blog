@@ -1,3 +1,4 @@
+import re
 import os
 import sys
 import subprocess
@@ -6,8 +7,21 @@ import shutil
 from jinja2 import Environment, FileSystemLoader
 import frontmatter
 import tempfile
+import markdown2
+from bs4 import BeautifulSoup
 
 BLOG_TITLE = 'Explog'
+
+
+def strip_markdown(text):
+    # Convert Markdown to HTML
+    html = markdown2.markdown(text)
+    # Strip HTML tags using BeautifulSoup
+    soup = BeautifulSoup(html, 'html.parser')
+    return soup.get_text()
+
+def full_path(path):
+  return os.path.join(os.path.dirname(os.path.realpath(__file__)), path)
 
 parser = argparse.ArgumentParser(description='Generate a blog site.')
 parser.add_argument('directory', help='The directory containing the blog files.')
@@ -27,9 +41,9 @@ def render_template(template_path, context):
   rendered_template = template.render(context)
   return rendered_template
 
-
 def convert_file_with_pandoc(input_path, output_path):
-  command = f"pandoc -f markdown -t html --standalone --mathml {input_path} -o {output_path}"
+  command = f"pandoc -f markdown -t html --standalone --mathjax\
+    {input_path} -o {output_path} -B templates/pandoc/header.html"
   print(f'Running {command}')
   result = subprocess.run(command, shell=True, capture_output=True, text=True)
   print(result.stdout)
@@ -59,7 +73,7 @@ if __name__ == '__main__':
           print(f'Skipping draft post {filename} as --include-drafts is not given.')
           continue
         post_dict = {key: post[key] for key in ['title', 'date', 'tags'] if key in post}
-        post_dict['snippet'] = post.content[:100] + '...'
+        post_dict['snippet'] = strip_markdown(post.content)[:100] + '...'
         post_dict['link'] = outputname
         posts.append(post_dict)
       # Convert

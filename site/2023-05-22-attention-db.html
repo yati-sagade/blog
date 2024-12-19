@@ -231,8 +231,15 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"
+  type="text/javascript"></script>
 </head>
 <body>
+<nav id="mainnav">
+  <a href="index.html">Home</a>
+</nav>
 <header id="title-block-header">
 <h1 class="title">Attention - this value does not exist</h1>
 <p class="date">2023-04-30</p>
@@ -280,28 +287,27 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a hr
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="bu">type</span>(results) <span class="op">==</span> <span class="bu">list</span></span></code></pre></div>
 <h3 id="answering-queries-with-attention-1">Answering queries with
 attention</h3>
-<p>Consider a dataset D containing key-value pairs
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>D</mi><mo>=</mo><mo stretchy="false" form="prefix">{</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mtext mathvariant="bold">𝐤</mtext><mn>1</mn></msub><mo>,</mo><msub><mtext mathvariant="bold">𝐯</mtext><mn>1</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mi>.</mi><mi>.</mi><mi>.</mi><mo>,</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mtext mathvariant="bold">𝐤</mtext><mi>m</mi></msub><mo>,</mo><msub><mtext mathvariant="bold">𝐯</mtext><mi>m</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">D = \{(\textbf{k}_1, \textbf{v}_1), ..., (\textbf{k}_m, \textbf{v}_m)\}</annotation></semantics></math>.</p>
-<p>Imagine a query mechanism that, given a query
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtext mathvariant="bold">𝐪</mtext><annotation encoding="application/x-tex">\textbf{q}</annotation></semantics></math>,
-produces a result given by:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mi>t</mi><mi>t</mi><mi>e</mi><mi>n</mi><mi>t</mi><mi>i</mi><mi>o</mi><mi>n</mi><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="bold">𝐪</mtext><mo>,</mo><mi>D</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>m</mi></munderover><mi>α</mi><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="bold">𝐪</mtext><mo>,</mo><msub><mtext mathvariant="bold">𝐤</mtext><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><msub><mtext mathvariant="bold">𝐯</mtext><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">
-Attention(\textbf{q}, D) = \sum_{i=1}^{m}\alpha(\textbf{q}, \textbf{k}_i) \textbf{v}_i
-</annotation></semantics></math></p>
+<p>Consider a dataset D containing key-value pairs <span
+class="math inline">\(D = \{(\textbf{k}_1, \textbf{v}_1), ...,
+(\textbf{k}_m, \textbf{v}_m)\}\)</span>.</p>
+<p>Imagine a query mechanism that, given a query <span
+class="math inline">\(\textbf{q}\)</span>, produces a result given
+by:</p>
+<p><span class="math display">\[
+Attention(\textbf{q}, D) = \sum_{i=1}^{m}\alpha(\textbf{q},
+\textbf{k}_i) \textbf{v}_i
+\]</span></p>
 <p>Note:</p>
 <ul>
-<li>The weights
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>α</mi><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="bold">𝐪</mtext><mo>,</mo><msub><mtext mathvariant="bold">𝐤</mtext><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\alpha(\textbf{q}, \textbf{k}_i)</annotation></semantics></math>
-are non-negative, and sum to 1.</li>
-<li>We can make this an exact key match retrieval by setting
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>α</mi><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="bold">𝐪</mtext><mo>,</mo><msub><mtext mathvariant="bold">𝐤</mtext><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\alpha(\textbf{q}, \textbf{k}_i)=1</annotation></semantics></math>
-when
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>=</mo><msub><mtext mathvariant="bold">𝐤</mtext><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">q=\textbf{k}_i</annotation></semantics></math>,
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0</mn><annotation encoding="application/x-tex">0</annotation></semantics></math>
-otherwise.</li>
-<li>We can get average pooling OTOH if we set
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>α</mi><mrow><mo stretchy="true" form="prefix">(</mo><mtext mathvariant="bold">𝐪</mtext><mo>,</mo><msub><mtext mathvariant="bold">𝐤</mtext><mi>i</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mfrac><mn>1</mn><mi>m</mi></mfrac></mrow><annotation encoding="application/x-tex">\alpha(\textbf{q}, \textbf{k}_i)=\frac{1}{m}</annotation></semantics></math>.</li>
+<li>The weights <span class="math inline">\(\alpha(\textbf{q},
+\textbf{k}_i)\)</span> are non-negative, and sum to 1.</li>
+<li>We can make this an exact key match retrieval by setting <span
+class="math inline">\(\alpha(\textbf{q}, \textbf{k}_i)=1\)</span> when
+<span class="math inline">\(q=\textbf{k}_i\)</span>, and <span
+class="math inline">\(0\)</span> otherwise.</li>
+<li>We can get average pooling OTOH if we set <span
+class="math inline">\(\alpha(\textbf{q},
+\textbf{k}_i)=\frac{1}{m}\)</span>.</li>
 </ul>
 <h3 id="implementation">Implementation</h3>
 <p>Our DB interface uses variable length words, but the attention

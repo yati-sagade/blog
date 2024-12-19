@@ -231,8 +231,15 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"
+  type="text/javascript"></script>
 </head>
 <body>
+<nav id="mainnav">
+  <a href="index.html">Home</a>
+</nav>
 <header id="title-block-header">
 <h1 class="title">SICP Exercise 1.20 - GCD</h1>
 <p class="date">2015-05-19</p>
@@ -241,43 +248,33 @@
 algorithm</a> for computing the <a
 href="http://en.wikipedia.org/wiki/Greatest_common_divisor">GCD
 (Greatest Common Divisor)</a> of two numbers is based on a very neat
-idea: The GCD of two numbers
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math></span>
-and
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math></span>,
-with
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>&gt;</mo><mi>b</mi></mrow><annotation encoding="application/x-tex">a \gt b</annotation></semantics></math><span>
-is the same as the GCD of
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>−</mo><mi>b</mi></mrow><annotation encoding="application/x-tex">a-b</annotation></semantics></math></span>
-and
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math></span>.
-A little thought would convince us that this means the GCD of
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math></span>
-and
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math></span>
-is then equal to the GCD of
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mi>e</mi><mi>m</mi><mi>a</mi><mi>i</mi><mi>n</mi><mi>d</mi><mi>e</mi><mi>r</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>a</mi><mo>,</mo><mi>b</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">remainder \left( a, b \right)</annotation></semantics></math></span>
-and
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math></span>,
-which in turn is equal to the GCD of
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math></span>
-and
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>r</mi><mi>e</mi><mi>m</mi><mi>a</mi><mi>i</mi><mi>n</mi><mi>d</mi><mi>e</mi><mi>r</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>b</mi><mo>,</mo><mi>r</mi><mi>e</mi><mi>m</mi><mi>a</mi><mi>i</mi><mi>n</mi><mi>d</mi><mi>e</mi><mi>r</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>a</mi><mo>,</mo><mi>b</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">remainder \left( b, remainder
-\left( a, b \right) \right)</annotation></semantics></math></span> and
-so on. In Scheme code,</p>
+idea: The GCD of two numbers <span><span
+class="math inline">\(a\)</span></span> and <span><span
+class="math inline">\(b\)</span></span>, with <span><span
+class="math inline">\(a \gt b\)</span><span> is the same as the GCD of
+<span><span class="math inline">\(a-b\)</span></span> and <span><span
+class="math inline">\(b\)</span></span>. A little thought would convince
+us that this means the GCD of <span><span
+class="math inline">\(a\)</span></span> and <span><span
+class="math inline">\(b\)</span></span> is then equal to the GCD of
+<span><span class="math inline">\(remainder \left( a, b
+\right)\)</span></span> and <span><span
+class="math inline">\(b\)</span></span>, which in turn is equal to the
+GCD of <span><span class="math inline">\(b\)</span></span> and
+<span><span class="math inline">\(remainder \left( b, remainder
+\left( a, b \right) \right)\)</span></span> and so on. In Scheme
+code,</p>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode scheme"><code class="sourceCode scheme"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>(<span class="ex">define</span><span class="fu"> </span>(<span class="kw">gcd</span> a b)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>     (<span class="kw">if</span> (<span class="op">=</span> b <span class="dv">0</span>)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>     a</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>     (<span class="kw">gcd</span> b (<span class="kw">remainder</span> a b))))</span></code></pre></div>
 <p>Note that the terminating clause for the recursion is when
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>b</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">b=0</annotation></semantics></math></span>,
-in which case we just return
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math></span>,
-since any number is a divisor of
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0</mn><annotation encoding="application/x-tex">0</annotation></semantics></math></span>,
-and
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0</mn><mo>×</mo><mn>0</mn><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">0 \times 0 = 0</annotation></semantics></math></span>.</p>
+<span><span class="math inline">\(b=0\)</span></span>, in which case we
+just return <span><span class="math inline">\(a\)</span></span>, since
+any number is a divisor of <span><span
+class="math inline">\(0\)</span></span>, and <span><span
+class="math inline">\(0 \times 0 = 0\)</span></span>.</p>
 <p>The exercise asks us to compare the applicative and normal orders of
 evaluation as applied to the procedure <code>gcd</code>, under the
 substitution model.</p>
@@ -404,8 +401,8 @@ class="sourceCode scheme"><code class="sourceCode scheme"><span id="cb2-1"><a hr
 <span id="cb2-108"><a href="#cb2-108" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-109"><a href="#cb2-109" aria-hidden="true" tabindex="-1"></a>-&gt; <span class="dv">2</span></span></code></pre></div>
 <p>In all, the number of remainder calls in the normal-order evaluation
-of <code>(gcd 206 40)</code> is therefore
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>4</mn><mo>+</mo><mn>7</mn><mo>+</mo><mn>4</mn><mo>+</mo><mn>2</mn><mo>+</mo><mn>1</mn><mo>=</mo><mn>18</mn></mrow><annotation encoding="application/x-tex">4 + 7 + 4 + 2 + 1 = 18</annotation></semantics></math></span></p>
+of <code>(gcd 206 40)</code> is therefore <span><span
+class="math inline">\(4 + 7 + 4 + 2 + 1 = 18\)</span></span></p>
 <p>Now, here’s the applicative-order evaluation of the same
 expression:</p>
 <div class="sourceCode" id="cb3"><pre

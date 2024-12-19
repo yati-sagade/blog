@@ -167,110 +167,90 @@
       vertical-align: middle;
     }
   </style>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js"
+  type="text/javascript"></script>
 </head>
 <body>
+<nav id="mainnav">
+  <a href="index.html">Home</a>
+</nav>
 <header id="title-block-header">
 <h1 class="title">SICP excercises 1.19 - Logarithmic time Fibonacci
 number generation</h1>
 <p class="date">2015-04-25</p>
 </header>
-<p>This exercise describes a transformation
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>T</mi><mrow><mi>p</mi><mi>q</mi></mrow></msub><annotation encoding="application/x-tex">T_{pq}</annotation></semantics></math></span>,
-that, when applied to a pair
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><mi>a</mi><mo>,</mo><mi>b</mi><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\left( a, b \right)</annotation></semantics></math></span>,
-transforms it according to
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>←</mo><mi>a</mi><mi>q</mi><mo>+</mo><mi>b</mi><mi>q</mi><mo>+</mo><mi>a</mi><mi>p</mi></mrow><annotation encoding="application/x-tex">a \gets aq + bq + ap</annotation></semantics></math></span>
-and
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>b</mi><mo>←</mo><mi>b</mi><mi>p</mi><mo>+</mo><mi>a</mi><mi>q</mi></mrow><annotation encoding="application/x-tex">b \gets bp + aq</annotation></semantics></math></span>.
-The transformation used to generate Fibonacci numbers, starting from the
-pair
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\left( 0, 1 \right)</annotation></semantics></math></span>,
-can be written as
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>←</mo><mi>a</mi><mo>+</mo><mi>b</mi></mrow><annotation encoding="application/x-tex">a \gets
-a + b</annotation></semantics></math></span> and
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>b</mi><mo>←</mo><mi>a</mi></mrow><annotation encoding="application/x-tex">b \gets a</annotation></semantics></math></span>.</p>
-<p>Note that the Fibonacci transformation is
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>T</mi><mn>01</mn></msub><annotation encoding="application/x-tex">T_{01}</annotation></semantics></math></span>
-(<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">p=0</annotation></semantics></math></span>
-and
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">q=1</annotation></semantics></math></span>).</p>
+<p>This exercise describes a transformation <span><span
+class="math inline">\(T_{pq}\)</span></span>, that, when applied to a
+pair <span><span class="math inline">\(\left( a, b
+\right)\)</span></span>, transforms it according to <span><span
+class="math inline">\(a \gets aq + bq + ap\)</span></span> and
+<span><span class="math inline">\(b \gets bp + aq\)</span></span>. The
+transformation used to generate Fibonacci numbers, starting from the
+pair <span><span class="math inline">\(\left( 0, 1
+\right)\)</span></span>, can be written as <span><span
+class="math inline">\(a \gets
+a + b\)</span></span> and <span><span class="math inline">\(b \gets
+a\)</span></span>.</p>
+<p>Note that the Fibonacci transformation is <span><span
+class="math inline">\(T_{01}\)</span></span> (<span><span
+class="math inline">\(p=0\)</span></span> and <span><span
+class="math inline">\(q=1\)</span></span>).</p>
 <p>The exercise asks us to show that applying any transformation
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>T</mi><mrow><mi>p</mi><mi>q</mi></mrow></msub><annotation encoding="application/x-tex">T_{pq}</annotation></semantics></math></span>
-<em>twice</em> (or
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>T</mi><mrow><mi>p</mi><mi>q</mi></mrow><mn>2</mn></msubsup><annotation encoding="application/x-tex">T^2_{pq}</annotation></semantics></math></span>)
-to a pair
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><mi>a</mi><mo>,</mo><mi>b</mi><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\left( a, b \right)</annotation></semantics></math></span>
-is equivalent to applying the transformation
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>T</mi><mrow><mi>p</mi><mi>′</mi><mi>q</mi><mi>′</mi></mrow></msub><annotation encoding="application/x-tex">T_{p&#39;q&#39;}</annotation></semantics></math></span>
-for some
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mi>′</mi></mrow><annotation encoding="application/x-tex">p&#39;</annotation></semantics></math></span>
-and
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mi>′</mi></mrow><annotation encoding="application/x-tex">q&#39;</annotation></semantics></math></span>,
-and to find
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mi>′</mi></mrow><annotation encoding="application/x-tex">p&#39;</annotation></semantics></math></span>
-and
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mi>′</mi></mrow><annotation encoding="application/x-tex">q&#39;</annotation></semantics></math></span>
-in terms of
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>p</mi><annotation encoding="application/x-tex">p</annotation></semantics></math></span>
-and
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>q</mi><annotation encoding="application/x-tex">q</annotation></semantics></math></span>.</p>
+<span><span class="math inline">\(T_{pq}\)</span></span> <em>twice</em>
+(or <span><span class="math inline">\(T^2_{pq}\)</span></span>) to a
+pair <span><span class="math inline">\(\left( a, b
+\right)\)</span></span> is equivalent to applying the transformation
+<span><span class="math inline">\(T_{p&#39;q&#39;}\)</span></span> for
+some <span><span class="math inline">\(p&#39;\)</span></span> and
+<span><span class="math inline">\(q&#39;\)</span></span>, and to find
+<span><span class="math inline">\(p&#39;\)</span></span> and <span><span
+class="math inline">\(q&#39;\)</span></span> in terms of <span><span
+class="math inline">\(p\)</span></span> and <span><span
+class="math inline">\(q\)</span></span>.</p>
 <p>Let’s apply the transformation once to get</p>
 <div>
-$ a’ = aq + bq + ap
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mi>/</mi><mi>d</mi><mi>i</mi><mi>v</mi><mo>&gt;</mo><mo>&lt;</mo><mi>d</mi><mi>i</mi><mi>v</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">&lt;/div&gt;
-&lt;div&gt;</annotation></semantics></math> b’ = bp + aq $
+$ a’ = aq + bq + ap <span class="math inline">\(&lt;/div&gt;
+&lt;div&gt;\)</span> b’ = bp + aq $
 </div>
 Now apply the transformation once more.
 <div>
-$ a’’ = a’q + b’q + a’p
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mi>/</mi><mi>d</mi><mi>i</mi><mi>v</mi><mo>&gt;</mo><mo>&lt;</mo><mi>d</mi><mi>i</mi><mi>v</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">&lt;/div&gt;
-&lt;div&gt;</annotation></semantics></math> b’’ = b’p + a’q $
+$ a’’ = a’q + b’q + a’p <span class="math inline">\(&lt;/div&gt;
+&lt;div&gt;\)</span> b’’ = b’p + a’q $
 </div>
-Substitute for
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mi>′</mi></mrow><annotation encoding="application/x-tex">a&#39;</annotation></semantics></math></span>
-and
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>b</mi><mi>′</mi></mrow><annotation encoding="application/x-tex">b&#39;</annotation></semantics></math></span>
-and rearrange
+Substitute for <span><span class="math inline">\(a&#39;\)</span></span>
+and <span><span class="math inline">\(b&#39;\)</span></span> and
+rearrange
 <div>
-$ a’’ = ( aq + bq + ap ) q + ( bp + aq ) q + ( aq + bq + ap ) p
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mi>/</mi><mi>d</mi><mi>i</mi><mi>v</mi><mo>&gt;</mo><mo>&lt;</mo><mi>d</mi><mi>i</mi><mi>v</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">&lt;/div&gt;
-&lt;div&gt;</annotation></semantics></math> = ap^2 + bq^2 + 2aq^2 + 2apq
-+ 2bpq
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mi>/</mi><mi>d</mi><mi>i</mi><mi>v</mi><mo>&gt;</mo><mo>&lt;</mo><mi>d</mi><mi>i</mi><mi>v</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">&lt;/div&gt;
-&lt;div&gt;</annotation></semantics></math> = a ( 2q^2 + p^2 + 2pq ) + b
-( q^2 + 2pq )
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mi>/</mi><mi>d</mi><mi>i</mi><mi>v</mi><mo>&gt;</mo><mo>&lt;</mo><mi>d</mi><mi>i</mi><mi>v</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">&lt;/div&gt;
-&lt;div&gt;</annotation></semantics></math> = a ( q^2 + 2pq ) + a ( p^2
-+ q^2 ) + b ( q^2 + 2pq )
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mi>/</mi><mi>d</mi><mi>i</mi><mi>v</mi><mo>&gt;</mo><mo>&lt;</mo><mi>d</mi><mi>i</mi><mi>v</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">&lt;/div&gt;
-&lt;div&gt;</annotation></semantics></math> = a ( q^2 + 2pq ) + b ( q^2
-+ 2pq ) + a ( p^2 + q^2 ) $
+$ a’’ = ( aq + bq + ap ) q + ( bp + aq ) q + ( aq + bq + ap ) p <span
+class="math inline">\(&lt;/div&gt;
+&lt;div&gt;\)</span> = ap^2 + bq^2 + 2aq^2 + 2apq + 2bpq <span
+class="math inline">\(&lt;/div&gt;
+&lt;div&gt;\)</span> = a ( 2q^2 + p^2 + 2pq ) + b ( q^2 + 2pq ) <span
+class="math inline">\(&lt;/div&gt;
+&lt;div&gt;\)</span> = a ( q^2 + 2pq ) + a ( p^2 + q^2 ) + b ( q^2 + 2pq
+) <span class="math inline">\(&lt;/div&gt;
+&lt;div&gt;\)</span> = a ( q^2 + 2pq ) + b ( q^2 + 2pq ) + a ( p^2 + q^2
+) $
 </div>
 <div>
-$ b’’ = b’p + a’q
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mi>/</mi><mi>d</mi><mi>i</mi><mi>v</mi><mo>&gt;</mo><mo>&lt;</mo><mi>d</mi><mi>i</mi><mi>v</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">&lt;/div&gt;
-&lt;div&gt;</annotation></semantics></math> = ( bp + aq )p + ( aq + bq +
-ap )q
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mi>/</mi><mi>d</mi><mi>i</mi><mi>v</mi><mo>&gt;</mo><mo>&lt;</mo><mi>d</mi><mi>i</mi><mi>v</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">&lt;/div&gt;
-&lt;div&gt;</annotation></semantics></math> = bp^2 + apq + aq^2 + bq^2 +
-apq
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>&lt;</mo><mi>/</mi><mi>d</mi><mi>i</mi><mi>v</mi><mo>&gt;</mo><mo>&lt;</mo><mi>d</mi><mi>i</mi><mi>v</mi><mo>&gt;</mo></mrow><annotation encoding="application/x-tex">&lt;/div&gt;
-&lt;div&gt;</annotation></semantics></math> = b( p^2 + q^2 ) + a( q^2 +
-2pq ) $
+$ b’’ = b’p + a’q <span class="math inline">\(&lt;/div&gt;
+&lt;div&gt;\)</span> = ( bp + aq )p + ( aq + bq + ap )q <span
+class="math inline">\(&lt;/div&gt;
+&lt;div&gt;\)</span> = bp^2 + apq + aq^2 + bq^2 + apq <span
+class="math inline">\(&lt;/div&gt;
+&lt;div&gt;\)</span> = b( p^2 + q^2 ) + a( q^2 + 2pq ) $
 </div>
-<p>Now comparing the final expressions for
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mi>″</mi></mrow><annotation encoding="application/x-tex">a&#39;&#39;</annotation></semantics></math></span>
-and
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>b</mi><mi>″</mi></mrow><annotation encoding="application/x-tex">b&#39;&#39;</annotation></semantics></math></span>
-with the original transformations, we note that transforming
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><mi>a</mi><mo>,</mo><mi>b</mi><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\left( a,b \right)</annotation></semantics></math>
-by
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msubsup><mi>T</mi><mrow><mi>p</mi><mi>q</mi></mrow><mn>2</mn></msubsup><annotation encoding="application/x-tex">T^2_{pq}</annotation></semantics></math></span>
-is equivalent to the single transformation
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>T</mi><mrow><mi>p</mi><mi>′</mi><mi>q</mi><mi>′</mi></mrow></msub><annotation encoding="application/x-tex">T_{p&#39;q&#39;}</annotation></semantics></math></span>,
-where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mi>′</mi><mo>=</mo><msup><mi>p</mi><mn>2</mn></msup><mo>+</mo><msup><mi>q</mi><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">p&#39; = p^2 + q^2</annotation></semantics></math>
-and
-<span><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi><mi>′</mi><mo>=</mo><msup><mi>q</mi><mn>2</mn></msup><mo>+</mo><mn>2</mn><mi>p</mi><mi>q</mi></mrow><annotation encoding="application/x-tex">q&#39; = q^2 + 2pq</annotation></semantics></math></span>.</p>
+<p>Now comparing the final expressions for <span><span
+class="math inline">\(a&#39;&#39;\)</span></span> and <span><span
+class="math inline">\(b&#39;&#39;\)</span></span> with the original
+transformations, we note that transforming <span><span
+class="math inline">\(\left( a,b \right)\)</span> by <span><span
+class="math inline">\(T^2_{pq}\)</span></span> is equivalent to the
+single transformation <span><span
+class="math inline">\(T_{p&#39;q&#39;}\)</span></span>, where <span
+class="math inline">\(p&#39; = p^2 + q^2\)</span> and <span><span
+class="math inline">\(q&#39; = q^2 + 2pq\)</span></span>.</p>
 </body>
 </html>
