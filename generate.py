@@ -25,6 +25,10 @@ def full_path(path):
 
 parser = argparse.ArgumentParser(description='Generate a blog site.')
 parser.add_argument('directory', help='The directory containing the blog files.')
+parser.add_argument('--copy-static',
+                    type=str,
+                    default=None,
+                    help='Copy all files from the given directory to the output directory.')
 parser.add_argument('--site-directory',
                     type=str,
                     default=None,
@@ -94,3 +98,8 @@ if __name__ == '__main__':
     fp.write(rendered_html.encode('utf-8'))
     fp.close()
     convert_file_with_pandoc(fp.name, os.path.join(site_directory, 'index.html'))
+
+  # Copy static files.
+  if (d:=args.copy_static) is not None:
+    print(f'Copying static files from {d} to {site_directory}')
+    shutil.copytree(d, site_directory, dirs_exist_ok=True)
