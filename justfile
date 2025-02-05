@@ -6,7 +6,11 @@ write NAME:
 
 build-with-drafts:
   #!/usr/bin/env bash
-  python generate.py --include-drafts --site-directory=./site --copy-static=./static/images .
+  python generate.py --include-drafts --site-directory=./site --copy-static=./static/images ./content/posts
+
+build:
+  #!/usr/bin/env bash
+  python generate.py --site-directory=./site --copy-static=./static/images ./content/posts
 
 publish: build
   #!/usr/bin/env bash
