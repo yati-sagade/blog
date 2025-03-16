@@ -1,0 +1,31 @@
+---
+title: Mindfulness
+date: 2025-02-06
+draft: true
+---
+I listened to a recent [Huberman Lab podcast episode with Dr. Ellen Langer][1].
+It is a delightful episode, Dr. Langer has a refreshing take on life.
+
+A few things have just stuck with me, and the more I think about them in the
+context of my day-to-day life, the more they make sense.
+
+### Behaviors make sense
+
+We all are reminded every now and then of of behaviors that we wish we hadn't
+engaged in. Every time, our response varies, maybe we'll resolve to not repeat,
+or maybe we'll distract ourselves out of shame. Only sometimes though do we
+think deeply of the behavior in the context of the circumstances at the time. I
+think we just forget the nuances: Maybe we were underslept, maybe something
+else was occupying our mind. Most of the time, _we did X at time T because
+doing X made sense at the time!_. Not to shy away from accountability and true
+improvement, I find that forgetting to include circumstances in any such
+evaluation of past behaviors results either in over-harsh and unhelpful
+self-sabotage, or no action at all.
+
+This principle is even more powerful when applied to other people around us.
+Their behavior also makes sense to them at the time!
+
+
+
+
+[1]:https://www.hubermanlab.com/episode/dr-ellen-langer-using-your-mind-to-control-your-physical-health-longevity

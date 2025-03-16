@@ -1,0 +1,9 @@
+---
+title: Notes on linear algebra
+date: 2025-02-09
+draft: true
+---
+
+### Matrix multiplication
+
+We all know the $C_{ij} = \sum_{k=1}^n

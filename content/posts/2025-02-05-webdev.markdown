@@ -1,0 +1,16 @@
+---
+title: Web development 2025
+date: 2025-02-06
+draft: true
+---
+These are my thoughts on learning modern front-end development for the Web.
+
+The context is a simple web application that consumes a RESTful API. Nothing
+complicated, simple CRUD on a hierarchy of types (e.g.,
+`team<-[belongs_to:1]-user-[owns:*]->folder-[contains:*]->document`).
+
+The same API is also used by a CLI frontend, so authentication is done with
+JWTs.
+
+
+
