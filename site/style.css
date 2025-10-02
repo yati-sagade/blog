@@ -1,0 +1,71 @@
+body {
+  font-family: Georgia, serif;
+  line-height: 1.6;
+  max-width: 42em;
+  margin: 0 auto;
+  padding: 2em;
+  color: #333;
+}
+
+h1, h2, h3 {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  line-height: 1.2;
+  margin-top: 1.5em;
+}
+
+p {
+  margin-bottom: 1.5em;
+}
+
+a {
+  color: #2d2c3b;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+div.sourceCode {
+  border: solid aliceblue;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.zippy {
+  border: 2px solid yellowgreen;
+  padding: 5px;
+  margin: 10px 0;
+  border-radius: 5px;
+}
+
+.zippy-content {
+  display: none;
+  padding-top: 5px;
+}
+
+.zippy-header {
+  cursor: pointer;
+  user-select: none;
+}
+
+.zippy.expanded .zippy-content {
+  display: block;
+}
+
+/* Sooo hacky. Love it and hate it but can't do much better haha, css knowledge limits reached. */
+.zippy.expanded .zippy-header-expanded {
+  display: inline;
+}
+
+.zippy.expanded .zippy-header-collapsed {
+  display: none;
+}
+
+.zippy:not(.expanded) .zippy-header-expanded {
+  display: none;
+}
+
+.zippy:not(.expanded) .zippy-header-collapsed {
+  display: inline;
+}

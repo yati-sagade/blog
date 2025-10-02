@@ -1,0 +1,16 @@
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.zippy').forEach(zippy => {
+    const previewText = zippy.getAttribute('data-preview') || 'Click to expand';
+    zippy.innerHTML = `
+      <div class="zippy-header-collapsed">${previewText} ▶</div>
+      <div class="zippy-header-expanded">${previewText} ▼</div>
+      <div class="zippy-content">${zippy.innerHTML}</div>
+    `;
+
+    zippy.addEventListener('click', function() {
+      this.classList.toggle('expanded');
+    });
+  });
+});
+</script>

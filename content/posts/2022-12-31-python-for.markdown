@@ -1,10 +1,7 @@
 ---
-
-layout: post
 title: Python's for loop syntax is more flexible than I thought!
 date: 2022-12-31
 summary: TL;DR - All assignment LHS forms are valid syntax for the for-loop target
-
 ---
 
 I came across an expression like:

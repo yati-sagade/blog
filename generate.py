@@ -25,10 +25,12 @@ def full_path(path):
 
 parser = argparse.ArgumentParser(description='Generate a blog site.')
 parser.add_argument('directory', help='The directory containing the blog files.')
+parser.add_argument('--clean', action='store_true', help='Clean the output directory before generating.')
 parser.add_argument('--copy-static',
-                    type=str,
-                    default=None,
-                    help='Copy all files from the given directory to the output directory.')
+          type=str,
+          action='append',
+          default=[],
+          help='Copy all files from the given directory to the output directory. Can be specified multiple times.')
 parser.add_argument('--site-directory',
                     type=str,
                     default=None,
@@ -47,7 +49,7 @@ def render_template(template_path, context):
 
 def convert_file_with_pandoc(input_path, output_path):
   command = f"pandoc -f markdown -t html --standalone --mathjax\
-    {input_path} -o {output_path} -B templates/pandoc/header.html"
+    {input_path} -o {output_path} -B templates/pandoc/header.html -H templates/pandoc/blog.js.html --css style.css"
   print(f'Running {command}')
   result = subprocess.run(command, shell=True, capture_output=True, text=True)
   print(result.stdout)
@@ -59,16 +61,22 @@ if __name__ == '__main__':
   site_directory = os.path.join(directory, 'site')
   if (d:=args.site_directory) is not None:
     site_directory = d
-  if os.path.exists(site_directory):
+  if args.clean and os.path.exists(site_directory):
     shutil.rmtree(site_directory)
-  os.makedirs(site_directory, exist_ok=True)
+  if not os.path.exists(site_directory):
+    os.makedirs(site_directory, exist_ok=True)
 
   # Keep track of posts to render the index page.
   posts = []
   for filename in os.listdir(directory):
     if filename.endswith(".md") or filename.endswith(".markdown"):
-      print(f"--- Processing {filename}...")
+      # Skip files that haven't been modified since the last time the output directory was modified
+      output_file = os.path.join(site_directory, os.path.splitext(filename)[0] + ".html")
       path = os.path.join(directory, filename)
+      if os.path.exists(output_file) and os.path.getmtime(path) <= os.path.getmtime(output_file):
+        print(f"Skipping {filename} as it hasn't been modified.")
+        continue
+      print(f"--- Processing {filename}...")
       outputname = os.path.splitext(os.path.basename(filename))[0] + ".html"
       # Load post details before converting.
       with open(path, 'r') as f:
@@ -100,6 +108,7 @@ if __name__ == '__main__':
     convert_file_with_pandoc(fp.name, os.path.join(site_directory, 'index.html'))
 
   # Copy static files.
-  if (d:=args.copy_static) is not None:
-    print(f'Copying static files from {d} to {site_directory}')
-    shutil.copytree(d, site_directory, dirs_exist_ok=True)
+  if (static_srcs:=args.copy_static) is not None:
+    for d in static_srcs:
+      print(f'Copying static files from {d} to {site_directory}')
+      shutil.copytree(d, site_directory, dirs_exist_ok=True)
