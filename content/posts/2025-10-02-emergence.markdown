@@ -1,0 +1,621 @@
+---
+title: Emergence
+date: 2025-10-02
+---
+
+The world is full of systems that behave in a complex manner, and yet the
+constituents of that system are engaged in relatively simple behavior. It is the
+interactions of a large number of these simple constituents that seems to give
+rise to a result that is much, much richer than the sum of the parts.
+
+Consider the mighty ant colony. It attacks, creates, feeds, grows and responds
+as one strange entity. No single ant can hope to orchestrate any of this
+intricate dance, and yet it is... just ants! A lot of them.
+
+<img class="demo" src="ant-colony.gif" height="400" width="400" />
+
+Rob Conway's [Game of
+Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life) features cells on a
+grid that are turned on or off individually using a dead simple rule. And yet,
+when repeated for time, the grid comes alive with shapes that move and interact
+with each other.
+
+<canvas id="life" height="400" width="400" class="demo"></canvas>
+
+[Langton's ant](https://en.wikipedia.org/wiki/Langton%27s_ant) is another
+curious game where a simple set of rules leads to complex macro behavior.
+
+<canvas id="ant" height="400" width="400" class="demo"></canvas>
+
+## Emergent behavior
+
+When simple rules of interaction at a given scale give rise to complex behavior
+at a larger scale, the latter is dubbed _emergent behavior_.  This emergent
+behavior may or may not be expected. Often though, some unexpected behaviors
+also emerge when we are trying to affect some different emergent behavior. There
+are thus two useful ways of studying emergent behavior.
+
+In the **top-down study**, we hope to go from observed complex behavior to the
+local rules that entities at a smaller scale ought to follow: _What is a
+single ant doing at any given moment?_
+
+The complimentary **bottom-up study** aims to predict the macro effect of a
+given set of rules that are followed locally at a smaller scale. The design of
+swarm algorithms where a member of a swarm makes local decisions based on its
+local environment read, resulting in desired swarm behaviour would fall in this
+category. A neat example is from this paper titled _[A Markov Chain Algorithm
+for Compression in Self-Organizing Particle
+Systems](https://randall.math.gatech.edu/Compression-PODC-16.pdf)_, where the
+desired macro behavior is that of compression — i.e., getting swarm particles
+to cluster closely together.
+
+
+<canvas id="compression-grid" height="400" width="400" class="demo"></canvas>
+
+This kind of emergence sounds like magic, and it _is_ magical in that it is awe
+inspiring, but there is of course nothing mystical about it. This is
+particularly important today, when we speak of reasoning or problem-solving as
+emergent behaviors of LLM training. We do want our language models to appear to
+reason and help us solve complex problems that involve multi-step solutions.
+The fact that they acquire these problem-solving abilities suddenly beyond a
+given training scale, is what makes us call it emergent behavior. But you see,
+our use of language, as found on the Internet and hence in the training sets of
+all current LLMs, encodes human reasoning, and hence to model that use of
+language, picking up this latent reasoning structure is a _must_. And one can
+see how it might require a certain scale of training data, compute, and model
+capacity to pick this structure up. It feels funky to be writing about this
+after using an LLM to write most of the code for each demo you see on this page.
+
+## Distributed software systems
+
+Anyone who has worked with a distributed system (and definitely those who have
+built one) know how complex systemic behaviors can arise due to delays and
+interactions between components that aren't perfectly reliable. A fascinating
+family of algorithms that creates complex systemic behavior through such
+interactions is the gossip protocol family. These protocols spread information
+through a network the way humans spread rumors: each node periodically tells a
+random neighbor what it knows.
+
+
+One surprising thing about this simple algorithm is how _fast_ it can spread
+information through the cluster. Asymptotically, it takes O(ln(N)) gossip
+periods before 99% of the nodes would learn of the news. For example, in a 1000
+node cluster where each node "gossips" every second, it would take just about 7
+seconds before almost all nodes would learn of the news, no matter which node it
+originates on.
+
+<canvas id="gossip" height="400" width="400"></canvas>
+
+## Markets and economies
+
+My favorite kind of emergent behavior comes from humans interacting with each
+other to create economies. Aacting mostly out of self-interest, thousands and
+millions of people are able to orchestrate extremely complex phenomena,
+fulfilling the most mundane as well as the most bizarre needs out there. The
+classic essay [I, Pencil by Leonard E.  Read](https://fee.org/ebooks/i-pencil/)
+illustrates this eloquently. No one person on this world can hope to know how to
+make the humble lead pencil from scratch, and yet most of us take it for granted
+that we'll just be able to buy one when we need one, cheaply.
+
+Another striking essay on this is [Bastiat's _There Are No Absolute
+Principles_ from his book _Economic
+Sophisms_](https://www.econlib.org/library/Bastiat/basSoph.html?chapter_num=22#book-reader),
+which discusses how 19th Century Paris was kept from total collapse and poverty
+simply due to self-interested people who are able to engage in free exchange
+with each other. That's it, it was true then, it is true now. 
+
+As another example, consider this: When the Swiss National Bank senses that the
+Swiss Franc (CHF) is too strong compared to the Euro, it wants to drive CHF
+down, since too strong of a CHF would hurt Switzerland's many export-oriented
+industries. However, the SNB cannot just go and _change_ the CHF/Euro exchange
+rate. Instead, it buys Euros to dump CHFs into the market, relying on the market
+forces to automatically lower demand and hence price for CHF.
+
+
+## Conclusion
+
+These fascinating systems serve as perfect illustrations of an important idea:
+while emergence seems magical, it can be engineered and analyzed. From ants and
+their colonies to humans and their economies, emergent behaviors arise from
+simple rules followed by small actors interacting with each other. This has
+practical implications for us as software engineers: we can harness emergent
+properties to build distributed systems, and we must be mindful of unintended
+emergent behaviors in the systems we design. The distinction between top-down
+and bottom-up approaches helps us reason about these systems systematically.
+
+<script>
+  (function() { // Game of Life
+    const size = 300;
+    let grid = new Array(size).fill(0).map(() => new Array(size).fill(0));
+    let newGrid = new Array(size).fill(0).map(() => new Array(size).fill(0));
+
+    // Initialize with random cells
+    for (let i = 0; i < size; i++) {
+      for (let j = 0; j < size; j++) {
+        grid[i][j] = Math.random() > 0.85 ? 1 : 0;
+      }
+    }
+
+    function countNeighbors(x, y) {
+      let count = 0;
+      for (let i = -1; i <= 1; i++) {
+        for (let j = -1; j <= 1; j++) {
+          if (i === 0 && j === 0) continue;
+          const newX = (x + i + size) % size;
+          const newY = (y + j + size) % size;
+          count += grid[newX][newY];
+        }
+      }
+      return count;
+    }
+
+    function updateGrid() {
+      for (let i = 0; i < size; i++) {
+        for (let j = 0; j < size; j++) {
+          const neighbors = countNeighbors(i, j);
+          newGrid[i][j] = neighbors === 3 || (neighbors === 2 && grid[i][j]) ? 1 : 0;
+        }
+      }
+      [grid, newGrid] = [newGrid, grid];
+      draw();
+      requestAnimationFrame(updateGrid);
+    }
+
+    function draw() {
+      const canvas = document.getElementById('life');
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const cellSize = canvas.width / size;
+      
+      for (let i = 0; i < size; i++) {
+        for (let j = 0; j < size; j++) {
+          if (grid[i][j]) {
+            ctx.fillStyle = '#000';
+            ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
+          }
+        }
+      }
+    }
+    document.addEventListener('DOMContentLoaded', updateGrid);
+  })();
+  (function() { // Langton's Ant
+      const size = 200;
+      let grid = new Array(size).fill(0).map(() => new Array(size).fill(0));
+      let antX = Math.floor(Math.random() * size);
+      let antY = Math.floor(Math.random() * size);
+      let direction = Math.floor(Math.random() * 4); // 0:up, 1:right, 2:down, 3:left
+
+      function updateAnt() {
+        // At a white square, turn right and flip color
+        // At a black square, turn left and flip color
+        if (grid[antX][antY] === 0) {
+          direction = (direction + 1) % 4;
+          grid[antX][antY] = 1;
+        } else {
+          direction = (direction + 3) % 4;
+          grid[antX][antY] = 0;
+        }
+
+        // Move forward
+        switch(direction) {
+          case 0: antX = (antX - 1 + size) % size; break;
+          case 1: antY = (antY + 1) % size; break;
+          case 2: antX = (antX + 1) % size; break;
+          case 3: antY = (antY - 1 + size) % size; break;
+        }
+
+        draw();
+        requestAnimationFrame(updateAnt);
+      }
+
+    function draw() {
+      const canvas = document.getElementById('ant');
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const cellSize = canvas.width / size;
+      
+      // Draw grid
+      for (let i = 0; i < size; i++) {
+        for (let j = 0; j < size; j++) {
+          if (grid[i][j]) {
+            ctx.fillStyle = '#000';
+            ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
+          }
+        }
+      }
+
+      // Draw ant
+      ctx.fillStyle = '#f00';
+      ctx.fillRect(antY * cellSize, antX * cellSize, cellSize, cellSize);
+    }
+
+    document.addEventListener('DOMContentLoaded', updateAnt);
+  })()
+</script>
+<script>
+(() => {
+  // ------- CONFIG -------
+  const canvas = document.getElementById('compression-grid');
+  const COLS = 30;
+  const ROWS = 30;
+  const HEX_R = 12;             // Hex radius in px
+  const NUM_PARTICLES = 100;    // Must be <= COLS*ROWS
+  const STEPS_PER_FRAME = 50;  // More = faster sim
+  const SHOW_GRID = true;
+  // Control UI
+  const lambdaSlider = document.createElement('input');
+  lambdaSlider.type = 'range';
+  lambdaSlider.min = '0.1';
+  lambdaSlider.max = '10';
+  lambdaSlider.step = '0.1';
+  lambdaSlider.value = '10';
+  lambdaSlider.style = 'width: 200px; margin: 10px;';
+  canvas.parentNode.insertBefore(lambdaSlider, canvas);
+
+  // Add labels for sliders
+  const lambdaLabel = document.createElement('label');
+  lambdaLabel.textContent = 'λ (compression): ';
+  canvas.parentNode.insertBefore(lambdaLabel, lambdaSlider);
+
+  const particleSlider = document.createElement('input');
+  particleSlider.type = 'range';
+  particleSlider.min = '2';
+  particleSlider.max = COLS * ROWS;
+  particleSlider.value = '100';
+  particleSlider.style = 'width: 200px; margin: 10px;';
+  canvas.parentNode.insertBefore(particleSlider, canvas);
+
+  const particleLabel = document.createElement('label');
+  particleLabel.textContent = 'Particle count: ';
+  canvas.parentNode.insertBefore(particleLabel, particleSlider);
+
+  let lambda = parseFloat(lambdaSlider.value);
+  let numParticles = parseInt(particleSlider.value);
+
+  lambdaSlider.addEventListener('input', (e) => {
+    lambda = parseFloat(e.target.value);
+  });
+
+  particleSlider.addEventListener('input', (e) => {
+    numParticles = parseInt(e.target.value);
+    occ.clear();
+    initBlob();
+  });
+
+  // ------- CANVAS SETUP -------
+  const ctx = canvas.getContext('2d');
+  const DPR = window.devicePixelRatio || 1;
+
+  // Compute canvas size to fit the hex grid nicely (even-q vertical layout)
+  const hexW = Math.sqrt(3) * HEX_R;
+  const hexH = 2 * HEX_R * 0.75;                 // vertical distance between row centers (3/4 of diameter)
+  const width  = Math.ceil((COLS + 0.5) * hexW);
+  const height = Math.ceil((ROWS + 1) * (HEX_R * 1.5));
+  canvas.style.width = width + 'px';
+  canvas.style.height = height + 'px';
+  canvas.width  = Math.floor(width  * DPR);
+  canvas.height = Math.floor(height * DPR);
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+
+  // ------- HEX HELPERS (even-q vertical layout) -------
+  function hexToPixel(q, r) {
+    // q: column, r: row
+    const x = HEX_R * Math.sqrt(3) * (q + 0.5 * (r & 1)); // shift odd rows by half
+    const y = HEX_R * (3/2) * r;
+    return [x + HEX_R * 1.2, y + HEX_R * 1.2]; // small margin
+  }
+
+  // 6-neighbor offsets for even-q (column-based) vertical layout
+  const NBR_OFFSETS = {
+    even: [[+1, 0], [0, -1], [-1, -1], [-1, 0], [-1, +1], [0, +1]],
+    odd:  [[+1, 0], [+1, -1], [0, -1], [-1, 0], [0, +1], [+1, +1]]
+  };
+  function neighbors(q, r) {
+    const parity = (q & 1) ? 'odd' : 'even';
+    const offs = NBR_OFFSETS[parity];
+    const list = [];
+    for (const [dq, dr] of offs) {
+      const nq = q + dq, nr = r + dr;
+      if (nq >= 0 && nq < COLS && nr >= 0 && nr < ROWS) list.push([nq, nr]);
+    }
+    return list;
+  }
+
+  // ------- STATE -------
+  // Occupancy as Set of "q,r"
+  const occ = new Set();
+
+  function key(q, r) { return q + ',' + r; }
+  function has(q, r) { return occ.has(key(q, r)); }
+  function add(q, r) { occ.add(key(q, r)); }
+  function del(q, r) { occ.delete(key(q, r)); }
+
+  // Seed particles as a connected blob near the center
+  function initBlob() {
+    const cq = Math.floor(COLS / 2);
+    const cr = Math.floor(ROWS / 2);
+    const target = Math.min(numParticles, COLS * ROWS);
+    add(cq, cr);
+    // simple BFS growth
+    const frontier = [[cq, cr]];
+    while (occ.size < target && frontier.length) {
+      const [q, r] = frontier.shift();
+      for (const [nq, nr] of neighbors(q, r)) {
+        if (!has(nq, nr)) {
+          add(nq, nr);
+          frontier.push([nq, nr]);
+          if (occ.size >= target) break;
+        }
+      }
+    }
+  }
+  initBlob();
+
+  // ------- ENERGY / ACCEPTANCE -------
+  function degreeAt(q, r) {
+    let d = 0;
+    for (const [nq, nr] of neighbors(q, r)) if (has(nq, nr)) d++;
+    return d;
+  }
+
+  function metropolisAccept(deltaE) {
+    // target pi ∝ λ^{e}, where e = #edges (contacts)
+    // Δe = deg_new - deg_old for the moved particle
+    if (deltaE >= 0) return true;
+    const a = Math.pow(lambda, deltaE); // deltaE is negative -> fraction
+    return Math.random() < a;
+  }
+
+  // ------- CONNECTIVITY CHECK (BFS) -------
+  function isConnectedAfterMove(qFrom, rFrom, qTo, rTo) {
+    // Temporarily apply move, BFS, then revert (small state => fine)
+    del(qFrom, rFrom);
+    add(qTo, rTo);
+
+    // start from qTo,rTo (now occupied)
+    const anyKey = key(qTo, rTo);
+    const visited = new Set([anyKey]);
+    const queue = [[qTo, rTo]];
+
+    while (queue.length) {
+      const [q, r] = queue.shift();
+      for (const [nq, nr] of neighbors(q, r)) {
+        const k = key(nq, nr);
+        if (has(nq, nr) && !visited.has(k)) {
+          visited.add(k);
+          queue.push([nq, nr]);
+        }
+      }
+    }
+
+    // revert
+    del(qTo, rTo);
+    add(qFrom, rFrom);
+
+    return visited.size === occ.size;
+  }
+
+  // ------- ONE MONTE CARLO STEP -------
+  const OCC_ARR = () => Array.from(occ, k => k.split(',').map(Number));
+
+  function step() {
+    if (occ.size === 0) return;
+
+    // choose a random particle
+    const arr = OCC_ARR();
+    const [q, r] = arr[(Math.random() * arr.length) | 0];
+
+    // choose a random neighbor as proposal
+    const nbrs = neighbors(q, r);
+    if (nbrs.length === 0) return;
+    const [nq, nr] = nbrs[(Math.random() * nbrs.length) | 0];
+
+    // must be empty destination
+    if (has(nq, nr)) return;
+
+    // compute local Δe
+    const degOld = degreeAt(q, r);
+    // Temporarily place particle at new spot (without commit) to measure degNew
+    del(q, r);
+    add(nq, nr);
+    const degNew = degreeAt(nq, nr);
+    // revert
+    del(nq, nr);
+    add(q, r);
+    const deltaE = degNew - degOld;
+
+    // Metropolis acceptance + connectivity constraint
+    if (metropolisAccept(deltaE) && isConnectedAfterMove(q, r, nq, nr)) {
+      del(q, r);
+      add(nq, nr);
+    }
+  }
+
+  // ------- RENDERING -------
+  function drawHex(cx, cy, r, fill) {
+    const a60 = Math.PI / 3;
+    ctx.beginPath();
+    for (let i = 0; i < 6; i++) {
+      const angle = a60 * i + Math.PI / 6;
+      const x = cx + r * Math.cos(angle);
+      const y = cy + r * Math.sin(angle);
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    if (fill) ctx.fill(); else ctx.stroke();
+  }
+
+  function render() {
+    ctx.clearRect(0, 0, canvas.width / DPR, canvas.height / DPR);
+
+    if (SHOW_GRID) {
+      ctx.globalAlpha = 0.2;
+      ctx.lineWidth = 1;
+      for (let r = 0; r < ROWS; r++) {
+        for (let q = 0; q < COLS; q++) {
+          const [x, y] = hexToPixel(q, r);
+          drawHex(x, y, HEX_R - 1, false);
+        }
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    // draw particles
+    ctx.lineWidth = 1.5;
+    ctx.fillStyle = '#111';
+    for (const k of occ) {
+      const [q, r] = k.split(',').map(Number);
+      const [x, y] = hexToPixel(q, r);
+      drawHex(x, y, HEX_R - 2, true);
+    }
+
+    // HUD
+    ctx.fillStyle = '#000';
+    ctx.font = '12px system-ui, sans-serif';
+    ctx.fillText(`|V|=${occ.size}  λ=${lambda.toFixed(2)}  steps/frame=${STEPS_PER_FRAME}`, 8, 16);
+  }
+
+  // ------- MAIN LOOP -------
+  function loop() {
+    for (let i = 0; i < STEPS_PER_FRAME; i++) step();
+    render();
+    requestAnimationFrame(loop);
+  }
+  loop();
+})();
+
+(() => {
+  const canvas = document.getElementById('gossip');
+  const ctx = canvas.getContext('2d');
+
+  // Add controls
+  const nodeSlider = document.createElement('input');
+  nodeSlider.type = 'range';
+  nodeSlider.min = '5';
+  nodeSlider.max = '100';
+  nodeSlider.value = '20';
+  nodeSlider.style = 'width: 200px; margin: 10px;';
+
+  const colorPicker = document.createElement('input');
+  colorPicker.type = 'color';
+  colorPicker.value = '#ff0000';
+  colorPicker.style = 'margin: 10px;';
+
+  const nodeLabel = document.createElement('label');
+  nodeLabel.textContent = 'Nodes: ';
+  canvas.parentNode.insertBefore(nodeLabel, canvas);
+  canvas.parentNode.insertBefore(nodeSlider, canvas);
+  canvas.parentNode.insertBefore(colorPicker, canvas);
+
+  // Add layout toggle
+  const layoutToggle = document.createElement('input');
+  layoutToggle.type = 'checkbox';
+  layoutToggle.id = 'layoutToggle';
+  layoutToggle.style = 'margin: 10px;';
+  layoutToggle.checked = true;
+  const layoutLabel = document.createElement('label');
+  layoutLabel.textContent = 'Random layout: ';
+  layoutLabel.htmlFor = 'layoutToggle';
+  canvas.parentNode.insertBefore(layoutLabel, canvas);
+  canvas.parentNode.insertBefore(layoutToggle, canvas);
+
+  let nodes = [];
+  let version = 0;
+
+  function initNodes() {
+    nodes = [];
+    const count = parseInt(nodeSlider.value);
+    const radius = Math.min(canvas.width, canvas.height) * 0.4;
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+
+
+    for (let i = 0; i < count; i++) {
+      if (layoutToggle.checked) {
+        // Random layout
+        nodes.push({
+          x: Math.random() * canvas.width * 0.8 + canvas.width * 0.1,
+          y: Math.random() * canvas.height * 0.8 + canvas.height * 0.1,
+          color: '#cccccc',
+          version: 0
+        });
+      } else {
+        // Circular layout    
+        const angle = (i / count) * Math.PI * 2;
+        nodes.push({
+          x: centerX + Math.cos(angle) * radius,
+          y: centerY + Math.sin(angle) * radius,
+          color: '#cccccc',
+          version: 0
+        });
+      }
+      nodes[0].color = colorPicker.value;
+      nodes[0].version = 1;
+    }
+  }
+
+  function gossip() {
+    const nodeCount = nodes.length;
+    for (let i = 0; i < nodeCount; i++) {
+      const target = Math.floor(Math.random() * nodeCount);
+      if (target !== i) {
+        if (nodes[i].version > nodes[target].version) {
+          nodes[target].color = nodes[i].color;
+          nodes[target].version = nodes[i].version;
+        } else if (nodes[target].version > nodes[i].version) {
+          nodes[i].color = nodes[target].color;
+          nodes[i].version = nodes[target].version;
+        }
+      }
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw connections
+    ctx.strokeStyle = '#eee';
+    ctx.lineWidth = 1;
+    nodes.forEach((node, i) => {
+      nodes.forEach((other, j) => {
+        if (i < j) {
+          ctx.beginPath();
+          ctx.moveTo(node.x, node.y);
+          ctx.lineTo(other.x, other.y);
+          ctx.stroke();
+        }
+      });
+    });
+
+    // Draw nodes
+    nodes.forEach((node, i) => {
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, 10, 0, Math.PI * 2);
+      ctx.fillStyle = node.color;
+      ctx.fill();
+      ctx.strokeStyle = '#000';
+      ctx.stroke();
+    });
+  }
+
+  function animate() {
+    setTimeout(() => {
+      gossip();
+      draw();
+      requestAnimationFrame(animate);
+    }, 500);
+  }
+
+  layoutToggle.addEventListener('input', initNodes);
+  nodeSlider.addEventListener('input', initNodes);
+  colorPicker.addEventListener('input', () => {
+    nodes[0].color = colorPicker.value;
+    nodes[0].version = ++version;
+  });
+
+  initNodes();
+  animate();
+})();
+</script>
+
+
